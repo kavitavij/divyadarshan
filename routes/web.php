@@ -9,32 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
-Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
-    // admin routes
-});
-Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
-});
 
-Route::prefix('admin')->group(function () {
-    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
-    Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard')->middleware('auth');
-    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
-});
-
-
-Route::prefix('admin')->group(function () {
-    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
-
-    Route::middleware(['auth', 'role:admin'])->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
-    });
-});
 
 // Ebook
 Route::get('/ebooks', [EbookController::class, 'index'])->name('ebooks');
