@@ -17,6 +17,7 @@ class EbookController extends Controller
             ['title' => 'Tirupati Temple Guide', 'lang' => 'English', 'cover' => 'temple1_1.jpg', 'file' => 'tirupati.pdf'],
             ['title' => 'वृन्दावन मंदिर', 'lang' => 'Hindi', 'cover' => 'book2.jpg', 'file' => 'vrindavan.pdf'],
             ['title' => 'Golden Temple History', 'lang' => 'Punjabi', 'cover' => 'book3.jpg', 'file' => 'golden.pdf'],
+            ['title' => 'ABBC', 'lang' => 'ABC', 'cover' => 'book3.jpg', 'file' => 'golden.pdf'],
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
         ];
 
