@@ -92,7 +92,7 @@
                 <div class="text-4xl mb-2">{{ $offer[0] }}</div>
                 <h3 class="text-lg font-semibold text-blue-700">{{ $offer[1] }}</h3>
                 <p class="text-sm text-gray-600 mt-1">{{ $offer[2] }}</p>
-                <a href="#" class="mt-3 inline-block text-sm bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition">Explore</a>
+                
             </div>
             @endforeach
         </div>

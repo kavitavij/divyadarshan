@@ -7,17 +7,8 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\TempleController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\EbookController;
-use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\AdminDashboardController;
+
 use App\Http\Controllers\Auth\AdminLoginController;
-
-// Default user login (already in Laravel)
-Auth::routes();
-
-// Admin login routes
-Route::get('admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
-Route::post('admin/login', [AdminLoginController::class, 'login']);
-
 // routes/web.php
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
 

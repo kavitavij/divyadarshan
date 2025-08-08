@@ -19,7 +19,11 @@ class TempleController extends Controller
     {
         $temple = Temple::findOrFail($id);
         return view('temples.show', compact('temple'));
+        $temple = Temple::where('slug', $slug)->firstOrFail();
+
+    return view('temples.show', compact('temple'));
     }
+    
 
     // Store a new temple
     public function store(Request $request)
@@ -74,4 +78,5 @@ class TempleController extends Controller
     {
         // Add delete logic here later if needed
     }
+    
 }
