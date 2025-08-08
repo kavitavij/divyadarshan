@@ -71,15 +71,61 @@
 
 
 
-<!-- 🔔 Latest Updates Section -->
+<!-- 🔔 Latest Updates Section with Vertical Scrolling -->
 <div class="mb-12 px-4">
-    <h2 class="text-xl font-semibold mb-4">Latest Updates</h2>
-    <ul class="list-disc list-inside text-gray-700 space-y-2">
-        <li>🔔 Special Darshan opened for Navratri week.</li>
-        <li>🏨 New hotel partners added for Tirupati region.</li>
-        <li>📖 New e-book on "Temple Rituals of South India" uploaded.</li>
-        <li>🌐 Language support extended to Bengali and Marathi.</li>
-    </ul>
+    <!-- Heading -->
+    <h2 class="text-xl font-semibold mb-4 text-center text-blue-800">Latest Updates</h2>
+
+    <!-- Scrolling Panel -->
+    <div class="vertical-panel">
+        <div class="vertical-scroll">
+            <div class="notification-item">🔔 Special Darshan opened for Navratri week.</div>
+            <div class="notification-item">🏨 New hotel partners added for Tirupati region.</div>
+            <div class="notification-item">📖 New e-book on "Temple Rituals of South India" uploaded.</div>
+            <div class="notification-item">🌐 Language support extended to Bengali and Marathi.</div>
+        </div>
+    </div>
 </div>
 
 @endsection
+<style>
+.vertical-panel {
+  width: 100%;
+  max-width: 500px;
+  height: 200px;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: #fff8dc;
+  border: 1px solid #ffd966;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.vertical-scroll {
+  display: flex;
+  flex-direction: column;
+  animation: scroll-up 30s linear infinite; /* Slower scroll */
+  /* animation-play-state: running ensures it never stops */
+}
+
+.notification-item {
+  display: block;
+  text-decoration: none;
+  padding: 12px 0;
+  font-weight: 500;
+  color: #7c4a03;
+  font-size: 16px;
+  text-align: center;
+}
+
+.notification-item:hover {
+  background-color: rgba(124, 74, 3, 0.1);
+}
+
+@keyframes scroll-up {
+  0%   { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
+}
+</style>
