@@ -21,7 +21,7 @@
 
     {{-- 🔷 Banner --}}
     <div class="banner-wrapper">
-        <img src="{{ asset('imagesaa/banner.png') }}" alt="DivyaDarshan Banner">
+        <img src="{{ asset('imagesa/banner.png') }}" alt="DivyaDarshan Banner">
         <div class="banner-logo-title">
             <img src="{{ asset('images/alogo.png') }}" alt="Logo">
             <h1>DivyaDarshan</h1>
@@ -44,8 +44,8 @@
             </div>
         </div>
         <a href="{{ route('ebooks') }}" class="hover:text-blue-600">E-Books</a>
-        <button @click="loginModal = true" class="hover:text-blue-600 focus:outline-none">Login</button>
-    </nav>
+        <a href="#" class="hover:text-blue-600">Login</a>
+    </div>
 
     {{-- 🔷 Swiper Slider --}}
     <div class="flex justify-center mt-4">

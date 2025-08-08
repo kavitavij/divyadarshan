@@ -1,40 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AdminAuthController extends Controller
+class AdminLoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('admin.login');
+        return view('auth.admin-login');
     }
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'role' => 'admin'])) {
-            return redirect()->route('admin.dashboard');
+        if (Auth::guard('admin')->attempt($credentials)) {
+            return redirect()->intended('/admin/dashboard');
         }
 
-        return back()->withErrors(['Invalid credentials or not an admin user.']);
-    }
-
-    public function dashboard()
-    {
-        return view('admin.dashboard');
-    }
-
-    public function logout()
-    {
-        Auth::logout();
-        return redirect()->route('admin.login');
+        return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
     }
 }

@@ -11,6 +11,8 @@ class EbookController extends Controller
         $selectedLang = $request->get('lang', 'All');
 
         $languages = ['All', 'Hindi', 'English', 'Punjabi'];
+
+        // Sample E-books data (this can come from DB later)
         $books = [
             ['title' => 'Tirupati Temple Guide', 'lang' => 'English', 'cover' => 'temple1_1.jpg', 'file' => 'tirupati.pdf'],
             ['title' => 'वृन्दावन मंदिर', 'lang' => 'Hindi', 'cover' => 'book2.jpg', 'file' => 'vrindavan.pdf'],
