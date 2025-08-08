@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    {{-- 🔷 Navigation --}}
+    <!-- Navigation  -->
     <nav class="flex flex-wrap justify-center gap-4 text-sm font-medium text-gray-700">
         <a href="{{ route('home') }}" class="hover:text-blue-600">Home</a>
         <a href="{{ route('about') }}" target="_blank" rel="noopener noreferrer">About</a>

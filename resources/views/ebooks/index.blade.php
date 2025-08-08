@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mb-12">
-    <h2 class="text-2xl font-bold text-center text-blue-700 mb-6">📚 E-Books</h2>
+<div class="mb-12 px-4">
+  <h2 class="text-2xl font-bold text-center text-blue-700 mb-6">📚 E-Books</h2>
 
-    <!-- Language Filter -->
-    <div class="language-boxes">
-        @foreach($languages as $lang)
-            <a href="{{ route('ebooks', ['lang' => $lang]) }}"
-               class="language-box {{ $selectedLang == $lang ? 'active' : '' }}">
-                {{ $lang }}
-            </a>
-        @endforeach
-    </div>
+  <!-- Language Filter -->
+  <div class="language-boxes flex gap-4 justify-center">
+    @foreach($languages as $lang)
+      <a href="{{ route('ebooks', ['lang' => $lang]) }}"
+         class="language-box {{ $selectedLang == $lang ? 'active' : '' }}">
+        {{ $lang }}
+      </a>
+    @endforeach
+  </div>
 
     <!-- Books Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 mt-6">
