@@ -22,50 +22,64 @@
     </style>
 </head>
 <body id="top" class="bg-gray-50 text-gray-800 font-sans">
-
-<!-- 🔹 Navbar -->
+<!--Navbar -->
 <header class="bg-white shadow">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    
+    <!-- Left: Logo -->
+    <div class="flex-shrink-0">
+      <h1 class="text-2xl font-bold text-blue-600">DivyaDarshan</h1>
+    </div>
 
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-center items-center gap-4 md:gap-10">
-            <h1 class="text-2xl font-bold text-blue-600"> DivyaDarshan</h1>
-            <nav class="flex flex-wrap justify-center gap-4 md:gap-8 text-sm font-medium text-gray-700">
-                <a href="/" class="hover:text-blue-600">Home</a>
-                <a href="/about" class="text-blue-600 font-semibold">About</a>
-                <div class="relative group">
-                    <span class="cursor-pointer">Temples </span>
-                    <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">T1</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">T2</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">T3</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">T4</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">T5</a>
-                    </div>
-                </div>
-                <div class="relative group">
-                        <span class="cursor-pointer">Online Services </span>
-                        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Darshan</a>
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Accommodation</a>
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Cab</a>
-                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Donations</a>
-                        </div>
-                </div>
-                <div class="relative group inline-block">
-                    <span class="cursor-pointer px-4 py-2 hover:text-blue-600">General Information </span>
-                    <div class="absolute left-0 mt-1 hidden group-hover:block bg-white border rounded shadow z-50">
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">FAQs</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Dress Code</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Contact Us</a>
-                    </div>
-                </div>
+    <!-- Middle: Menu -->
+    <nav class="flex gap-6 text-sm font-medium text-gray-700">
+      <a href="/" class="hover:text-blue-600">Home</a>
+      <a href="/about" class="text-blue-600 font-semibold">About</a>
 
-                <a href="/login" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Login</a>
-            </nav>
+      <!-- Dropdown: Temples -->
+      <div class="relative group">
+        <span class="cursor-pointer">Temples</span>
+        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T1</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T2</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T3</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T4</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T5</a>
         </div>
+      </div>
+
+      <!-- Dropdown: Online Services -->
+      <div class="relative group">
+        <span class="cursor-pointer">Online Services</span>
+        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Darshan</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Accommodation</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Cab</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Donations</a>
+        </div>
+      </div>
+
+      <!-- Dropdown: General Info -->
+      <div class="relative group">
+        <span class="cursor-pointer">General Information</span>
+        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">FAQs</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Dress Code</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Contact Us</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Right: Login -->
+    <div class="flex-shrink-0">
+      <a href="/login" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Login</a>
+    </div>
+
+  </div>
 </header>
+
 
 <main class="max-w-6xl mx-auto px-4 py-10 space-y-16">
     <section class="text-center animate-fadeInUp">
@@ -124,7 +138,10 @@
     </section>
 
 </main>
-<a href="#top" class="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition hidden md:block z-50">↑ Top</a>
+<a href="#top" 
+   class="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition hidden md:block z-50">
+   ↑ Back to Top
+</a>
 
 <!-- 🔻 Footer -->
 <footer class="bg-gray-200 text-center p-4 text-sm mt-10">
@@ -133,6 +150,10 @@
     <a href="mailto:support@divyadarshan.com" class="underline">support@divyadarshan.com</a> |
     <a href="#">Terms</a> | <a href="#">Guidelines</a> | <a href="#">Complaint</a>
 </footer>
-
 </body>
 </html>
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+</style>

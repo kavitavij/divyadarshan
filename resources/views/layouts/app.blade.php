@@ -4,103 +4,74 @@
     <meta charset="UTF-8">
     <title>DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    {{-- ✅ Load CSS & JS using Vite --}}
     @vite([
         'resources/css/app.css',
         'resources/css/custom.css',
         'resources/js/app.js'
     ])
-
-    {{-- Optional: External Swiper CSS --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 </head>
-
 <body x-data="{ loginModal: false }" class="bg-gray-100 font-sans text-gray-800">
 <div class="max-w-7xl mx-auto px-4">
+<script src="//unpkg.com/alpinejs" defer></script>
 
-    {{-- 🔷 Banner --}}
-    <div class="banner-wrapper">
+    <!-- <div class="banner-wrapper">
         <img src="{{ asset('imagesa/banner.png') }}" alt="DivyaDarshan Banner">
         <div class="banner-logo-title">
             <img src="{{ asset('images/alogo.png') }}" alt="Logo">
             <h1>DivyaDarshan</h1>
-        </div>
-    </div>
-<header class="bg-white shadow">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        </div> -->
     
-    <!-- Left: Logo -->
-    <div class="flex-shrink-0">
-      <h1 class="text-2xl font-bold text-blue-600">DivyaDarshan</h1>
     </div>
+<header class="bg-white shadow" x-data="{ open: false }">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    <!-- Logo -->
+    <div class="flex-shrink-0">
+      <a href="/home" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
+    </div>
+    <!-- Mobile Toggle Button -->
+    <button @click="open = !open" class="md:hidden text-gray-700 focus:outline-none">
+      <!-- Hamburger -->
+      <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <!-- Close -->
+      <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
 
-    <!-- Center: Navigation Links -->
+    <!-- Desktop Menu -->
     <nav class="hidden md:flex flex-wrap justify-center gap-4 md:gap-8 text-sm font-medium text-gray-700">
       <a href="/" class="hover:text-blue-600">Home</a>
-      <a href="/about" class="text-blue-600 font-semibold">About</a>
-
-      <div class="relative group">
-        <span class="cursor-pointer">Temples</span>
-        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T1</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T2</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T3</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T4</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T5</a>
-        </div>
-      </div>
-
-      <div class="relative group">
-        <span class="cursor-pointer">Our Services</span>
-        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Darshan</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Accommodation</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Cab</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Donations</a>
-        </div>
-      </div>
-
-      <div class="relative group inline-block">
-        <span class="cursor-pointer px-4 py-2 hover:text-blue-600">General Information</span>
-        <div class="absolute left-0 mt-1 hidden group-hover:block bg-white border rounded shadow z-50">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">FAQs</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Dress Code</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Contact Us</a>
-        </div>
-      </div>
+      <a href="/about" class="font-semibold text-gray-700">About</a>
+      <a href="#" class="hover:text-blue-600">Temples</a>
+      <a href="#" class="hover:text-blue-600">Our Services</a>
+      <a href="{{ route('ebooks') }}" class="hover:text-blue-600">eBooks</a>
     </nav>
 
-    <!-- Right: Login Button -->
-    <div class="flex-shrink-0">
-      <a href="/login" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Login</a>
+    <!-- Desktop Login -->
+    <div class="hidden md:block">
+      <a href="/login" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Login</a>
     </div>
+  </div>
 
+  <!-- Mobile Menu -->
+  <div x-show="open" x-transition class="md:hidden px-4 pb-4 space-y-2 bg-gray-50">
+    <a href="/" class="block hover:text-blue-600" @click="open = false">Home</a>
+    <a href="/about" class="block font-semibold text-gray-700" @click="open = false">About</a>
+    <a href="#" class="block hover:text-blue-600" @click="open = false">Temples</a>
+    <a href="#" class="block hover:text-blue-600" @click="open = false">Our Services</a>
+    <a href="{{ route('ebooks') }}" class="block hover:text-blue-600" @click="open = false">eBooks</a>
+    <a href="/login" class="block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="open = false">Login</a>
   </div>
 </header>
 
-    <!-- Navigation  -->
-    <nav class="flex flex-wrap justify-center gap-4 text-sm font-medium text-gray-700">
-        <a href="{{ route('home') }}" class="hover:text-blue-600">Home</a>
-        <a href="{{ route('about') }}" target="_blank" rel="noopener noreferrer">About</a>
-        <a href="{{ route('temples.index') }}" class="hover:text-blue-600">Temples</a>
-        <div class="relative group">
-            <span class="cursor-pointer">Services ▾</span>
-            <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Darshan</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Accommodation</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Cab</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Donations</a>
-            </div>
-        </div>
-        <a href="{{ route('ebooks') }}" class="hover:text-blue-600">E-Books</a>
-        <a href="#" class="hover:text-blue-600">Login</a>
-    </div>
-
-    {{-- 🔷 Swiper Slider --}}
+     <!-- Swiper Slider  -->
     <div class="flex justify-center mt-4">
         <div class="swiper mySwiper" style="max-width: 400px;">
             <div class="swiper-wrapper">

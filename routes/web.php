@@ -7,7 +7,6 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\TempleController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\EbookController;
-
 use App\Http\Controllers\Auth\AdminLoginController;
 // routes/web.php
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');

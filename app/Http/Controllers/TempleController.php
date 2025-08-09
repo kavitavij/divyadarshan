@@ -19,9 +19,6 @@ class TempleController extends Controller
     {
         $temple = Temple::findOrFail($id);
         return view('temples.show', compact('temple'));
-        $temple = Temple::where('slug', $slug)->firstOrFail();
-
-    return view('temples.show', compact('temple'));
     }
     
 
