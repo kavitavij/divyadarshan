@@ -17,8 +17,13 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-        //
-    }
+    public function boot()
+{
+    // Share $allTemples with the layout or any view that needs it
+    view()->composer('*', function ($view) {
+    $allTemples = \App\Models\Temple::orderBy('name')->get();
+    $view->with('allTemples', $allTemples);
+});
+
+}
 }

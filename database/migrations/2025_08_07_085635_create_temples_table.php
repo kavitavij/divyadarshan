@@ -13,9 +13,6 @@ return new class extends Migration {
             $table->string('location');
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            
-            
-
             $table->text('culture')->nullable();
             $table->text('history')->nullable();
             $table->text('best_time')->nullable();

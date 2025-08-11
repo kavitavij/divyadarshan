@@ -25,6 +25,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 
 // Temples
+Route::get('/temples/{id}', [TempleController::class, 'show'])->name('temples.show');
 Route::get('/temples', [TempleController::class, 'index'])->name('temples.index');
 Route::get('/temples/{id}', [TempleController::class, 'show'])->name('temples.show');
 Route::post('/temples/{id}/favorite', [TempleController::class, 'favorite'])

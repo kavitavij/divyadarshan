@@ -40,33 +40,34 @@
     </form>
     
     <!-- 📜 Temple Cards -->
-    @if($temples->count())
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-            @foreach ($temples as $temple)
-                <div class="bg-white p-4 rounded shadow hover:shadow-lg transition text-center max-w-xs w-full mx-auto flex flex-col h-full animate-fadeIn">
-                    <img src="{{ asset('images/temples/' . $temple->image) }}"
-                         alt="{{ $temple->name }}"
-                         class="w-full h-48 object-cover rounded mb-3">
+    @if($temples->total() > 0)
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
+        @foreach ($temples as $temple)
+            <div class="bg-white p-4 rounded shadow hover:shadow-lg transition text-center max-w-xs w-full mx-auto flex flex-col h-full animate-fadeIn">
+                <img src="{{ asset('images/temples/' . $temple->image) }}"
+                     alt="{{ $temple->name }}"
+                     class="w-full h-48 object-cover rounded mb-3">
 
-                    <h3 class="text-lg font-bold text-blue-700">{{ $temple->name }}</h3>
-                    <p class="text-sm text-gray-600 mb-3">{{ $temple->location }}</p>
+                <h3 class="text-lg font-bold text-blue-700">{{ $temple->name }}</h3>
+                <p class="text-sm text-gray-600 mb-3">{{ $temple->location }}</p>
 
-                    <div class="mt-auto">
-                        <a href="{{ route('temples.show', $temple->id) }}" class="view-details-button">
-                            View Details
-                        </a>
-                    </div>
+                <div class="mt-auto">
+                    <a href="{{ route('temples.show', $temple->id) }}" class="view-details-button">
+                        View Details
+                    </a>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endforeach
+    </div>
 
-        <!-- Pagination -->
-        <div class="mt-8 flex justify-center">
-            {{ $temples->links() }}
-        </div>
-    @else
-        <p class="text-center text-gray-600">No temples found.</p>
-    @endif
+    <!-- Pagination -->
+    <div class="mt-8 flex justify-center">
+        {{ $temples->links() }}
+    </div>
+@else
+    <p class="text-center text-gray-600">No temples found.</p>
+@endif
+
 </div>
 
 

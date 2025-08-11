@@ -36,17 +36,43 @@
       <a href="/" class="hover:text-blue-600">Home</a>
       <a href="/about" class="text-blue-600 font-semibold">About</a>
 
-      <!-- Dropdown: Temples -->
-      <div class="relative group">
-        <span class="cursor-pointer">Temples</span>
-        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T1</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T2</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T3</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T4</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T5</a>
-        </div>
-      </div>
+      <!-- Temples Dropdown -->
+<div class="relative group">
+  <button 
+    aria-haspopup="true" 
+    aria-expanded="false" 
+    class="cursor-pointer px-3 py-1 text-gray-700 hover:text-blue-600 font-semibold flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-600 rounded"
+    id="templesDropdownBtn"
+  >
+    Temples
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+
+  <div 
+    class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
+    role="menu" 
+    aria-labelledby="templesDropdownBtn"
+  >
+    @foreach($allTemples as $temple)
+      <a href="{{ route('temples.show', $temple->id) }}" 
+         class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+         role="menuitem"
+      >
+        {{ $temple->name }}
+      </a>
+    @endforeach
+
+    <hr class="my-1 border-gray-300">
+    <a href="{{ route('temples.index') }}" class="block px-4 py-2 hover:bg-gray-100 font-semibold text-blue-600 whitespace-nowrap" role="menuitem">
+      View All Temples
+    </a>
+  </div>
+</div>
+
+
+
 
       <!-- Dropdown: Online Services -->
       <div class="relative group">
