@@ -24,11 +24,12 @@
 <body id="top" class="bg-gray-50 text-gray-800 font-sans">
 <!--Navbar -->
 <header class="bg-white shadow">
+  
   <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
     
     <!-- Left: Logo -->
     <div class="flex-shrink-0">
-      <h1 class="text-2xl font-bold text-blue-600">DivyaDarshan</h1>
+      <a href="/home" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
     </div>
 
     <!-- Middle: Menu -->
@@ -37,41 +38,30 @@
       <a href="/about" class="text-blue-600 font-semibold">About</a>
 
       <!-- Temples Dropdown -->
-<div class="relative group">
-  <button 
-    aria-haspopup="true" 
-    aria-expanded="false" 
-    class="cursor-pointer px-3 py-1 text-gray-700 hover:text-blue-600 font-semibold flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-600 rounded"
-    id="templesDropdownBtn"
-  >
-    Temples
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M19 9l-7 7-7-7"></path>
-    </svg>
-  </button>
+    <div class="relative group">
+    <button 
+          aria-haspopup="true" 
+          aria-expanded="false" 
+          class="inline-flex items-center gap-1 px-3 py-2 text-gray-700 hover:text-blue-600 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 rounded"
+          id="templesDropdownBtn">
+          Temples
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 9l-7 7-7-7"></path>
+          </svg></button>
 
-  <div 
-    class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
-    role="menu" 
-    aria-labelledby="templesDropdownBtn"
-  >
-    @foreach($allTemples as $temple)
-      <a href="{{ route('temples.show', $temple->id) }}" 
-         class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-         role="menuitem"
-      >
-        {{ $temple->name }}
-      </a>
-    @endforeach
-
-    <hr class="my-1 border-gray-300">
-    <a href="{{ route('temples.index') }}" class="block px-4 py-2 hover:bg-gray-100 font-semibold text-blue-600 whitespace-nowrap" role="menuitem">
-      View All Temples
-    </a>
-  </div>
-</div>
-
-
+   <div 
+          class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
+          role="menu" 
+          aria-labelledby="templesDropdownBtn">
+          @foreach($allTemples as $temple)
+            <a href="{{ route('temples.show', $temple->id) }}" 
+              class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+              role="menuitem">
+              {{ $temple->name }}
+            </a>
+          @endforeach
+        </div>
+      </div>
 
 
       <!-- Dropdown: Online Services -->

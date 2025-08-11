@@ -15,61 +15,56 @@
 <div class="max-w-7xl mx-auto px-4">
 <script src="//unpkg.com/alpinejs" defer></script>
 
-<header class="bg-white shadow" x-data="{ open: false }">
+<header class="bg-white shadow">
   <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-    <!-- Logo -->
+    <!-- Left: Logo -->
     <div class="flex-shrink-0">
       <a href="/home" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
     </div>
-    <!-- Mobile Toggle Button -->
-    <button @click="open = !open" class="md:hidden text-gray-700 focus:outline-none">
-      <!-- Hamburger -->
-      <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-      <!-- Close -->
-      <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
 
-    <!-- Desktop Menu -->
-    <nav class="hidden md:flex flex-wrap justify-center gap-4 md:gap-8 text-sm font-medium text-gray-700">
+    <!-- Middle: Navigation -->
+    <nav class="flex items-center gap-8 text-sm font-medium text-gray-700">
       <a href="/home" class="hover:text-blue-600">Home</a>
-      <a href="/about" class="font-semibold text-gray-700">About</a>
-      <a href="#" class="hover:text-blue-600">Temples</a>
-      <a href="#" class="hover:text-blue-600">Our Services</a>
+      <a href="/about" class="hover:text-blue-600">About</a>
+
+      <!-- Temples Dropdown -->
+      <div class="relative group">
+        <button 
+          aria-haspopup="true" 
+          aria-expanded="false" 
+          class="inline-flex items-center gap-1 px-3 py-2 text-gray-700 hover:text-blue-600 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 rounded"
+          id="templesDropdownBtn">
+          Temples
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+
+        <div 
+          class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
+          role="menu" 
+          aria-labelledby="templesDropdownBtn">
+          @foreach($allTemples as $temple)
+            <a href="{{ route('temples.show', $temple->id) }}" 
+              class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+              role="menuitem">
+              {{ $temple->name }}
+            </a>
+          @endforeach
+        </div>
+      </div>
+
+      <a href="#" class="hover:text-blue-600">Online Services</a>
       <a href="{{ route('ebooks') }}" class="hover:text-blue-600">eBooks</a>
     </nav>
 
-    <!-- Desktop Login -->
-    <div class="hidden md:block">
-      <button @click="loginModal = true; modalView = 'login'" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Login</button>
-    </div>
-  </div>
+    <!-- Right: Login Button -->
+    <div class="flex-shrink-0">
+      <button @click="loginModal = true; modalView = 'login'" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+  Login
+</button>
 
-  <!-- Mobile Menu -->
-  <div x-show="open" x-transition class="md:hidden px-4 pb-4 space-y-2 bg-gray-50">
-    <a href="/" class="block hover:text-blue-600" @click="open = false">Home</a>
-    <a href="/about" class="block font-semibold text-gray-700" @click="open = false">About</a>
-    <!-- Dropdown: Temples -->
-      <div class="relative group">
-        <span class="cursor-pointer">Temples</span>
-        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T1</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T2</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T3</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T4</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">T5</a>
-        </div>
-      </div>
-    <a href="#" class="block hover:text-blue-600" @click="open = false">Our Services</a>
-    <a href="{{ route('ebooks') }}" class="block hover:text-blue-600" @click="open = false">eBooks</a>
-    <button @click="loginModal = true; modalView = 'login'; open = false" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Login</button>
+    </div>
   </div>
 </header>
 

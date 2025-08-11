@@ -7,25 +7,34 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-4">
         @php
-            $modules = [
-                ['icon' => '🛕', 'title' => 'Temple Info', 'desc' => 'Browse temple details, timings, maps.'],
-                ['icon' => '📅', 'title' => 'Book Darshan', 'desc' => 'Choose slots for special/general darshan.'],
-                ['icon' => '🛌', 'title' => 'Accommodation', 'desc' => 'Book temple or partner hotel rooms.'],
-                ['icon' => '🙏', 'title' => 'Sevas & Poojas', 'desc' => 'Participate in poojas online or in-person.'],
-                ['icon' => '🚕', 'title' => 'Cab Booking', 'desc' => 'One-way, round trip, or temple packages.'],
-                ['icon' => '💰', 'title' => 'Donations', 'desc' => 'Make donations with instant receipts.'],
-                ['icon' => '📖', 'title' => 'E-Books', 'desc' => 'View and download spiritual texts.'],
-                ['icon' => '🌐', 'title' => 'Languages', 'desc' => 'Available in Hindi, Tamil, Telugu & more.'],
-            ];
-        @endphp
+    $modules = [
+        ['icon' => '🛕', 'title' => 'Temple Info', 'desc' => 'Browse temple details, timings, maps.', 'url' => $firstTemple ? route('temples.show', $firstTemple->id) : route('temples.index')],
+        ['icon' => '📅', 'title' => 'Book Darshan', 'desc' => 'Choose slots for special/general darshan.', 'url' => url('/online-services')],
+        ['icon' => '🛌', 'title' => 'Accommodation', 'desc' => 'Book temple or partner hotel rooms.', 'url' => '#'], 
+        ['icon' => '🙏', 'title' => 'Sevas & Poojas', 'desc' => 'Participate in poojas online or in-person.', 'url' => '#'], 
+        ['icon' => '🚕', 'title' => 'Cab Booking', 'desc' => 'One-way, round trip, or temple packages.', 'url' => url('/online-services')],
+        ['icon' => '💰', 'title' => 'Donations', 'desc' => 'Make donations with instant receipts.', 'url' => '#'],
+        ['icon' => '📖', 'title' => 'E-Books', 'desc' => 'View and download spiritual texts.', 'url' => route('ebooks')],
+        ['icon' => '🌐', 'title' => 'Languages', 'desc' => 'Available in Hindi, Tamil, Telugu & more.', 'url' => '#'],
+    ];
+@endphp
 
-        @foreach ($modules as $module)
-            <div class="service-card bg-white p-6 rounded shadow text-center transition">
-                <div class="text-4xl mb-2">{{ $module['icon'] }}</div>
-                <h3 class="text-lg font-semibold text-blue-700">{{ $module['title'] }}</h3>
-                <p class="text-sm text-gray-600 mt-1">{{ $module['desc'] }}</p>
-            </div>
-        @endforeach
+@foreach ($modules as $module)
+    <div class="service-card bg-white p-6 rounded shadow text-center transition">
+        <button 
+            type="button" 
+            class="text-4xl mb-2 hover:text-blue-700 focus:outline-none"
+            onclick="window.location.href='{{ $module['url'] }}'"
+            aria-label="{{ $module['title'] }} button"
+        >
+            {{ $module['icon'] }}
+        </button>
+
+        <h3 class="text-lg font-semibold text-blue-700">{{ $module['title'] }}</h3>
+        <p class="text-sm text-gray-600 mt-1">{{ $module['desc'] }}</p>
+    </div>
+@endforeach
+
 
     </div>
 </div>

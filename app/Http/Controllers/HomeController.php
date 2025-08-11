@@ -17,8 +17,8 @@ public function index(Request $request)
     }
 
     $temples = $query->paginate(6);
+    $firstTemple = $temples->first();  // Get first temple or null if none
 
-    return view('home.index', compact('temples'));
+    return view('home.index', compact('temples', 'firstTemple'));
 }
-
 }
