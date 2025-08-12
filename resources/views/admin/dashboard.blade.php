@@ -7,8 +7,8 @@
     <div class="card mt-4">
         <div class="card-body">
             <h5 class="card-title">Quick Actions</h5>
-            <a href="" class="btn btn-primary">Add New Temple</a>
-            <a href="" class="btn btn-secondary">Upload Ebook</a>
+            <a href="{{ route('admin.temples.index') }}" class="btn btn-primary">Add New Temple</a>
+            <a href="{{ route('admin.ebooks.index') }}" class="btn btn-secondary">Upload Ebook</a>
         </div>
     </div>
 @endsection
