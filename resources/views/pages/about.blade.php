@@ -39,54 +39,100 @@
 
       <!-- Temples Dropdown -->
     <div class="relative group">
-    <button 
-          aria-haspopup="true" 
-          aria-expanded="false" 
-          class="inline-flex items-center gap-1 px-3 py-2 text-gray-700 hover:text-blue-600 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 rounded"
-          id="templesDropdownBtn">
-          Temples
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 9l-7 7-7-7"></path>
-          </svg></button>
+        <button 
+            aria-haspopup="true" 
+            aria-expanded="false" 
+            class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
+            style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
+            id="templesDropdownBtn">
+            <span>Temples</span>
+            <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" 
+                viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
 
-   <div 
-          class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
-          role="menu" 
-          aria-labelledby="templesDropdownBtn">
-          @foreach($allTemples as $temple)
-            <a href="{{ route('temples.show', $temple->id) }}" 
-              class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-              role="menuitem">
-              {{ $temple->name }}
-            </a>
-          @endforeach
+        <div 
+            class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
+            role="menu" 
+            aria-labelledby="templesDropdownBtn">
+            @foreach($allTemples as $temple)
+                <a href="{{ route('temples.show', $temple->id) }}" 
+                  class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                  role="menuitem">
+                  {{ $temple->name }}
+                </a>
+            @endforeach
         </div>
-      </div>
+    </div>
 
-
-      <!-- Dropdown: Online Services -->
+      <!-- Online Services Dropdown -->
       <div class="relative group">
-        <span class="cursor-pointer">Online Services</span>
-        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Darshan</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Accommodation</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Cab</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Donations</a>
-        </div>
-      </div>
+          <button 
+              aria-haspopup="true" 
+              aria-expanded="false" 
+              class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
+              style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
+              id="servicesDropdownBtn">
+              <span>Online Services</span>
+              <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" 
+                  viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 9l-7 7-7-7"></path>
+              </svg>
+          </button>
 
+          <div 
+              class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
+              role="menu" 
+              aria-labelledby="servicesDropdownBtn">
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Darshan Booking</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Seva Booking</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Accommodation Booking</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Cab Booking</a>
+          </div>
+      </div>
       <!-- Dropdown: General Info -->
-      <div class="relative group">
-        <span class="cursor-pointer">General Information</span>
-        <div class="absolute z-10 hidden group-hover:block bg-white border rounded shadow mt-1 text-left">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">FAQs</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Dress Code</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Contact Us</a>
-        </div>
+    <div class="relative group">
+          <button 
+              aria-haspopup="true" 
+              aria-expanded="false" 
+              class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
+              style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
+              id="servicesDropdownBtn">
+              <span>General Information</span>
+              <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" 
+                  viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 9l-7 7-7-7"></path>
+              </svg>
+          </button>
+
+          <div 
+              class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
+              role="menu" 
+              aria-labelledby="servicesDropdownBtn">
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">FAQs</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Sevas</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Dress Code</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Contact Us</a>
+          </div>
       </div>
-    </nav>
+</nav>
 
     <!-- Right: Login -->
     <div class="flex-shrink-0">
@@ -164,7 +210,7 @@
     &copy; {{ date('Y') }} DivyaDarshan. All rights reserved. <br>
     Contact: +91-1234567890 |
     <a href="mailto:support@divyadarshan.com" class="underline">support@divyadarshan.com</a> |
-    <a href="#">Terms</a> | <a href="#">Guidelines</a> | <a href="#">Complaint</a>
+    <a href="{{ route('terms') }}">Terms</a> | <a href="#">Guidelines</a> | <a href="#">Complaint</a>
 </footer>
 </body>
 </html>

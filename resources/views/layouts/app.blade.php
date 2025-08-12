@@ -10,41 +10,6 @@
         'resources/js/app.js'
     ])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
-    {{-- Paste this CSS inside the <head> tag --}}
-<style>
-    .news-ticker {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 320px;
-        height: 80px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        overflow: hidden;
-        padding: 10px;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-    }
-    .news-ticker-content {
-        animation: scroll-up 20s linear infinite;
-    }
-    .news-item {
-        display: block;
-        padding: 10px;
-        white-space: nowrap;
-        font-size: 14px;
-    }
-    .news-icon {
-        font-size: 24px;
-        margin-right: 10px;
-    }
-    @keyframes scroll-up {
-        0% { transform: translateY(100%); }
-        100% { transform: translateY(-100%); }
-    }
-</style>
 </head>
 <body x-data="{ loginModal: false, modalView: 'login' }" :class="{ 'overflow-hidden': loginModal }" class="bg-gray-100 font-sans text-gray-800">
 <div class="max-w-7xl mx-auto px-4">
@@ -54,12 +19,12 @@
   <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
     <!-- Left: Logo -->
     <div class="flex-shrink-0">
-      <a href="/home" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
+      <a href="/" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
     </div>
 
     <!-- Middle: Navigation -->
     <nav class="flex items-center gap-8 text-sm font-medium text-gray-700">
-      <a href="/home" class="hover:text-blue-600">Home</a>
+      <a href="/" class="hover:text-blue-600">Home</a>
       <a href="/about" class="hover:text-blue-600">About</a>
 
       <!-- Temples Dropdown -->
@@ -308,20 +273,5 @@
 
     </div>
 </div>
-{{-- Paste this HTML right before the closing </body> tag --}}
-@if(isset($latestNews) && $latestNews->isNotEmpty())
-<div class="news-ticker">
-    <div class="news-icon">🔔</div>
-    <div class="news-ticker-content">
-        @foreach($latestNews as $news)
-            <div class="news-item">{{ strip_tags($news) }}</div>
-        @endforeach
-        {{-- Repeat the items to create a seamless loop --}}
-        @foreach($latestNews as $news)
-            <div class="news-item">{{ strip_tags($news) }}</div>
-        @endforeach
-    </div>
-</div>
-@endif
 </body>
 </html>

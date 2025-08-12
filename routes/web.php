@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\Admin\EbookController as AdminEbookController;
 use App\Http\Controllers\Admin\TempleController as AdminTempleController;
+
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
@@ -39,5 +40,6 @@ Route::get('/dashboard', function () {
     }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+Route::view('/terms-and-conditions', 'pages.terms')->name('terms');
 
 require __DIR__.'/auth.php';
