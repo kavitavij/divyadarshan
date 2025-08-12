@@ -4,10 +4,25 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AboutController;
-use App\Http\Controllers\TempleController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\TempleController;
+
+// Publicly accessible routes
+Route::get('/', function () {
+    return view('welcome');
+});
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(...);
+// Admin routes with authentication and role middleware
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::resource('temples', TempleController::class);
+});
+
+// Authentication routes provided by Laravel Fortify/UI
+require __DIR__.'/auth.php';
 // routes/web.php
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
 
@@ -53,8 +68,9 @@ Route::get('/clear-duplicate-temples', function () {
 
 // Dashboard
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    // Just redirect to the admin dashboard's route
+    return redirect()->route('admin.dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 // Profile
 Route::middleware('auth')->group(function () {
