@@ -10,19 +10,19 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::table('users', function (Blueprint $table) {
-        // ADD THIS LINE
-        $table->string('role')->default('user');
-    });
-}
+    {
+        Schema::table('temples', function (Blueprint $table) {
+            // This JSON column will store dates and their statuses, like {"2025-08-12": "available"}
+            $table->json('slot_data')->nullable()->after('social_services');
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('temples', function (Blueprint $table) {
             //
         });
     }

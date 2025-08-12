@@ -1,86 +1,43 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AboutController;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\EbookController;
-use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\TempleController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\TempleController;
-
-// Publicly accessible routes
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(...);
-// Admin routes with authentication and role middleware
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::resource('temples', TempleController::class);
-});
-
-// Authentication routes provided by Laravel Fortify/UI
-require __DIR__.'/auth.php';
-// routes/web.php
-Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
-
-// Ebook
-Route::get('/ebooks', [EbookController::class, 'index'])->name('ebooks');
-
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-});
-
-// Home
+use App\Http\Controllers\EbookController;
+use App\Http\Controllers\Admin\EbookController as AdminEbookController;
+use App\Http\Controllers\Admin\TempleController as AdminTempleController;
+// ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-// About
 Route::get('/about', [AboutController::class, 'index'])->name('about');
-
-// Temples
-Route::get('/temples/{id}', [TempleController::class, 'show'])->name('temples.show');
+Route::get('/ebooks', [EbookController::class, 'index'])->name('ebooks.index');
 Route::get('/temples', [TempleController::class, 'index'])->name('temples.index');
 Route::get('/temples/{id}', [TempleController::class, 'show'])->name('temples.show');
-Route::post('/temples/{id}/favorite', [TempleController::class, 'favorite'])
-    ->name('temples.favorite')
-    ->middleware('auth');
 
-
-// Admin Routes
-Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/temples/create', [TempleController::class, 'create'])->name('admin.temples.create');
-    Route::post('/temples', [TempleController::class, 'store'])->name('admin.temples.store');
-});
-
-// Utility route to clear duplicates
-Route::get('/clear-duplicate-temples', function () {
-    $duplicates = DB::table('temples as t1')
-        ->join('temples as t2', function ($join) {
-            $join->on('t1.name', '=', 't2.name')
-                 ->on('t1.location', '=', 't2.location')
-                 ->whereRaw('t1.id > t2.id');
-        })
-        ->delete();
-    return 'Duplicate temples deleted successfully.';
-});
-
-// Dashboard
-Route::get('/dashboard', function () {
-    // Just redirect to the admin dashboard's route
-    return redirect()->route('admin.dashboard');
-})->middleware(['auth'])->name('dashboard');
-
-// Profile
+// ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
+    Route::post('/temples/{id}/favorite', [TempleController::class, 'favorite'])->name('temples.favorite');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// ## ADMIN ROUTES ##
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::resource('temples', AdminTempleController::class);
+    Route::resource('ebooks', AdminEbookController::class);
+});
+
+// ## BREEZE DASHBOARD & AUTHENTICATION ##
+Route::get('/dashboard', function () {
+    if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 require __DIR__.'/auth.php';
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

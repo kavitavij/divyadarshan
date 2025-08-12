@@ -16,21 +16,10 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Check if user is logged in
-        if (!Auth::check()) {
-            return redirect('login');
+        if (!Auth::check() || !in_array($request->user()->role, $roles)) {
+            abort(403, 'Unauthorized Action');
         }
 
-        // Check if user has one of the required roles
-        $user = Auth::user();
-        foreach ($roles as $role) {
-            // If the user has the role, let the request continue
-            if ($user->role == $role) {
-                return $next($request);
-            }
-        }
-
-        // If user doesn't have the required role, abort
-        abort(403, 'Unauthorized Action');
+        return $next($request);
     }
 }

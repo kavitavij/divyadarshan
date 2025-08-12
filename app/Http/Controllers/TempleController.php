@@ -8,114 +8,79 @@ use Carbon\Carbon;
 
 class TempleController extends Controller
 {
-    // Show all temples
-   public function index(Request $request)
-{
-    $query = Temple::query();
+    /**
+     * Display a listing of all temples for the public.
+     */
+    public function index(Request $request)
+    {
+        $query = Temple::query();
 
-    if ($search = $request->input('search')) {
-        $query->where('name', 'like', "%{$search}%")
-              ->orWhere('location', 'like', "%{$search}%");
-    }
-
-    $temples = $query->paginate(12);
-
-    return view('temples.index', compact('temples'));
-}
-
-public function show($id)
-{
-    $temple = Temple::findOrFail($id);
-
-    $startDate = Carbon::today();
-    $calendars = [];
-
-    for ($i = 0; $i < 4; $i++) {
-        $monthStart = $startDate->copy()->addMonths($i)->startOfMonth();
-        $monthEnd = $monthStart->copy()->endOfMonth();
-
-        $days = [];
-
-        // Fill blanks for days before month start (Monday is first day in W3Schools)
-        $blankDays = ($monthStart->dayOfWeek + 6) % 7; // convert Sunday=0 to Sunday=6 for Monday-start calendar
-        for ($b = 0; $b < $blankDays; $b++) {
-            $days[] = null;
+        // Handle search functionality on the public temple listing page
+        if ($search = $request->input('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%");
         }
 
-        for ($date = $monthStart; $date->lte($monthEnd); $date->addDay()) {
-            // Random example slot status; replace with real data fetching
-            $rand = rand(1, 10);
-            $status = $rand <= 6 ? 'available' : ($rand <= 8 ? 'full' : 'not_available');
+        $temples = $query->latest()->paginate(12);
 
-            $days[] = [
-                'date' => $date->toDateString(),
-                'day' => $date->day,
-                'status' => $status,
+        return view('temples.index', compact('temples'));
+    }
+
+    /**
+     * Display a single temple's details to the public.
+     */
+    public function show($id)
+    {
+        $temple = Temple::findOrFail($id);
+
+        // --- Calendar Generation for Public View ---
+        $startDate = Carbon::today();
+        $calendars = [];
+        $savedSlots = $temple->slot_data ?? []; // Get saved data, or empty array if null
+
+        for ($i = 0; $i < 4; $i++) {
+            $month = $startDate->copy()->addMonths($i);
+            $monthStart = $month->copy()->startOfMonth();
+            $monthEnd = $month->copy()->endOfMonth();
+            $days = [];
+
+            // Add blank days to ensure the first day of the month starts on the correct day of the week
+            $blankDays = ($monthStart->dayOfWeek + 6) % 7;
+            for ($b = 0; $b < $blankDays; $b++) {
+                $days[] = null;
+            }
+
+            // Populate the days of the month
+            for ($date = $monthStart->copy(); $date->lte($monthEnd); $date->addDay()) {
+                $dateString = $date->toDateString();
+                $days[] = [
+                    'date' => $dateString,
+                    'day' => $date->day,
+                    // Get the status from your saved data, or default to 'not_available'
+                    'status' => $savedSlots[$dateString] ?? 'not_available',
+                ];
+            }
+
+            $calendars[] = [
+                'month_name' => $month->format('F Y'),
+                'days' => $days,
             ];
         }
 
-        $calendars[] = [
-            'month_name' => $monthStart->format('F Y'),
-            'days' => $days,
-        ];
+        return view('temples.detail', compact('temple', 'calendars'));
     }
 
-    return view('temples.detail', compact('temple', 'calendars'));
-}
-
-
-    // Store a new temple
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-
-        $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
-        $request->file('image')->move(public_path('images/temples'), $imageName);
-
-        Temple::create([
-            'name' => $request->name,
-            'location' => $request->location,
-            'description' => $request->description,
-            'image' => $imageName,
-        ]);
-
-        return redirect()->back()->with('success', 'Temple added successfully!');
-    }
-
-    // Bookmark a temple
+    /**
+     * Allows a logged-in user to favorite a temple.
+     */
     public function favorite($id)
     {
-        auth()->user()->favorites()->attach($id);
-        return back()->with('success', 'Temple bookmarked!');
-    }
+        // Find the temple first
+        $temple = Temple::findOrFail($id);
+        
+        // Attach it to the logged-in user's favorites
+        auth()->user()->favorites()->syncWithoutDetaching($temple->id);
 
-    // Show form to create a temple (optional)
-    public function create()
-    {
-        return view('temples.create');
+        return back()->with('success', 'Temple bookmarked successfully!');
     }
-
-    // Show form to edit a temple (optional)
-    public function edit(Temple $temple)
-    {
-        return view('temples.edit', compact('temple'));
-    }
-
-    // Update a temple (optional)
-    public function update(Request $request, Temple $temple)
-    {
-        // Add update logic here later if needed
-    }
-
-    // Delete a temple (optional)
-    public function destroy(Temple $temple)
-    {
-        // Add delete logic here later if needed
-    }
-    
 }

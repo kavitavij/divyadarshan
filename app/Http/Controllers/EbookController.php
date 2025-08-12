@@ -2,31 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ebook;
 use Illuminate\Http\Request;
 
 class EbookController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $selectedLang = $request->get('lang', 'All');
-
-        $languages = ['All', 'Hindi', 'English', 'Punjabi'];
-
-        // Sample E-books data (this can come from DB later)
-        $books = [
-            ['title' => 'Tirupati Temple Guide', 'lang' => 'English', 'cover' => 'temple1_1.jpg', 'file' => 'tirupati.pdf'],
-            ['title' => 'वृन्दावन मंदिर', 'lang' => 'Hindi', 'cover' => 'book2.jpg', 'file' => 'vrindavan.pdf'],
-            ['title' => 'Golden Temple History', 'lang' => 'Punjabi', 'cover' => 'book3.jpg', 'file' => 'golden.pdf'],
-            ['title' => 'ABBC', 'lang' => 'Marathi', 'cover' => 'book3.jpg', 'file' => 'golden.pdf'],
-            ['title' => 'ABB', 'lang' => 'Bengali', 'cover' => 'book3.jpg', 'file' => 'golden.pdf'],
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-        ];
-
-        // Filter by language
-        if ($selectedLang !== 'All') {
-            $books = array_filter($books, fn($b) => strtolower($b['lang']) === strtolower($selectedLang));
-        }
-
-        return view('ebooks.index', compact('books', 'languages', 'selectedLang'));
+        $ebooks = Ebook::latest()->paginate(12); // Get the 12 newest ebooks
+        return view('ebooks.index', compact('ebooks'));
     }
 }

@@ -10,6 +10,41 @@
         'resources/js/app.js'
     ])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    {{-- Paste this CSS inside the <head> tag --}}
+<style>
+    .news-ticker {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 320px;
+        height: 80px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        padding: 10px;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+    }
+    .news-ticker-content {
+        animation: scroll-up 20s linear infinite;
+    }
+    .news-item {
+        display: block;
+        padding: 10px;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+    .news-icon {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+    @keyframes scroll-up {
+        0% { transform: translateY(100%); }
+        100% { transform: translateY(-100%); }
+    }
+</style>
 </head>
 <body x-data="{ loginModal: false, modalView: 'login' }" :class="{ 'overflow-hidden': loginModal }" class="bg-gray-100 font-sans text-gray-800">
 <div class="max-w-7xl mx-auto px-4">
@@ -55,14 +90,44 @@
       </div>
 
       <a href="#" class="hover:text-blue-600">Online Services</a>
-      <a href="{{ route('ebooks') }}" class="hover:text-blue-600">eBooks</a>
+      <a href="{{ route('ebooks.index') }}" class="hover:text-blue-600">eBooks</a>
     </nav>
 
     <!-- Right: Login Button -->
     <div class="flex-shrink-0">
-      <button @click="loginModal = true; modalView = 'login'" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-  Login
-</button>
+    @guest
+        {{-- This button shows only if the user is a GUEST --}}
+        <button @click="loginModal = true; modalView = 'login'" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Login
+        </button>
+    @else
+        {{-- This dropdown shows only if the user is LOGGED IN --}}
+        <div class="relative group">
+            <button class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                <span>{{ Auth::user()->name }}</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+
+            <div class="absolute hidden group-hover:block right-0 bg-white border rounded shadow-lg mt-1 min-w-max z-20">
+
+                @if(Auth::user()->role === 'admin')
+                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
+                @endif
+
+                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Log Out
+                    </a>
+                </form>
+            </div>
+        </div>
+    @endguest
+</div>
 
     </div>
   </div>
@@ -243,6 +308,20 @@
 
     </div>
 </div>
-
+{{-- Paste this HTML right before the closing </body> tag --}}
+@if(isset($latestNews) && $latestNews->isNotEmpty())
+<div class="news-ticker">
+    <div class="news-icon">🔔</div>
+    <div class="news-ticker-content">
+        @foreach($latestNews as $news)
+            <div class="news-item">{{ strip_tags($news) }}</div>
+        @endforeach
+        {{-- Repeat the items to create a seamless loop --}}
+        @foreach($latestNews as $news)
+            <div class="news-item">{{ strip_tags($news) }}</div>
+        @endforeach
+    </div>
+</div>
+@endif
 </body>
 </html>

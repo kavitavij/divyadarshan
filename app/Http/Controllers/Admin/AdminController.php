@@ -7,8 +7,14 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function index()
     {
+        // Simply return the admin dashboard view.
         return view('admin.dashboard');
     }
 }

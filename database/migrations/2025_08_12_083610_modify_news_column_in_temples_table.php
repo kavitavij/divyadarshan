@@ -9,19 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
+    public function up(): void
 {
     Schema::table('temples', function (Blueprint $table) {
-        $table->json('gallery')->nullable();
-        $table->text('map_embed')->nullable();
+        // Change the news column to JSON to store multiple items
+        $table->json('news')->nullable()->change();
     });
 }
 
 public function down(): void
 {
     Schema::table('temples', function (Blueprint $table) {
-        $table->dropColumn(['gallery', 'map_embed']);
+        // Revert back to text if migration is rolled back
+        $table->text('news')->nullable()->change();
     });
 }
-
 };

@@ -115,10 +115,18 @@
     </div>
 </div>
 
-
 <div id="news" class="tab-content hidden">
     <h2 class="text-2xl font-semibold mb-4">News & Updates</h2>
-    {!! $temple->news ?: '<p>No news available yet.</p>' !!}
+    @if(!empty($temple->news) && is_array($temple->news))
+        <ul class="list-disc pl-5 space-y-2">
+            @foreach($temple->news as $newsItem)
+                {{-- We only display the 'text' part of the news item --}}
+                <li>{{ $newsItem['text'] ?? '' }}</li>
+            @endforeach
+        </ul>
+    @else
+        <p>No news available yet.</p>
+    @endif
 </div>
 
 <div id="social" class="tab-content hidden">

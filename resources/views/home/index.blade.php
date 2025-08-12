@@ -14,7 +14,7 @@
         ['icon' => '🙏', 'title' => 'Sevas & Poojas', 'desc' => 'Participate in poojas online or in-person.', 'url' => '#'], 
         ['icon' => '🚕', 'title' => 'Cab Booking', 'desc' => 'One-way, round trip, or temple packages.', 'url' => url('/online-services')],
         ['icon' => '💰', 'title' => 'Donations', 'desc' => 'Make donations with instant receipts.', 'url' => '#'],
-        ['icon' => '📖', 'title' => 'E-Books', 'desc' => 'View and download spiritual texts.', 'url' => route('ebooks')],
+        ['icon' => '📖', 'title' => 'E-Books', 'desc' => 'View and download spiritual texts.', 'url' => route('ebooks.index')],
         ['icon' => '🌐', 'title' => 'Languages', 'desc' => 'Available in Hindi, Tamil, Telugu & more.', 'url' => '#'],
     ];
 @endphp
