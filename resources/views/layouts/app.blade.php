@@ -129,9 +129,9 @@
             <a href="mailto:support@divyadarshan.com" class="text-blue-600 hover:underline">support@divyadarshan.com</a>
         </div>
         <div>
-            <a href="#" class="text-blue-600 hover:underline">Terms & Condition</a> |
-            <a href="#" class="text-blue-600 hover:underline">Guidelines</a> |
-            <a href="#" class="text-blue-600 hover:underline">Complaint</a>
+            <a href="{{ route('terms') }}" class="text-blue-600 hover:underline">Terms & Condition</a> |
+            <a href="{{ route('guidelines') }}" class="text-blue-600 hover:underline">Guidelines</a> |
+    <a href="{{ route('complaint') }}" class="text-blue-600 hover:underline">Complaint</a>
         </div>
         <div class="flex gap-2">
             <a href="#" class="hover:text-blue-600">Facebook</a>

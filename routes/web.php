@@ -10,6 +10,9 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\Admin\EbookController as AdminEbookController;
 use App\Http\Controllers\Admin\TempleController as AdminTempleController;
+use App\Http\Controllers\GuidelineController; 
+use App\Http\Controllers\ComplaintController; 
+use App\Http\Controllers\Admin\LatestUpdateController;
 
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -17,6 +20,9 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/ebooks', [EbookController::class, 'index'])->name('ebooks.index');
 Route::get('/temples', [TempleController::class, 'index'])->name('temples.index');
 Route::get('/temples/{id}', [TempleController::class, 'show'])->name('temples.show');
+Route::view('/terms', 'pages.terms')->name('terms');
+Route::view('/guidelines', 'pages.guidelines')->name('guidelines');
+Route::view('/complaint', 'pages.complaint')->name('complaint');
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
@@ -31,6 +37,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('temples', AdminTempleController::class);
     Route::resource('ebooks', AdminEbookController::class);
+    Route::resource('latest_updates', LatestUpdateController::class);
 });
 
 // ## BREEZE DASHBOARD & AUTHENTICATION ##
@@ -40,6 +47,5 @@ Route::get('/dashboard', function () {
     }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-Route::view('/terms-and-conditions', 'pages.terms')->name('terms');
 
 require __DIR__.'/auth.php';

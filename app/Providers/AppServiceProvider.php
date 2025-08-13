@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Temple;
+use App\Models\LatestUpdate; 
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,39 +22,31 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('*', function ($view) {
-            // For the main navigation dropdown
-            $allTemples = Temple::orderBy('name')->get();
+        // Use a try-catch block to prevent errors if the database is not ready
+        try {
+            View::composer('*', function ($view) {
+                // For the main navigation dropdown
+                $allTemples = Temple::orderBy('name')->get();
 
-            // --- THE DEFINITIVE NEWS TICKER LOGIC ---
-            $latestNews = collect(); // Start with an empty collection to prevent errors
-
-            try {
-                // 1. Get all temples that might have news, ordered by the most recently updated.
-                $templesWithNews = Temple::whereNotNull('news')
-                                    ->whereJsonLength('news', '>', 0) // Ensures 'news' is not an empty array
-                                    ->latest('updated_at')
-                                    ->get();
-
-                // 2. Loop through the temples and their news items to find the ones marked for the ticker.
+                // For the floating news ticker
+                $templesWithNews = Temple::whereNotNull('news')->whereJsonLength('news', '>', 0)->latest('updated_at')->get();
                 $latestNews = $templesWithNews->flatMap(function ($temple) {
-                    // Make sure the news data is an array before we use it.
                     $newsItems = is_array($temple->news) ? $temple->news : [];
+                    return collect($newsItems)->where('show_on_ticker', true)->pluck('text');
+                })->take(10);
 
-                    // Filter the news items to get only the ones where 'show_on_ticker' is true.
-                    return collect($newsItems)
-                        ->where('show_on_ticker', true)
-                        ->pluck('text');
-                })->take(10); // 3. We'll take up to 10 of the most recent ticker items.
+                // For the homepage "Latest Updates" scrolling panel
+                $latestUpdates = LatestUpdate::where('is_active', true)->latest()->get();
 
-            } catch (\Exception $e) {
-                // This 'try-catch' block prevents the site from crashing if there's a database error.
-                \Log::error('Could not fetch news for the ticker: ' . $e->getMessage());
-            }
-
-            // Share the data with all views.
-            $view->with('allTemples', $allTemples)
-                ->with('latestNews', $latestNews);
-        });
+                // Share all the data with all views
+                $view->with('allTemples', $allTemples)
+                     ->with('latestNews', $latestNews)
+                     ->with('latestUpdates', $latestUpdates);
+            });
+        } catch (\Exception $e) {
+            // If the database isn't ready, we'll just log the error and continue
+            // This prevents errors during commands like `php artisan migrate`
+            \Log::error("Could not share view data: " . $e->getMessage());
+        }
     }
 }

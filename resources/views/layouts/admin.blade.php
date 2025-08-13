@@ -23,8 +23,12 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('admin.ebooks.index') }}">Manage Ebooks</a>
             </li>
+            <li class="nav-item">
+        <a class="nav-link" href="{{ route('admin.latest_updates.index') }}">Latest Updates</a>
+    </li>
         </ul>
         <hr>
+        
         <div class="px-3">
              <form method="POST" action="{{ route('logout') }}">
                 @csrf

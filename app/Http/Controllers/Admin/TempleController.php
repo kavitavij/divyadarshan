@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Temple;
 use Illuminate\Http\Request;
-use Carbon\Carbon; // Make sure this is imported
+use Carbon\Carbon;
 
 class TempleController extends Controller
 {
@@ -22,7 +22,6 @@ class TempleController extends Controller
 
     public function store(Request $request)
     {
-        // Validation for all fields
         $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
@@ -61,7 +60,6 @@ class TempleController extends Controller
 
     public function edit(Temple $temple)
     {
-        // --- Calendar Generation for the Edit Form ---
         $startDate = Carbon::today();
         $adminCalendars = [];
         $savedSlots = $temple->slot_data ?? [];
@@ -87,6 +85,8 @@ class TempleController extends Controller
         return view('admin.temples.edit', compact('temple', 'adminCalendars'));
     }
 
+    // In app/Http/Controllers/Admin/TempleController.php
+
     public function update(Request $request, Temple $temple)
     {
         $request->validate([
@@ -95,9 +95,10 @@ class TempleController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->except(['_token', '_method', 'news_items', 'news_tickers', 'image', 'slot_data']);
+        // 1. Get all the simple text-based fields from the form.
+        $data = $request->only(['name', 'location', 'description', 'about', 'online_services', 'social_services']);
 
-        // --- Handle News Items ---
+        // 2. Process the News Items array.
         if ($request->has('news_items')) {
             $newsData = [];
             foreach ($request->news_items as $index => $text) {
@@ -108,19 +109,15 @@ class TempleController extends Controller
             $data['news'] = $newsData;
         }
 
-        // --- Handle Slot Data (THE FIX IS HERE) ---
+        // 3. Process the Slot Booking data.
         if ($request->has('slot_data')) {
-            // Filter out default values to keep the database clean
-            $filteredSlots = array_filter($request->slot_data, function ($status) {
-                return $status !== 'not_available';
-            });
+            $filteredSlots = array_filter($request->slot_data, fn($status) => $status !== 'not_available');
             $data['slot_data'] = $filteredSlots;
         } else {
-            // If no slot data is submitted, clear it in the database
             $data['slot_data'] = null;
         }
 
-        // --- Handle Image Upload ---
+        // 4. Handle the Image Upload.
         if ($request->hasFile('image')) {
             if ($temple->image && file_exists(public_path($temple->image))) {
                 unlink(public_path($temple->image));
@@ -130,6 +127,7 @@ class TempleController extends Controller
             $data['image'] = 'images/temples/' . $imageName;
         }
 
+        // 5. Update the temple with the complete, merged data array.
         $temple->update($data);
 
         return redirect()->route('admin.temples.index')->with('success', 'Temple updated successfully.');

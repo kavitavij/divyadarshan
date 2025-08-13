@@ -34,8 +34,6 @@
         <p class="text-sm text-gray-600 mt-1">{{ $module['desc'] }}</p>
     </div>
 @endforeach
-
-
     </div>
 </div>
 <!-- 🛕 Temple Section -->
@@ -53,9 +51,9 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
         @foreach ($temples as $temple)
             <div class="bg-white p-4 rounded shadow hover:shadow-lg transition text-center max-w-xs w-full mx-auto flex flex-col h-full animate-fadeIn">
-                <img src="{{ asset('images/temples/' . $temple->image) }}"
-                     alt="{{ $temple->name }}"
-                     class="w-full h-48 object-cover rounded mb-3">
+                <img src="{{ asset($temple->image) }}"
+                    alt="{{ $temple->name }}"
+                    class="w-full h-48 object-cover rounded mb-3">
 
                 <h3 class="text-lg font-bold text-blue-700">{{ $temple->name }}</h3>
                 <p class="text-sm text-gray-600 mb-3">{{ $temple->location }}</p>
@@ -68,7 +66,6 @@
             </div>
         @endforeach
     </div>
-
     <!-- Pagination -->
     <div class="mt-8 flex justify-center">
         {{ $temples->links() }}
@@ -76,18 +73,11 @@
 @else
     <p class="text-center text-gray-600">No temples found.</p>
 @endif
-
 </div>
-
-
-
-<!-- 🔔 Latest Updates Section with Vertical Scrolling -->
-<div class="mb-12 px-4">
+<!-- <div class="mb-12 px-4">
     <!-- Heading -->
-    <h2 class="text-xl font-semibold mb-4 text-center text-blue-800">Latest Updates</h2>
-
-    <!-- Scrolling Panel -->
-    <div class="vertical-panel">
+    <!-- <h2 class="text-xl font-semibold mb-4 text-center text-blue-800">Latest Updates</h2> -->
+    <!-- <div class="vertical-panel">
         <div class="vertical-scroll">
             <div class="notification-item">🔔 Special Darshan opened for Navratri week.</div>
             <div class="notification-item">🏨 New hotel partners added for Tirupati region.</div>
@@ -95,8 +85,24 @@
             <div class="notification-item">🌐 Language support extended to Bengali and Marathi.</div>
         </div>
     </div>
-</div>
+</div> --> 
+<div class="mb-12 px-4">
+    <h2 class="text-xl font-semibold mb-4 text-center text-blue-800">Latest Updates</h2>
 
+    <div class="vertical-panel">
+        <div class="vertical-scroll">
+            {{-- Check if there are any updates to show --}}
+            @if(isset($latestUpdates) && $latestUpdates->isNotEmpty())
+                {{-- Loop through each update from the database --}}
+                @foreach ($latestUpdates as $update)
+                    <div class="notification-item">{{ $update->message }}</div>
+                @endforeach
+            @else
+                <div class="notification-item">No updates at the moment.</div>
+            @endif
+        </div>
+    </div>
+</div>
 @endsection
 <style>
 .vertical-panel {

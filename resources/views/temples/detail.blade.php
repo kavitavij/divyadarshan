@@ -39,7 +39,7 @@
 <h1 class="text-3xl font-bold mb-4 text-blue-700">{{ $temple->name }}</h1>
 
 <div class="mb-6">
-    <img src="{{ asset('images/temples/' . $temple->image) }}" alt="{{ $temple->name }}" class="w-full max-w-md rounded mb-4">
+    <img src="{{ asset($temple->image) }}" alt="{{ $temple->name }}" class="w-full max-w-md rounded mb-4">
 </div>
 
 <nav class="mb-6 border-b border-gray-300">

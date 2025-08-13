@@ -206,12 +206,26 @@
 </a>
 
 <!-- 🔻 Footer -->
-<footer class="bg-gray-200 text-center p-4 text-sm mt-10">
-    &copy; {{ date('Y') }} DivyaDarshan. All rights reserved. <br>
-    Contact: +91-1234567890 |
-    <a href="mailto:support@divyadarshan.com" class="underline">support@divyadarshan.com</a> |
-    <a href="{{ route('terms') }}">Terms</a> | <a href="#">Guidelines</a> | <a href="#">Complaint</a>
+<footer class="bg-gray-200 border-t py-4 text-sm text-gray-700">
+    <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
+        <div>&copy; {{ date('Y') }} DivyaDarshan. All rights reserved.</div>
+        <div>
+            Contact: +91-1234567890 |
+            <a href="mailto:support@divyadarshan.com" class="text-blue-600 hover:underline">support@divyadarshan.com</a>
+        </div>
+        <div>
+            <a href="{{ route('terms') }}" class="text-blue-600 hover:underline">Terms & Condition</a> |
+            <a href="{{ route('guidelines') }}" class="text-blue-600 hover:underline">Guidelines</a> |
+    <a href="{{ route('complaint') }}" class="text-blue-600 hover:underline">Complaint</a>
+        </div>
+        <div class="flex gap-2">
+            <a href="#" class="hover:text-blue-600">Facebook</a>
+            <a href="#" class="hover:text-blue-600">Twitter</a>
+            <a href="#" class="hover:text-blue-600">Instagram</a>
+        </div>
+    </div>
 </footer>
+
 </body>
 </html>
 <style>

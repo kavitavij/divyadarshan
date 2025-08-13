@@ -9,24 +9,29 @@ class Temple extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
-    'name',
-    'location',
-    'description',
-    'image',
-    'gallery',
-    'map',
-    'history',
-    'timings',
-    'how_to_reach',
-    'ebook_path',
-    'about',
-    'online_services',
-    'slot_booking', 
-    'news',
-    'social_services',
-];
-protected $casts = [
+        'name',
+        'location',
+        'description',
+        'image',
+        'about',
+        'online_services',
+        'news',
+        'social_services',
+        'slot_data', 
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
         'news' => 'array',
         'slot_data' => 'array', 
     ];
