@@ -90,7 +90,7 @@
                 role="menuitem">Darshan Booking</a>
               <a href="#" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                role="menuitem">Seva Booking</a>
+                role="menuitem">Sevas</a>
               <a href="#" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Accommodation Booking</a>
@@ -216,7 +216,7 @@
         <div>
             <a href="{{ route('terms') }}" class="text-blue-600 hover:underline">Terms & Condition</a> |
             <a href="{{ route('guidelines') }}" class="text-blue-600 hover:underline">Guidelines</a> |
-    <a href="{{ route('complaint') }}" class="text-blue-600 hover:underline">Complaint</a>
+            <a href="{{ route('complaint.form') }}" class="text-blue-600 hover:underline">Complaint</a>
         </div>
         <div class="flex gap-2">
             <a href="#" class="hover:text-blue-600">Facebook</a>

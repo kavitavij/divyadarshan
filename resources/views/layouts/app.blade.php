@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite([
         'resources/css/app.css',
-        'resources/css/custom.css',
         'resources/js/app.js'
     ])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
@@ -54,7 +53,39 @@
         </div>
       </div>
 
-      <a href="#" class="hover:text-blue-600">Online Services</a>
+      <!-- Online Services Dropdown -->
+      <div class="relative group">
+          <button 
+              aria-haspopup="true" 
+              aria-expanded="false" 
+              class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
+              style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
+              id="servicesDropdownBtn">
+              <span>Online Services</span>
+              <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" 
+                  viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 9l-7 7-7-7"></path>
+              </svg>
+          </button>
+
+          <div 
+              class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
+              role="menu" 
+              aria-labelledby="servicesDropdownBtn">
+              <a href="{{ route('booking.index') }}" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Darshan Booking</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Sevas</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Accommodation Booking</a>
+              <a href="#" 
+                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                role="menuitem">Cab Booking</a>
+          </div>
+      </div>
       <a href="{{ route('ebooks.index') }}" class="hover:text-blue-600">eBooks</a>
     </nav>
 
@@ -131,7 +162,7 @@
         <div>
             <a href="{{ route('terms') }}" class="text-blue-600 hover:underline">Terms & Condition</a> |
             <a href="{{ route('guidelines') }}" class="text-blue-600 hover:underline">Guidelines</a> |
-    <a href="{{ route('complaint') }}" class="text-blue-600 hover:underline">Complaint</a>
+            <a href="{{ route('complaint.form') }}" class="text-blue-600 hover:underline">Complaint</a>
         </div>
         <div class="flex gap-2">
             <a href="#" class="hover:text-blue-600">Facebook</a>
@@ -273,5 +304,8 @@
 
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+@stack('scripts')
 </body>
 </html>

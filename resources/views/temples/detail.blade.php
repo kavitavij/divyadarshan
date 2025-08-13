@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
- {{-- Paste this CSS inside the <head> tag --}}
+<div class="container py-5">
 <style>
     .news-ticker {
         position: fixed;

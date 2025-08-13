@@ -176,7 +176,7 @@
         <section class="cta">
           Have questions about these Terms or need assistance?
           <div>
-            <a href="{{ route('complaint') }}">Submit a Complaint</a>
+            <a href="{{ route('complaint.form') }}">Submit a Complaint</a>
             <a href="{{ route('guidelines') }}">Read Guidelines</a>
           </div>
           <div class="muted" style="margin-top:6px;">We’re here to guide you every step of your spiritual journey.</div>
@@ -187,7 +187,7 @@
         <div class="links">
           <a href="{{ route('terms') }}">Terms</a> •
           <a href="{{ route('guidelines') }}">Guidelines</a> •
-          <a href="{{ route('complaint') }}">Complaint</a>
+          <a href="{{ route('complaint.form') }}">Complaint</a>
         </div>
         <div class="muted">© {{ date('Y') }} DivyaDarshan <span class="tag">Pilgrimage Care</span></div>
       </footer>

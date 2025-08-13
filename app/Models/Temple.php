@@ -31,8 +31,11 @@ class Temple extends Model
      *
      * @var array
      */
-    protected $casts = [
-        'news' => 'array',
-        'slot_data' => 'array', 
+     protected $casts = [
+        'slot_data' => 'array', // This is the crucial line
+        'news' => 'array',      // Also good to have for your news column
     ];
+    public function darshanSlots() {
+    return $this->hasMany(DarshanSlot::class);
+}
 }

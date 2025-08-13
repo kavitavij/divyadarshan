@@ -24,8 +24,11 @@
                 <a class="nav-link" href="{{ route('admin.ebooks.index') }}">Manage Ebooks</a>
             </li>
             <li class="nav-item">
-        <a class="nav-link" href="{{ route('admin.latest_updates.index') }}">Latest Updates</a>
-    </li>
+                 <a class="nav-link" href="{{ route('admin.latest_updates.index') }}">Latest Updates</a>
+            </li>
+            <li>
+                <a class="nav-link" href="{{ route('admin.complaints.index') }}">Manage Complaints</a>
+            </li>
         </ul>
         <hr>
         
@@ -40,6 +43,8 @@
     <main class="main-content">
         @yield('content')
     </main>
-
+   <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
 </body>
 </html>

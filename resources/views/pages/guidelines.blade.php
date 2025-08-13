@@ -236,7 +236,7 @@
         <section class="cta">
           Need assistance with travel, accommodation, or darshan passes?
           <div>
-            <a href="{{ route('complaint') }}">Submit a Complaint</a>
+            <a href="{{ route('complaint.form') }}">Submit a Complaint</a>
             <a href="{{ route('terms') }}">Read Terms &amp; Conditions</a>
           </div>
           <div class="muted" style="margin-top:6px;">We’re here to help you focus on devotion—leave the logistics to us.</div>
@@ -247,7 +247,7 @@
         <div class="links">
           <a href="{{ route('terms') }}">Terms</a> •
           <a href="{{ route('guidelines') }}">Guidelines</a> •
-          <a href="{{ route('complaint') }}">Complaint</a>
+          <a href="{{ route('complaint.form') }}">Complaint</a>
         </div>
         <div class="muted">© {{ date('Y') }} DivyaDarshan <span class="tag">Pilgrimage Care</span></div>
       </footer>

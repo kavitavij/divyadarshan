@@ -1,6 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+@if(session('success'))
+    <div class="container mx-auto px-4">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    </div>
+@endif
 <div class="mb-12">
     <h2 class="text-2xl font-bold text-center text-blue-700 mb-6">Our Services</h2>
     <p class="text-center text-gray-600 mb-8">All essential services for your spiritual journey</p>
@@ -15,7 +22,7 @@
         ['icon' => '🚕', 'title' => 'Cab Booking', 'desc' => 'One-way, round trip, or temple packages.', 'url' => url('/online-services')],
         ['icon' => '💰', 'title' => 'Donations', 'desc' => 'Make donations with instant receipts.', 'url' => '#'],
         ['icon' => '📖', 'title' => 'E-Books', 'desc' => 'View and download spiritual texts.', 'url' => route('ebooks.index')],
-        ['icon' => '🌐', 'title' => 'Languages', 'desc' => 'Available in Hindi, Tamil, Telugu & more.', 'url' => '#'],
+        ['icon' => '🌐', 'title' => 'Languages', 'desc' => 'Available in Hindi, Tamil, Telugu & more.', 'url' => route('ebooks.index')],
     ];
 @endphp
 
