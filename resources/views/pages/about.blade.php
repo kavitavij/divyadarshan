@@ -134,12 +134,41 @@
       </div>
 </nav>
 
-    <!-- Right: Login -->
+    <!-- Right: Login Button -->
     <div class="flex-shrink-0">
-      <a href="/login" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Login</a>
-    </div>
+    @guest
+        {{-- This button shows only if the user is a GUEST --}}
+        <button @click="loginModal = true; modalView = 'login'" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Login
+        </button>
+    @else
+        {{-- This dropdown shows only if the user is LOGGED IN --}}
+        <div class="relative group">
+            <button class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                <span>{{ Auth::user()->name }}</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
 
-  </div>
+            <div class="absolute hidden group-hover:block right-0 bg-white border rounded shadow-lg mt-1 min-w-max z-20">
+
+                @if(Auth::user()->role === 'admin')
+                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
+                @endif
+
+                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My eBooks</a>
+                <a href="{{ route('profile.bookings') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Log Out
+                    </a>
+                </form>
+            </div>
+        </div>
+    @endguest
 </header>
 
 
@@ -193,11 +222,13 @@
         <h2 class="text-2xl font-bold text-blue-700 mb-2">💻 Technology Meets Tradition</h2>
         <p>From QR-coded darshan tickets to multilingual interfaces and secure payment gateways — we combine innovation with devotion.</p>
     </section>
+    @guest
     <section class="text-center py-10 animate-fadeInUp">
         <h2 class="text-3xl font-bold text-blue-700 mb-4">Start Your Divine Journey Today</h2>
         <p class="mb-6 text-gray-700">Register now and explore services across hundreds of Indian temples.</p>
-        <a href="/register">Register Now</a>
+        <a href="/register" class="mt-4 inline-block bg-blue-700 hover:bg-blue-800 text-white font-medium px-6 py-2 rounded shadow transition-all duration-300">Register Now</a>
     </section>
+    @endguest
 
 </main>
 <a href="#top" 
