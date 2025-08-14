@@ -58,6 +58,46 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
+        /* --- NEW STYLES FOR PAYMENT TABS --- */
+        .payment-methods-nav {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+        .payment-methods-nav .nav-link {
+            color: #6c757d;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+        }
+        .payment-methods-nav .nav-link.active {
+            color: #4a148c;
+            border-bottom-color: #4a148c;
+            font-weight: 600;
+        }
+        .payment-method-content {
+            display: none;
+        }
+        .payment-method-content.active {
+            display: block;
+        }
+        .wallet-icons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .wallet-icons img {
+            height: 40px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .wallet-icons img:hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -67,10 +107,6 @@
                 <div class="card payment-card">
                     <div class="card-header"><h2>Complete Your Payment</h2></div>
                     <div class="card-body">
-                        <div class="alert alert-info text-center">
-                            This is a mock payment gateway for demonstration purposes.
-                        </div>
-
                         <div class="mb-4 summary-box">
                             <h4>Booking Summary</h4>
                             <p><strong>Temple:</strong> {{ $booking->temple->name }}</p>
@@ -78,33 +114,95 @@
                             <p class="total-amount"><strong>Total Amount:</strong> ₹{{ $amount }}</p>
                         </div>
 
-                        {{-- This form simulates the final step after payment --}}
-                        <form action="{{ route('booking.confirm') }}" method="POST">
-                            @csrf
-                            {{-- We pass the booking ID to the final confirmation step --}}
-                            <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                        {{-- Payment Method Tabs --}}
+                        <div class="payment-methods-nav">
+                            <div class="nav-link active" data-target="#card-payment">Credit/Debit Card</div>
+                            <div class="nav-link" data-target="#upi-payment">UPI</div>
+                            <div class="nav-link" data-target="#netbanking-payment">Net Banking</div>
+                            <div class="nav-link" data-target="#wallets-payment">Wallets</div>
+                        </div>
 
+                        {{-- Payment Method Content Panes --}}
+                        <div id="card-payment" class="payment-method-content active">
                             <div class="form-group">
                                 <label for="card_number">Card Number</label>
-                                <input type="text" id="card_number" class="form-control" value="4242 4242 4242 4242" readonly>
+                                <input type="text" id="card_number" class="form-control" placeholder="4242 4242 4242 4242">
                             </div>
                             <div class="row mt-3">
                                 <div class="col-md-6 form-group">
                                     <label for="expiry">Expiry</label>
-                                    <input type="text" id="expiry" class="form-control" value="12/28" readonly>
+                                    <input type="text" id="expiry" class="form-control" placeholder="MM/YY">
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label for="cvv">CVV</label>
-                                    <input type="text" id="cvv" class="form-control" value="123" readonly>
+                                    <input type="text" id="cvv" class="form-control" placeholder="123">
                                 </div>
                             </div>
+                        </div>
 
-                            <button type="submit" class="btn btn-success btn-lg w-100 mt-4 btn-pay-now">Pay Now</button>
+                        <div id="upi-payment" class="payment-method-content text-center">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=divyadarshan@okhdfcbank" alt="UPI QR Code" class="mx-auto">
+                            <p class="my-3">Scan to pay or enter your UPI ID below.</p>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="yourname@upi">
+                            </div>
+                        </div>
+
+                        <div id="netbanking-payment" class="payment-method-content">
+                            <div class="form-group">
+                                <label for="bank-select">Select Your Bank</label>
+                                <select id="bank-select" class="form-select">
+                                    <option>State Bank of India</option>
+                                    <option>HDFC Bank</option>
+                                    <option>ICICI Bank</option>
+                                    <option>Axis Bank</option>
+                                    <option>Punjab National Bank</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="wallets-payment" class="payment-method-content text-center">
+                            <p>Select your preferred wallet to pay.</p>
+                            <div class="wallet-icons">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Amazon_Pay_logo.svg/2560px-Amazon_Pay_logo.svg.png" alt="Amazon Pay">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" alt="PhonePe">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/JioMoney_logo.svg/1200px-JioMoney_logo.svg.png" alt="JioMoney">
+                            </div>
+                        </div>
+
+                        {{-- This form handles the final submission --}}
+                        <form action="{{ route('booking.confirm') }}" method="POST" class="mt-4">
+                            @csrf
+                            <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                            <button type="submit" class="btn btn-success btn-lg w-100 btn-pay-now">Pay Now</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.payment-methods-nav .nav-link');
+    const panes = document.querySelectorAll('.payment-method-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Deactivate all tabs and panes
+            tabs.forEach(t => t.classList.remove('active'));
+            panes.forEach(p => p.classList.remove('active'));
+
+            // Activate the clicked tab and its corresponding pane
+            this.classList.add('active');
+            const targetPane = document.querySelector(this.dataset.target);
+            if (targetPane) {
+                targetPane.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>

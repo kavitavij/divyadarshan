@@ -6,12 +6,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <style>
+        /* Custom styles for the chatbot */
+        #chat-icon {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background-color: #4a148c; /* Deep purple */
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease-in-out;
+            z-index: 9998;
+        }
+        #chat-icon:hover {
+            transform: scale(1.1);
+        }
+        #chat-notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 22px;
+            height: 22px;
+            background-color: #dc2626; /* Red */
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+        #chat-widget {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            width: 350px;
+            max-width: 90vw;
+            height: 500px;
+            max-height: 70vh;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.5);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transform-origin: bottom right;
+            z-index: 9999;
+        }
+        #chat-widget.open {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .chat-header {
+            background-color: #4a148c;
+            color: white;
+            padding: 1rem;
+            font-weight: bold;
+            text-align: center;
+            flex-shrink: 0; /* Prevents header from shrinking */
+        }
+        .chat-messages {
+            flex-grow: 1; /* Allows this area to take up all available space */
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            padding: 0.5rem 1rem;
+            border-radius: 18px;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+        .message.user {
+            background-color: #3b82f6; /* Blue */
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .message.bot {
+            background-color: #f1f5f9; /* Light gray */
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input {
+            border-top: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            flex-shrink: 0; /* Prevents input from shrinking */
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background-color: #94a3b8;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+    </style>
 </head>
 <body x-data="{ loginModal: false, modalView: 'login' }" :class="{ 'overflow-hidden': loginModal }" class="bg-gray-100 font-sans text-gray-800">
 <div class="max-w-7xl mx-auto px-4">
-<script src="//unpkg.com/alpinejs" defer></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
 
-<header class="bg-white shadow">
+    <header class="bg-white shadow">
   <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
     <!-- Left: Logo -->
     <div class="flex-shrink-0">
@@ -28,11 +148,13 @@
         <button 
           aria-haspopup="true" 
           aria-expanded="false" 
-          class="inline-flex items-center gap-1 px-3 py-2 text-gray-700 hover:text-blue-600 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 rounded"
+          class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
+          style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
           id="templesDropdownBtn">
-          Temples
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 9l-7 7-7-7"></path>
+          <span>Temples</span>
+          <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" 
+               viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
 
@@ -42,8 +164,8 @@
           aria-labelledby="templesDropdownBtn">
           @foreach($allTemples as $temple)
             <a href="{{ route('temples.show', $temple->id) }}" 
-              class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-              role="menuitem">
+               class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+               role="menuitem">
               {{ $temple->name }}
             </a>
           @endforeach
@@ -60,7 +182,7 @@
               id="servicesDropdownBtn">
               <span>Online Services</span>
               <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" 
-                  viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                   viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M19 9l-7 7-7-7"></path>
               </svg>
           </button>
@@ -70,17 +192,17 @@
               role="menu" 
               aria-labelledby="servicesDropdownBtn">
               <a href="{{ route('booking.index') }}" 
-                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                role="menuitem">Darshan Booking</a>
+                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                 role="menuitem">Darshan Booking</a>
               <a href="#" 
-                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                role="menuitem">Sevas</a>
+                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                 role="menuitem">Sevas</a>
               <a href="#" 
-                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                role="menuitem">Accommodation Booking</a>
+                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                 role="menuitem">Accommodation Booking</a>
               <a href="#" 
-                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                role="menuitem">Cab Booking</a>
+                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                 role="menuitem">Cab Booking</a>
           </div>
       </div>
       <a href="{{ route('ebooks.index') }}" class="hover:text-blue-600">eBooks</a>
@@ -89,12 +211,10 @@
     <!-- Right: Login Button -->
     <div class="flex-shrink-0">
     @guest
-        {{-- This button shows only if the user is a GUEST --}}
         <button @click="loginModal = true; modalView = 'login'" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
             Login
         </button>
     @else
-        {{-- This dropdown shows only if the user is LOGGED IN --}}
         <div class="relative group">
             <button class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 <span>{{ Auth::user()->name }}</span>
@@ -109,7 +229,7 @@
 
                 <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
                 <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My eBooks</a>
-                <a href="{{ route('profile.booking') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
+                <a href="{{ route('profile.bookings') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <a href="{{ route('logout') }}"
@@ -123,7 +243,6 @@
     @endguest
 </div>
 
-    </div>
   </div>
 </header>
 
@@ -149,7 +268,7 @@
     @yield('content')
 </main>
 
-{{-- 🔷 Footer --}}
+   {{-- 🔷 Footer --}}
 <footer class="bg-gray-200 border-t py-4 text-sm text-gray-700">
     <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
         <div>&copy; {{ date('Y') }} DivyaDarshan. All rights reserved.</div>
@@ -171,6 +290,7 @@
 </footer>
 
 </div>
+
 
 {{-- 🔷 Swiper JS --}}
 <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
@@ -215,12 +335,12 @@
               <div class="mb-4">
                   <label for="email" class="block text-gray-700 mb-1">Email</label>
                   <input id="email" name="email" type="email" required autofocus
-                      class="w-full border border-gray-300 rounded px-3 py-2">
+                         class="w-full border border-gray-300 rounded px-3 py-2">
               </div>
               <div class="mb-4">
                   <label for="password" class="block text-gray-700 mb-1">Password</label>
                   <input id="password" name="password" type="password" required
-                      class="w-full border border-gray-300 rounded px-3 py-2">
+                         class="w-full border border-gray-300 rounded px-3 py-2">
               </div>
               <div class="mb-4 flex items-center">
                   <input id="remember" name="remember" type="checkbox" class="mr-2">
@@ -232,7 +352,7 @@
               </div>
               <a href="javascript:window.history.back();">GO Back </a>
               <div class="flex justify-end">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Log In</button>
+                  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Log In</button>
               </div>
           </form>
         </div>
@@ -247,22 +367,22 @@
               <div class="mb-4">
                   <label for="name" class="block text-gray-700 mb-1">Name</label>
                   <input id="name" name="name" type="text" required autofocus
-                      class="w-full border border-gray-300 rounded px-3 py-2">
+                         class="w-full border border-gray-300 rounded px-3 py-2">
               </div>
               <div class="mb-4">
                   <label for="email" class="block text-gray-700 mb-1">Email</label>
                   <input id="email" name="email" type="email" required
-                      class="w-full border border-gray-300 rounded px-3 py-2">
+                         class="w-full border border-gray-300 rounded px-3 py-2">
               </div>
               <div class="mb-4">
                   <label for="password" class="block text-gray-700 mb-1">Password</label>
                   <input id="password" name="password" type="password" required
-                      class="w-full border border-gray-300 rounded px-3 py-2">
+                         class="w-full border border-gray-300 rounded px-3 py-2">
               </div>
               <div class="mb-4">
                   <label for="password_confirmation" class="block text-gray-700 mb-1">Confirm Password</label>
                   <input id="password_confirmation" name="password_confirmation" type="password" required
-                      class="w-full border border-gray-300 rounded px-3 py-2">
+                         class="w-full border border-gray-300 rounded px-3 py-2">
               </div>
               <div class="flex justify-between items-center mb-4">
                   <a href="#" class="text-blue-600 hover:underline text-sm" @click.prevent="modalView = 'login'">Already have an account? Login</a>
@@ -285,7 +405,7 @@
               <div class="mb-4">
                   <label for="email" class="block text-gray-700 mb-1">Email Address</label>
                   <input id="email" name="email" type="email" required autofocus
-                      class="w-full border border-gray-300 rounded px-3 py-2">
+                         class="w-full border border-gray-300 rounded px-3 py-2">
               </div>
               <div class="flex justify-between items-center mb-4">
                   <a href="#" class="text-blue-600 hover:underline text-sm" @click.prevent="modalView = 'login'">Back to Login</a>
@@ -302,8 +422,142 @@
 
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-@stack('scripts')
+
+<!-- Chatbot Icon -->
+<div id="chat-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.837 8.837 0 01-4.445-1.272l-3.338 1.113a1 1 0 01-1.265-1.265l1.113-3.338A8.837 8.837 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.415 14.156a.636.636 0 01-.21-.49l-.33-1.103a6.834 6.834 0 00.916-2.013 1 1 0 111.916.539 4.833 4.833 0 01-1.423 1.88l1.103.33a.636.636 0 01.49.21 4.833 4.833 0 01-1.88 1.423z" clip-rule="evenodd" />
+    </svg>
+    <div id="chat-notification-badge">1</div>
+</div>
+
+<!-- Chatbot Widget -->
+<div id="chat-widget">
+    <div class="chat-header">DivyaDarshan Help Bot</div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="message bot">Namaste! I am Lilly, your virtual assistant. How can I help you today?</div>
+    </div>
+    <div class="chat-input">
+        <form id="chat-form" class="flex gap-2">
+            <input type="text" id="user-input" class="flex-grow border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400" placeholder="Ask a question..." required>
+            <button type="submit" class="bg-purple-600 text-white rounded-full p-2 hover:bg-purple-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                </svg>
+            </button>
+        </form>
+    </div>
+</div>
+
+{{-- All scripts go at the end of the body --}}
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+@stack('scripts') {{-- For page-specific scripts like booking --}}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Swiper Initialization ---
+    new Swiper('.mySwiper', {
+        loop: true,
+        spaceBetween: 30,
+        centeredSlides: true,
+        autoplay: { delay: 2500, disableOnInteraction: false },
+        pagination: { el: '.swiper-pagination', clickable: true },
+    });
+
+    // --- Chatbot and Notification Logic ---
+    const chatIcon = document.getElementById('chat-icon');
+    const chatWidget = document.getElementById('chat-widget');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatNotificationBadge = document.getElementById('chat-notification-badge');
+
+    const originalTitle = document.title;
+    const notificationTitle = '(1) ' + originalTitle;
+    let tabNotificationActive = true;
+
+    if (sessionStorage.getItem('chatBotClicked')) {
+        chatNotificationBadge.style.display = 'none';
+        tabNotificationActive = false;
+    }
+
+    function handleVisibilityChange() {
+        if (!tabNotificationActive) return;
+        document.title = document.hidden ? notificationTitle : originalTitle;
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    chatIcon.addEventListener('click', () => {
+        chatWidget.classList.toggle('open');
+        if (chatNotificationBadge.style.display !== 'none') {
+            chatNotificationBadge.style.display = 'none';
+            sessionStorage.setItem('chatBotClicked', 'true');
+            tabNotificationActive = false;
+            document.title = originalTitle;
+        }
+    });
+
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+            addMessage(userMessage, 'user');
+            userInput.value = '';
+            callGeminiAPI(userMessage);
+        }
+    });
+
+    function addMessage(text, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = text;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.id = 'typing-indicator';
+        indicator.classList.add('message', 'bot');
+        indicator.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+        chatMessages.appendChild(indicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) indicator.remove();
+    }
+
+    async function callGeminiAPI(prompt) {
+        showTypingIndicator();
+        const apiKey = "AIzaSyCRm02E9AhSIbZIrbQN-e_r8AWzbh1lD2w"; 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const systemPrompt = `You are a friendly and knowledgeable virtual assistant for "DivyaDarshan", a website dedicated to helping devotees with their pilgrimage needs in India. Your name is 'Lilly'. Your goal is to guide users to the correct section of the website, not to provide exhaustive information yourself. Keep your answers concise and focused on navigation.`;
+        const chatHistory = [
+            { role: "user", parts: [{ text: systemPrompt }] },
+            { role: "model", parts: [{ text: "Namaste! I am ready to assist your users." }] },
+            { role: "user", parts: [{ text: prompt }] }
+        ];
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: chatHistory }),
+            });
+            if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+            const result = await response.json();
+            const botResponse = result.candidates[0].content.parts[0].text;
+            removeTypingIndicator();
+            addMessage(botResponse, 'bot');
+        } catch (error) {
+            console.error("Gemini API call failed:", error);
+            removeTypingIndicator();
+            addMessage("I'm sorry, I'm having trouble connecting right now. Please try again later.", 'bot');
+        }
+    }
+});
+</script>
 </body>
 </html>

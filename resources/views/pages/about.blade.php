@@ -118,16 +118,16 @@
               class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
               role="menu" 
               aria-labelledby="servicesDropdownBtn">
-              <a href="#" 
+              <a href="{{ route('info.faq') }}"
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">FAQs</a>
               <a href="#" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Sevas</a>
-              <a href="#" 
+              <a href="{{ route('info.dress-code') }}"
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Dress Code</a>
-              <a href="#" 
+              <a href="{{ route('info.contact') }}" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Contact Us</a>
           </div>

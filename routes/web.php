@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\EbookController;
@@ -16,6 +15,7 @@ use App\Http\Controllers\Admin\TempleController as AdminTempleController;
 use App\Http\Controllers\Admin\EbookController as AdminEbookController;
 use App\Http\Controllers\Admin\LatestUpdateController;
 use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
+use App\Http\Controllers\Admin\DarshanSlotController;
 
 
 // ## PUBLIC ROUTES ##
@@ -28,30 +28,38 @@ Route::get('/guidelines', [GuidelineController::class, 'index'])->name('guidelin
 Route::get('/complaint', [ComplaintController::class, 'index'])->name('complaint.form');
 Route::post('/complaint', [ComplaintController::class, 'store'])->name('complaint.store');
 Route::get('/terms', [TermsController::class, 'index'])->name('terms');
+Route::get('/info/faq', function () {return view('info.faq');})->name('info.faq');
+Route::get('/info/dress-code', function () {return view('info.dress-code');})->name('info.dress-code');
+Route::get('/info/contact', function () {return view('info.contact');})->name('info.contact');
+
+
+// Darshan Booking Flow
 Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name('booking.index');
 Route::match(['get', 'post'], '/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
 Route::post('/booking/confirm', [DarshanBookingController::class, 'store'])->name('booking.confirm');
 Route::get('/booking/{booking}/summary', [DarshanBookingController::class, 'summary'])->name('booking.summary');
-Route::get('/profile/bookings', [ProfileController::class, 'bookings'])->name('profile.booking');
+Route::get('/booking/{booking}/payment', [DarshanBookingController::class, 'payment'])->name('booking.payment');
 
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
+    // Temple
     Route::post('/temples/{id}/favorite', [TempleController::class, 'favorite'])->name('temples.favorite');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.updateStatus');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
-    Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
-    Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
-    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
-
-});
-Route::middleware('auth')->group(function () {
+    
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Ebooks
+    Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
+    Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
+    Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
+    
+    // Bookings
+    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
 });
+
 
 // ## ADMIN ROUTES ##
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -61,8 +69,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('latest_updates', LatestUpdateController::class);
     Route::resource('complaints', AdminComplaintController::class)->only(['index', 'destroy']);
     Route::patch('/complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.updateStatus');
-    Route::get('/temples/{temple}/slots', [AdminDarshanSlotController::class, 'index'])->name('temples.slots.index');
-    Route::post('/temples/{temple}/slots', [AdminDarshanSlotController::class, 'store'])->name('temples.slots.store');
+    Route::get('/temples/{temple}/slots', [DarshanSlotController::class, 'index'])->name('temples.slots.index');
+    Route::post('/temples/{temple}/slots', [DarshanSlotController::class, 'store'])->name('temples.slots.store');
 });
 
 
