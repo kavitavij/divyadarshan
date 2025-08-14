@@ -33,8 +33,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function favorites() {
-    return $this->belongsToMany(Temple::class, 'favorites');
-}
-
+    public function favorites() 
+    {
+        return $this->belongsToMany(Temple::class, 'favorites');
+    }
+    public function ebooks()
+    {
+        return $this->belongsToMany(Ebook::class);
+    }   
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

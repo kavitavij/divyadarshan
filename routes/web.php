@@ -29,7 +29,10 @@ Route::get('/complaint', [ComplaintController::class, 'index'])->name('complaint
 Route::post('/complaint', [ComplaintController::class, 'store'])->name('complaint.store');
 Route::get('/terms', [TermsController::class, 'index'])->name('terms');
 Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name('booking.index');
-Route::post('/darshan-booking', [DarshanBookingController::class, 'store'])->name('booking.store');
+Route::match(['get', 'post'], '/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
+Route::post('/booking/confirm', [DarshanBookingController::class, 'store'])->name('booking.confirm');
+Route::get('/booking/{booking}/summary', [DarshanBookingController::class, 'summary'])->name('booking.summary');
+
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
@@ -37,8 +40,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.updateStatus');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+    Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
+    Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
+    Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
+    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
 
+});
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // ## ADMIN ROUTES ##
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {

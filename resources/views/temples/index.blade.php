@@ -1,15 +1,14 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Manage Temples</h1>
         <a href="{{ route('admin.temples.create') }}" class="btn btn-primary">Add New Temple</a>
     </div>
 
     @if ($message = Session::get('success'))
         <div class="alert alert-success">
-            <p>{{ $message }}</p>
+            {{ $message }}
         </div>
     @endif
 
@@ -38,22 +37,19 @@
                         <td>{{ $temple->location }}</td>
                         <td>
                             <form action="{{ route('admin.temples.destroy', $temple->id) }}" method="POST">
-                                <a class="btn btn-info btn-sm" href="{{ route('admin.temples.show', $temple->id) }}">Show</a>
-                                <a class="btn btn-primary btn-sm" href="{{ route('admin.temples.edit', $temple->id) }}">Edit</a>
+                                <a class="btn btn-sm btn-info" href="{{ route('admin.temples.edit', $temple->id) }}">Edit</a>
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this temple?')">Delete</button>
                             </form>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-            {{-- For pagination links --}}
-            <div class="d-flex justify-content-center">
+            <div class="mt-3">
                 {!! $temples->links() !!}
             </div>
         </div>
     </div>
-</div>
 @endsection

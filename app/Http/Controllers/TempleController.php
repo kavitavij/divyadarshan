@@ -2,85 +2,100 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Temple;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class TempleController extends Controller
 {
     /**
-     * Display a listing of all temples for the public.
+     * Display a listing of the temples.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = Temple::query();
-
-        // Handle search functionality on the public temple listing page
-        if ($search = $request->input('search')) {
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%");
-        }
-
-        $temples = $query->latest()->paginate(12);
-
+        $temples = Temple::latest()->paginate(10);
         return view('temples.index', compact('temples'));
     }
 
     /**
-     * Display a single temple's details to the public.
+     * Display the specified temple page with its calendar.
      */
-    public function show($id)
+    public function show(Request $request, Temple $temple)
     {
-        $temple = Temple::findOrFail($id);
+        $calendars = $this->generateCalendarData($temple);
+        $slots = [];
+        $selectedDate = null;
 
-        // --- Calendar Generation for Public View ---
-        $startDate = Carbon::today();
-        $calendars = [];
-        $savedSlots = $temple->slot_data ?? []; // Get saved data, or empty array if null
+        // Check if a date was selected by the user
+        if ($request->has('selected_date')) {
+            $selectedDate = Carbon::parse($request->selected_date);
+            $dateString = $selectedDate->toDateString();
+            $slotData = $temple->slot_data ?? [];
 
-        for ($i = 0; $i < 4; $i++) {
-            $month = $startDate->copy()->addMonths($i);
-            $monthStart = $month->copy()->startOfMonth();
-            $monthEnd = $month->copy()->endOfMonth();
-            $days = [];
-
-            // Add blank days to ensure the first day of the month starts on the correct day of the week
-            $blankDays = ($monthStart->dayOfWeek + 6) % 7;
-            for ($b = 0; $b < $blankDays; $b++) {
-                $days[] = null;
+            // Determine the final status of the selected date
+            $dayStatus = 'available'; // Default
+            if (isset($slotData[$dateString])) {
+                $dayStatus = $slotData[$dateString];
+            }
+            if ($selectedDate->isPast() && !$selectedDate->isToday()) {
+                $dayStatus = 'not_available';
             }
 
-            // Populate the days of the month
-            for ($date = $monthStart->copy(); $date->lte($monthEnd); $date->addDay()) {
-                $dateString = $date->toDateString();
-                $days[] = [
-                    'date' => $dateString,
-                    'day' => $date->day,
-                    // Get the status from your saved data, or default to 'not_available'
-                    'status' => $savedSlots[$dateString] ?? 'not_available',
+            // Only generate time slots if the final status is 'available'
+            if ($dayStatus === 'available') {
+                $slots = [
+                    ['id' => 1, 'start_time_formatted' => '09:00 AM', 'end_time_formatted' => '11:00 AM'],
+                    ['id' => 2, 'start_time_formatted' => '11:00 AM', 'end_time_formatted' => '01:00 PM'],
+                    ['id' => 3, 'start_time_formatted' => '03:00 PM', 'end_time_formatted' => '05:00 PM'],
                 ];
             }
-
-            $calendars[] = [
-                'month_name' => $month->format('F Y'),
-                'days' => $days,
-            ];
         }
 
-        return view('temples.detail', compact('temple', 'calendars'));
+        return view('temples.show', compact('temple', 'calendars', 'slots', 'selectedDate'));
     }
 
     /**
-     * Allows a logged-in user to favorite a temple.
+     * Generates calendar data for the public temple page.
      */
-    public function favorite($id)
+    private function generateCalendarData(Temple $temple)
     {
-        // Find the temple first
-        $temple = Temple::findOrFail($id);
-        
-        // Attach it to the logged-in user's favorites
-        auth()->user()->favorites()->syncWithoutDetaching($temple->id);
+        $calendars = [];
+        $currentDate = Carbon::now()->startOfMonth();
+        $slotData = $temple->slot_data ?? [];
 
-        return back()->with('success', 'Temple bookmarked successfully!');
+        for ($i = 0; $i < 4; $i++) {
+            $monthName = $currentDate->format('F Y');
+            $daysInMonth = $currentDate->daysInMonth;
+            $startOfMonth = $currentDate->copy()->startOfMonth()->dayOfWeek;
+
+            $days = array_fill(0, $startOfMonth, null);
+
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $date = $currentDate->copy()->setDay($day);
+                $dateString = $date->toDateString();
+                
+                // THE FIX IS HERE: The logic is re-ordered to be more explicit.
+                
+                // 1. First, check if the date is in the past. This has the highest priority.
+                if ($date->isPast() && !$date->isToday()) {
+                    $status = 'not_available';
+                } 
+                // 2. Next, check if a specific status was saved in the admin panel.
+                elseif (isset($slotData[$dateString])) {
+                    $status = $slotData[$dateString]; // This will be 'full' or 'not_available'
+                } 
+                // 3. If neither of the above is true, the date is available by default.
+                else {
+                    $status = 'available';
+                }
+
+                $days[] = ['day' => $day, 'date' => $dateString, 'status' => $status];
+            }
+
+            $calendars[] = ['month_name' => $monthName, 'days' => $days];
+            $currentDate->addMonth();
+        }
+
+        return $calendars;
     }
 }

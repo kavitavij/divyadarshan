@@ -57,4 +57,22 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+        public function myEbooks()
+        {
+            $user = Auth::user();
+            // Eager load the ebooks to get all their details
+            $ebooks = $user->ebooks()->get();
+
+            return view('profile.my-ebooks', compact('ebooks'));
+        }
+        public function myBookings(): View
+    {
+        $user = Auth::user();
+
+        // Get all bookings for the current user, load the temple details,
+        // and order them with the newest first.
+        $bookings = $user->bookings()->with('temple')->latest()->paginate(10);
+
+        return view('profile.my-bookings', compact('bookings'));
+    }
 }

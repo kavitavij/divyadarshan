@@ -18,4 +18,8 @@ class Ebook extends Model
         'type',     
         'price',    
     ];
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

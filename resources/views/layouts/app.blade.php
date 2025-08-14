@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <title>DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @vite([
-        'resources/css/app.css',
-        'resources/js/app.js'
-    ])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 </head>
 <body x-data="{ loginModal: false, modalView: 'login' }" :class="{ 'overflow-hidden': loginModal }" class="bg-gray-100 font-sans text-gray-800">
@@ -111,7 +108,8 @@
                 @endif
 
                 <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
-
+                <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My eBooks</a>
+                <a href="{{ route('profile.bookings') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <a href="{{ route('logout') }}"
