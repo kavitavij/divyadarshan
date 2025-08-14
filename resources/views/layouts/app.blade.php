@@ -109,7 +109,7 @@
 
                 <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
                 <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My eBooks</a>
-                <a href="{{ route('profile.bookings') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
+                <a href="{{ route('profile.booking') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <a href="{{ route('logout') }}"

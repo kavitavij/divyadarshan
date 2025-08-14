@@ -32,6 +32,7 @@ Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name
 Route::match(['get', 'post'], '/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
 Route::post('/booking/confirm', [DarshanBookingController::class, 'store'])->name('booking.confirm');
 Route::get('/booking/{booking}/summary', [DarshanBookingController::class, 'summary'])->name('booking.summary');
+Route::get('/profile/bookings', [ProfileController::class, 'bookings'])->name('profile.booking');
 
 
 // ## AUTHENTICATED USER ROUTES ##
