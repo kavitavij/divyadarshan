@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bookings', function (Blueprint $table) {
-            // Add this line to create the new column
+            
             $table->json('devotee_details')->nullable()->after('status');
         });
     }
