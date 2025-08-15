@@ -24,6 +24,12 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: transform 0.2s ease-in-out;
             z-index: 9998;
+            overflow: hidden; /* Ensures the image inside is clipped to the circle */
+        }
+        #chat-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         #chat-icon:hover {
             transform: scale(1.1);
