@@ -45,4 +45,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Booking::class);
     }
+    public function hotel()
+{
+    return $this->hasOne(Hotel::class, 'manager_id');
+}
 }

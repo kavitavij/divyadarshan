@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\StayController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\TempleController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\GeneralInfoController;
 use App\Http\Controllers\Admin\SevaController;
 use App\Http\Controllers\SevaBookingController; 
 use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\HotelManager\DashboardController;
 
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -39,7 +41,10 @@ Route::get('/seva-booking', [SevaBookingController::class, 'index'])->name('seva
 Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name('booking.index');
 Route::post('/contact-us', [GeneralInfoController::class, 'handleContactForm'])->name('info.contact.submit');
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+
+Route::get('/stays', [StayController::class, 'index'])->name('stays.index');
+Route::get('/stays/{hotel}', [StayController::class, 'show'])->name('stays.show');
 });
 
 // ## AUTHENTICATED USER ROUTES ##
@@ -73,6 +78,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/seva-booking/confirm', [SevaBookingController::class, 'confirm'])->name('sevas.booking.confirm');
 });
 
+    Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name('hotel-manager.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+    });
 
 // ## ADMIN ROUTES ##
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -87,7 +96,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('temples.sevas', SevaController::class)->shallow();
     Route::get('/temples/{temple}/darshan-bookings', [AdminTempleController::class, 'showDarshanBookings'])->name('temples.darshan_bookings');
     Route::get('/temples/{temple}/seva-bookings', [AdminTempleController::class, 'showSevaBookings'])->name('temples.seva_bookings');
-});
+    Route::resource('hotels', App\Http\Controllers\Admin\HotelController::class);
+    Route::resource('hotels.rooms', App\Http\Controllers\Admin\RoomController::class)->shallow();
+    });
 
 
 // ## BREEZE DASHBOARD & AUTHENTICATION ##

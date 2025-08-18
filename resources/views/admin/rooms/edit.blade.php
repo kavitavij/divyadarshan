@@ -1,0 +1,41 @@
+@extends('layouts.admin')
+
+@section('content')
+<div class="container-fluid">
+    <h1>Edit Room: {{ $room->type }}</h1>
+    <p>For hotel: {{ $room->hotel->name }}</p>
+
+    <div class="card">
+        <div class="card-body">
+            <form action="{{ route('admin.rooms.update', $room) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="form-group mb-3">
+                    <label for="type">Room Type (e.g., Standard, Deluxe, Suite)</label>
+                    <input type="text" name="type" class="form-control" value="{{ old('type', $room->type) }}" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="description">Description</label>
+                    <textarea name="description" class="form-control" rows="3">{{ old('description', $room->description) }}</textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group mb-3">
+                        <label for="capacity">Capacity (people)</label>
+                        <input type="number" name="capacity" class="form-control" value="{{ old('capacity', $room->capacity) }}" required>
+                    </div>
+                    <div class="col-md-4 form-group mb-3">
+                        <label for="price_per_night">Price per Night (₹)</label>
+                        <input type="number" name="price_per_night" class="form-control" step="0.01" value="{{ old('price_per_night', $room->price_per_night) }}" required>
+                    </div>
+                    <div class="col-md-4 form-group mb-3">
+                        <label for="total_rooms">Total Number of Rooms</label>
+                        <input type="number" name="total_rooms" class="form-control" value="{{ old('total_rooms', $room->total_rooms) }}" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Room</button>
+                <a href="{{ route('admin.hotels.rooms.index', $room->hotel_id) }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

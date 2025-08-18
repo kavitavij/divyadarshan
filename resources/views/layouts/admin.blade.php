@@ -32,6 +32,9 @@
             <li>
                 <a class="nav-link" href="{{ route('admin.bookings.index') }}">Bookings </a>
             </li>
+            <li>
+                <a class="nav-link" href="{{ route('admin.hotels.index') }}">Hotels </a>
+            </li>
         </ul>
         <hr>
         

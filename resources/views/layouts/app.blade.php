@@ -6,126 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
-    <!-- <style>
-        /* Custom styles for the chatbot */
-        #chat-icon {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 60px;
-            height: 60px;
-            background-color: #4a148c; /* Deep purple */
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease-in-out;
-            z-index: 9998;
-        }
-        #chat-icon:hover {
-            transform: scale(1.1);
-        }
-        #chat-notification-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 22px;
-            height: 22px;
-            background-color: #dc2626; /* Red */
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid white;
-        }
-        #chat-widget {
-            position: fixed;
-            bottom: 100px;
-            right: 25px;
-            width: 350px;
-            max-width: 90vw;
-            height: 500px;
-            max-height: 70vh;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transform: scale(0.5);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            transform-origin: bottom right;
-            z-index: 9999;
-        }
-        #chat-widget.open {
-            transform: scale(1);
-            opacity: 1;
-        }
-        .chat-header {
-            background-color: #4a148c;
-            color: white;
-            padding: 1rem;
-            font-weight: bold;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        .chat-messages {
-            flex-grow: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .message {
-            padding: 0.5rem 1rem;
-            border-radius: 18px;
-            max-width: 80%;
-            line-height: 1.5;
-        }
-        .message.user {
-            background-color: #3b82f6; /* Blue */
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-        .message.bot {
-            background-color: #f1f5f9; /* Light gray */
-            color: #1e293b;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-        .chat-input {
-            border-top: 1px solid #e2e8f0;
-            padding: 0.75rem;
-            flex-shrink: 0;
-        }
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background-color: #94a3b8;
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1.0); }
-        }
-    </style> -->
 </head>
 <body x-data="{ loginModal: false, modalView: 'login', mobileMenuOpen: false }" 
       :class="{ 'overflow-hidden': loginModal || mobileMenuOpen }" 
@@ -197,10 +77,10 @@
                 <a href="{{ route('sevas.booking.index') }}" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" 
                 role="menuitem">Sevas</a>
-              <a href="#" 
+                <a href="{{ route('admin.stays.index') }}"
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Accommodation Booking</a>
-              <a href="#" 
+                <a href="#" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Cab Booking</a>
           </div>
@@ -435,7 +315,7 @@ var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
-s1.src='https://embed.tawk.to/68a2f17fa43302192439ea70/1j2u7un6p';
+s1.src='https://embed.tawk.to/68a2f658d8c4f11928198433/1j2u94ja5';
 s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
