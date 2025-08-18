@@ -29,7 +29,7 @@
     
     <!-- Left: Logo -->
     <div class="flex-shrink-0">
-      <a href="/home" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
+      <a href="/" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
     </div>
 
     <!-- Middle: Menu -->
@@ -85,10 +85,10 @@
               class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
               role="menu" 
               aria-labelledby="servicesDropdownBtn">
-              <a href="#" 
+              <a href="{{ route('booking.index') }}" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Darshan Booking</a>
-              <a href="#" 
+              <a href="{{ route('sevas.booking.index') }}" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Sevas</a>
               <a href="#" 
@@ -121,7 +121,7 @@
               <a href="{{ route('info.faq') }}"
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">FAQs</a>
-              <a href="#" 
+              <a href="{{route('info.sevas') }}" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Sevas</a>
               <a href="{{ route('info.dress-code') }}"
@@ -202,8 +202,8 @@
             @endforeach
         </div>
     </section>
-    <section class="animate-fadeInUp">
-        <h2 class="text-2xl font-bold text-blue-700 mb-3">🏛 History of Temples</h2>
+    <section class="bg-blue-50 p-6 rounded animate-fadeInUp">
+        <h2 class="text-2xl font-bold text-blue-800 mb-2">🏛 History of Temples</h2>
         <p>India’s temples are not just spiritual centers — they are living legacies. Our platform showcases each temple’s history, origin stories, architecture, dress codes, and spiritual significance.</p>
     </section>
     <section class="bg-blue-50 p-6 rounded animate-fadeInUp">

@@ -10,7 +10,9 @@ use Carbon\Carbon;
 
 class DarshanBookingController extends Controller
 {
-    // ... your index() and generateCalendarData() methods remain the same ...
+    /**
+     * Display the booking page.
+     */
     public function index(Request $request)
     {
         $temples = Temple::orderBy('name')->get();
@@ -52,6 +54,92 @@ class DarshanBookingController extends Controller
         return view('booking.index', compact('temples', 'selectedTemple', 'calendars', 'slots', 'selectedDate'));
     }
 
+    /**
+     * Show the form for entering user details.
+     */
+    public function details(Request $request)
+    {
+        if ($request->isMethod('get')) {
+            return redirect()->route('booking.index')->with('error', 'There was a problem with your selection. Please try again.');
+        }
+
+        $bookingData = $request->validate([
+            'temple_id' => 'required|exists:temples,id',
+            'darshan_slot_id' => 'required|integer',
+            'number_of_people' => 'required|integer|min:1|max:5',
+        ]);
+
+        return view('booking.details', compact('bookingData'));
+    }
+
+    /**
+     * Store the booking details and redirect to the summary page.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'temple_id' => 'required|exists:temples,id',
+            'darshan_slot_id' => 'required|integer',
+            'number_of_people' => 'required|integer|min:1|max:5',
+            'devotees' => 'required|array',
+        ]);
+
+        $booking = Booking::create([
+            'user_id' => Auth::id(),
+            'temple_id' => $request->temple_id,
+            'darshan_slot_id' => $request->darshan_slot_id,
+            'number_of_people' => $request->number_of_people,
+            'status' => 'Pending Payment',
+            'devotee_details' => $request->devotees,
+        ]);
+
+        return redirect()->route('booking.summary', $booking);
+    }
+
+    /**
+     * Display the booking summary page.
+     */
+    public function summary(Booking $booking)
+    {
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+        $booking->load('temple');
+        return view('booking.summary', compact('booking'));
+    }
+
+    /**
+     * Display the mock payment page.
+     */
+    public function payment(Booking $booking)
+    {
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+        $booking->load('temple');
+        $amount = $booking->number_of_people * 100; // Example fee
+        $confirmRoute = route('booking.confirm');
+        return view('shared.payment', compact('booking', 'amount', 'confirmRoute'));
+    }
+
+    /**
+     * This is the final confirmation step after the "payment" is made.
+     */
+    public function confirmBooking(Request $request)
+    {
+        $request->validate(['booking_id' => 'required|exists:bookings,id']);
+        $booking = Booking::findOrFail($request->booking_id);
+
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $booking->status = 'Confirmed';
+        $booking->save();
+
+        return redirect()->route('home')->with('success', 'Your payment was successful and your Darshan has been confirmed!');
+    }
+    
     private function generateCalendarData(Temple $temple)
     {
         $calendars = [];
@@ -85,68 +173,4 @@ class DarshanBookingController extends Controller
 
         return $calendars;
     }
-
-
-    /**
-     * NEW METHOD: Show the form for entering user details.
-     */
-    public function details(Request $request)
-    {
-        // If it's a GET request, it's an error. Redirect them.
-        if ($request->isMethod('get')) {
-            return redirect()->route('booking.index')->with('error', 'There was a problem with your selection. Please try again.');
-        }
-
-        // If it's a POST request, proceed with validation as normal.
-        $bookingData = $request->validate([
-            'temple_id' => 'required|exists:temples,id',
-            'darshan_slot_id' => 'required|integer',
-            'number_of_people' => 'required|integer|min:1|max:5',
-        ]);
-
-        return view('booking.details', compact('bookingData'));
-    }
-    /**
-     * UPDATED METHOD: Store the final booking after details are entered.
-     */
-    public function store(Request $request)
-{
-    $request->validate([
-        'temple_id' => 'required|exists:temples,id',
-        'darshan_slot_id' => 'required|integer',
-        'number_of_people' => 'required|integer|min:1|max:5',
-        'devotees' => 'required|array',
-        'devotees.*.first_name' => 'required|string|max:255',
-        // Add validation for your other devotee fields...
-    ]);
-
-    // Create the booking
-    $booking = Booking::create([
-        'user_id' => Auth::id(),
-        'temple_id' => $request->temple_id,
-        'darshan_slot_id' => $request->darshan_slot_id,
-        'number_of_people' => $request->number_of_people,
-        'status' => 'Pending Payment', // New status
-        'devotee_details' => $request->devotees,
-    ]);
-
-    // Redirect to the new summary page with the booking ID
-    return redirect()->route('booking.summary', ['booking' => $booking->id]);
-}
-
-/**
- * NEW METHOD: Display the booking summary page.
- */
-public function summary(Booking $booking)
-{
-    // Ensure the user can only view their own bookings
-    if ($booking->user_id !== Auth::id()) {
-        abort(403);
-    }
-
-    // Eager load the temple relationship to get the temple name
-    $booking->load('temple');
-
-    return view('booking.summary', compact('booking'));
-}
 }

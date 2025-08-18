@@ -170,4 +170,15 @@ class TempleController extends Controller
         }
         return $calendars;
     }
+    public function showDarshanBookings(Temple $temple)
+    {
+        $bookings = $temple->darshanBookings()->with('user')->latest()->paginate(15);
+        return view('admin.temples.darshan_bookings', compact('temple', 'bookings'));
+    }
+        public function showSevaBookings(Temple $temple)
+    {
+        $bookings = $temple->sevaBookings()->with(['user', 'seva'])->latest()->paginate(15);
+        return view('admin.temples.seva_bookings', compact('temple', 'bookings'));
+    }
+    
 }

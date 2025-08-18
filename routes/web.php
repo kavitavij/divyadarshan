@@ -16,7 +16,10 @@ use App\Http\Controllers\Admin\EbookController as AdminEbookController;
 use App\Http\Controllers\Admin\LatestUpdateController;
 use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\DarshanSlotController;
-
+use App\Http\Controllers\GeneralInfoController; 
+use App\Http\Controllers\Admin\SevaController;
+use App\Http\Controllers\SevaBookingController; 
+use App\Http\Controllers\Admin\BookingController;
 
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -28,18 +31,16 @@ Route::get('/guidelines', [GuidelineController::class, 'index'])->name('guidelin
 Route::get('/complaint', [ComplaintController::class, 'index'])->name('complaint.form');
 Route::post('/complaint', [ComplaintController::class, 'store'])->name('complaint.store');
 Route::get('/terms', [TermsController::class, 'index'])->name('terms');
-Route::get('/info/faq', function () {return view('info.faq');})->name('info.faq');
-Route::get('/info/dress-code', function () {return view('info.dress-code');})->name('info.dress-code');
-Route::get('/info/contact', function () {return view('info.contact');})->name('info.contact');
-
-
-// Darshan Booking Flow
+Route::get('/info/faq', [GeneralInfoController::class, 'faq'])->name('info.faq');
+Route::get('/info/dress-code', [GeneralInfoController::class, 'dressCode'])->name('info.dress-code');
+Route::get('/info/contact', [GeneralInfoController::class, 'contact'])->name('info.contact');
+Route::get('/info/sevas', [GeneralInfoController::class, 'sevas'])->name('info.sevas');
+Route::get('/seva-booking', [SevaBookingController::class, 'index'])->name('sevas.booking.index');
 Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name('booking.index');
-Route::match(['get', 'post'], '/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
-Route::post('/booking/confirm', [DarshanBookingController::class, 'store'])->name('booking.confirm');
-Route::get('/booking/{booking}/summary', [DarshanBookingController::class, 'summary'])->name('booking.summary');
-Route::get('/booking/{booking}/payment', [DarshanBookingController::class, 'payment'])->name('booking.payment');
-
+Route::post('/contact-us', [GeneralInfoController::class, 'handleContactForm'])->name('info.contact.submit');
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+});
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
@@ -58,6 +59,18 @@ Route::middleware('auth')->group(function () {
     
     // Bookings
     Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    // Darshan Booking flow
+    Route::match(['get', 'post'], '/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
+    Route::post('/booking/confirm', [DarshanBookingController::class, 'store'])->name('booking.confirm');
+    Route::get('/booking/{booking}/summary', [DarshanBookingController::class, 'summary'])->name('booking.summary');
+    Route::get('/booking/{booking}/payment', [DarshanBookingController::class, 'payment'])->name('booking.payment');
+
+    // Seva Booking Flow
+    Route::post('/seva-booking', [SevaBookingController::class, 'store'])->name('sevas.booking.store');
+    Route::get('/seva-booking/{sevaBooking}/summary', [SevaBookingController::class, 'summary'])->name('sevas.booking.summary');
+    Route::get('/seva-booking/{sevaBooking}/payment', [SevaBookingController::class, 'payment'])->name('sevas.booking.payment');
+    Route::post('/seva-booking/confirm', [SevaBookingController::class, 'confirm'])->name('sevas.booking.confirm');
 });
 
 
@@ -71,6 +84,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('/complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.updateStatus');
     Route::get('/temples/{temple}/slots', [DarshanSlotController::class, 'index'])->name('temples.slots.index');
     Route::post('/temples/{temple}/slots', [DarshanSlotController::class, 'store'])->name('temples.slots.store');
+    Route::resource('temples.sevas', SevaController::class)->shallow();
+    Route::get('/temples/{temple}/darshan-bookings', [AdminTempleController::class, 'showDarshanBookings'])->name('temples.darshan_bookings');
+    Route::get('/temples/{temple}/seva-bookings', [AdminTempleController::class, 'showSevaBookings'])->name('temples.seva_bookings');
 });
 
 

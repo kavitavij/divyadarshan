@@ -7,10 +7,8 @@
         <a href="{{ route('admin.temples.create') }}" class="btn btn-primary">Add New Temple</a>
     </div>
 
-    @if ($message = Session::get('success'))
-        <div class="alert alert-success">
-            <p>{{ $message }}</p>
-        </div>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <div class="card">
@@ -18,41 +16,27 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Image</th>
                         <th>Name</th>
                         <th>Location</th>
-                        <th width="280px">Action</th>
+                        <th width="480px">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($temples as $temple)
                     <tr>
-                        <td>
-                            @if($temple->image)
-                                <img src="{{ asset($temple->image) }}" height="50" alt="{{ $temple->name }}">
-                            @else
-                                <span>No Image</span>
-                            @endif
-                        </td>
                         <td>{{ $temple->name }}</td>
                         <td>{{ $temple->location }}</td>
                         <td>
-                            <form action="{{ route('admin.temples.destroy', $temple->id) }}" method="POST">
-                                <a class="btn btn-info btn-sm" href="{{ route('admin.temples.show', $temple->id) }}">Show</a>
-                                <a class="btn btn-primary btn-sm" href="{{ route('admin.temples.edit', $temple->id) }}">Edit</a>
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                            </form>
+                            <a class="btn btn-primary btn-sm" href="{{ route('admin.temples.edit', $temple->id) }}">Edit Details</a>
+                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.temples.sevas.index', $temple) }}">Manage Sevas</a>
+                            <a class="btn btn-info btn-sm" href="{{ route('admin.temples.darshan_bookings', $temple) }}">Darshan Bookings</a>
+                            <a class="btn btn-success btn-sm" href="{{ route('admin.temples.seva_bookings', $temple) }}">Seva Bookings</a>
+                            
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-            {{-- For pagination links --}}
-            <div class="d-flex justify-content-center">
-                {!! $temples->links() !!}
-            </div>
         </div>
     </div>
 </div>

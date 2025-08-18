@@ -29,6 +29,9 @@
             <li>
                 <a class="nav-link" href="{{ route('admin.complaints.index') }}">Manage Complaints</a>
             </li>
+            <li>
+                <a class="nav-link" href="{{ route('admin.bookings.index') }}">Bookings </a>
+            </li>
         </ul>
         <hr>
         

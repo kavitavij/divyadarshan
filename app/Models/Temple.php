@@ -9,33 +9,34 @@ class Temple extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name',
-        'location',
-        'description',
-        'image',
-        'about',
-        'online_services',
-        'news',
-        'social_services',
-        'slot_data', 
+        'name', 'location', 'description', 'image', 'about', 
+        'online_services', 'news', 'social_services', 'slot_data', 
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-     protected $casts = [
-        'slot_data' => 'array', // This is the crucial line
-        'news' => 'array',      // Also good to have for your news column
+    protected $casts = [
+        'slot_data' => 'array',
+        'news' => 'array',
     ];
-    public function darshanSlots() {
-    return $this->hasMany(DarshanSlot::class);
-}
+    
+    public function sevas()
+    {
+        return $this->hasMany(Seva::class);
+    }
+
+    /**
+     * Get all Darshan bookings for the temple.
+     */
+    public function darshanBookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Get all Seva bookings for the temple through its sevas.
+     */
+    public function sevaBookings()
+    {
+        return $this->hasManyThrough(SevaBooking::class, Seva::class);
+    }
 }

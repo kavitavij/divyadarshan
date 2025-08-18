@@ -131,7 +131,7 @@
                             
                             {{-- Payment Button --}}
                             <div class="text-center mt-4">
-                                <a href="#" class="btn btn-success btn-lg btn-proceed">Proceed to Payment</a>
+                                <a href="{{ route('booking.payment', $booking) }}" class="btn btn-success btn-lg btn-proceed">Proceed to Payment</a>
                             </div>
                         </div>
                     </div>

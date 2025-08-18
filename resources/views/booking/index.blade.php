@@ -3,7 +3,47 @@
 @push('styles')
     {{-- Custom styles are no longer needed as we are using Tailwind classes directly --}}
 @endpush
+<style> 
+    .animated-btn {
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #000010;
+  text-align: center;
+  font-size: 18px;
+  padding: 12px 20px;
+  width: 180px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
 
+.animated-btn span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.animated-btn span:after {
+  content: '\00bb'; /* » arrow */
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -15px;
+  transition: 0.5s;
+}
+
+.animated-btn:hover span {
+  padding-right: 20px;
+}
+
+.animated-btn:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+</style>
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -101,11 +141,13 @@
 
                                 {{-- 4. Number of People --}}
                                 <div class="form-group mt-4">
-                                    <label for="number_of_people">4. Number of People</label>
+                                    <label for="number_of_people"> Number of People</label>
                                     <input type="number" name="number_of_people" class="form-control" min="1" max="5" required>
                                 </div>
+                                <br>
 
-                                <button type="submit" class="btn btn-primary mt-4">Confirm Booking</button>
+                                <button type="submit" class="animated-btn"><span>Next</span></button>
+
                             @endif
                         </form>
                     @endif

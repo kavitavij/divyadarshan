@@ -118,11 +118,11 @@
           <div class="grid">
             <div class="col-6">
               <ul class="clean">
-                <li>Carry a valid government ID (Aadhaar/Passport/Driving License) for all check-ins.</li>
-                <li>Register for any required yatra/darshan passes as advised by the temple.</li>
-                <li>Pack modest clothing, comfortable footwear, reusable water bottle, and light snacks.</li>
-                <li>Keep medicines, basic first-aid, and any prescriptions in your cabin bag.</li>
-              </ul>
+                <li><strong>Check Bookings:</strong> Double-check your Darshan, accommodation, and travel bookings. Keep digital and physical copies of all documents.</li>
+                <li><strong>Pack Smart:</strong> Pack modest clothing according to the <a href="{{ route('info.dress-code') }}" style="color:var(--brand);">Dress Code</a>, comfortable footwear, and any personal medications.</li>
+                <li><strong>Valid ID:</strong> Carry a valid government-issued photo ID (Aadhaar, Passport, etc.) for all members of your group.</li>
+                <li><strong>Health First:</strong> If undertaking a physically demanding pilgrimage, consult a doctor. Stay hydrated and carry a basic first-aid kit.</li>
+          </ul> 
             </div>
             <div class="col-6">
               <div class="tips">
@@ -236,6 +236,7 @@
         <section class="cta">
           Need assistance with travel, accommodation, or darshan passes?
           <div>
+            <a href="{{ route('home') }}">Back to Home</a>
             <a href="{{ route('complaint.form') }}">Submit a Complaint</a>
             <a href="{{ route('terms') }}">Read Terms &amp; Conditions</a>
           </div>
