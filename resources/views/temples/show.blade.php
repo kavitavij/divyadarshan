@@ -37,13 +37,12 @@
 
     {{-- Slot Booking Tab Content --}}
     <div id="slots" class="tab-content hidden">
-        <form id="bookingForm" action="#" method="POST">
+        <form id="bookingForm" action="{{ route('booking.details') }}" method="POST">
             @csrf
             <input type="hidden" name="temple_id" value="{{ $temple->id }}">
 
             <div class="form-group mt-4">
                 <h2 class="text-2xl font-semibold mb-4 text-center">Darshan Slot Availability</h2>
-                {{-- Legend using Tailwind classes --}}
                 <div class="flex justify-center gap-4 my-4 text-sm">
                     <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-green-700"></div> Available</div>
                     <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-sky-800"></div> Not Available</div>
@@ -55,11 +54,9 @@
                         <div class="border rounded-lg p-3 bg-white shadow">
                             <div class="text-center font-bold mb-2">{{ $calendar['month_name'] }}</div>
                             <div class="grid grid-cols-7 gap-1 text-center">
-                                {{-- Day names --}}
                                 @foreach(['S', 'M', 'T', 'W', 'T', 'F', 'S'] as $dayName)
                                     <div class="font-semibold text-xs text-gray-500">{{ $dayName }}</div>
                                 @endforeach
-                                {{-- Calendar days --}}
                                 @foreach ($calendar['days'] as $day)
                                     @if (is_null($day))
                                         <div></div>
@@ -92,22 +89,33 @@
             @if ($selectedDate)
                 <div class="form-group mt-4">
                     <h4>Available Slots for: {{ $selectedDate->format('F d, Y') }}</h4>
-                    @if (!empty($slots))
+                    
+                    @if ($slots->isNotEmpty())
                         @foreach ($slots as $slot)
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="darshan_slot_id" id="slot_{{ $slot['id'] }}" value="{{ $slot['id'] }}" required>
-                                <label class="form-check-label" for="slot_{{ $slot['id'] }}">
-                                    {{ $slot['start_time_formatted'] }} - {{ $slot['end_time_formatted'] }}
-                                </label>
+                                {{-- This logic now displays all slots and their live status --}}
+                                @if($slot->available_capacity > 0)
+                                    <input class="form-check-input" type="radio" name="darshan_slot_id" id="slot_{{ $slot->id }}" value="{{ $slot->id }}" required>
+                                    <label class="form-check-label" for="slot_{{ $slot->id }}">
+                                        {{ $slot->start_time_formatted }} - {{ $slot->end_time_formatted }}
+                                        <span class="badge bg-success">{{ $slot->available_capacity }} slots available</span>
+                                    </label>
+                                @else
+                                    <input class="form-check-input" type="radio" name="darshan_slot_id" id="slot_{{ $slot->id }}" value="{{ $slot->id }}" disabled>
+                                    <label class="form-check-label text-muted" for="slot_{{ $slot->id }}">
+                                        {{ $slot->start_time_formatted }} - {{ $slot->end_time_formatted }}
+                                        <span class="badge bg-danger">Full</span>
+                                    </label>
+                                @endif
                             </div>
                         @endforeach
                     @else
-                        <p class="text-danger">No time slots are available for this day.</p>
+                        <p class="text-danger">No time slots are scheduled for this day.</p>
                     @endif
                 </div>
                 <div class="form-group mt-4">
                     <label for="number_of_people">Number of People</label>
-                    <input type="number" name="number_of_people" class="form-control" min="1" max="5" required>
+                    <input type="number" name="number_of_people" class="form-control" min="1" max="8" required>
                 </div>
                 <button type="submit" class="btn btn-primary mt-4">Confirm Booking</button>
             @endif
@@ -116,22 +124,12 @@
 
     {{-- News Tab Content --}}
     <div id="news" class="tab-content hidden">
-        <h2 class="text-2xl font-semibold mb-4">News & Updates</h2>
-        @if(!empty($temple->news) && is_array($temple->news))
-            <ul class="list-disc pl-5 space-y-2">
-                @foreach($temple->news as $newsItem)
-                    <li>{{ $newsItem['text'] ?? '' }}</li>
-                @endforeach
-            </ul>
-        @else
-            <p>No news available yet.</p>
-        @endif
+        {{-- ... news content ... --}}
     </div>
 
     {{-- Social Services Tab Content --}}
     <div id="social" class="tab-content hidden">
-        <h2 class="text-2xl font-semibold mb-4">Social Services</h2>
-        {!! $temple->social_services ?: '<p>Social services information not available yet.</p>' !!}
+        {{-- ... social services content ... --}}
     </div>
 </div>
 
@@ -140,7 +138,6 @@
         const tabLinks = document.querySelectorAll('.tab-link');
         const tabContents = document.querySelectorAll('.tab-content');
 
-        // Function to handle tab switching
         function switchTab(targetId) {
             tabLinks.forEach(link => {
                 link.classList.remove('border-blue-600', 'text-blue-600');
@@ -161,23 +158,19 @@
             }
         }
 
-        // Handle clicks on tab links
         tabLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('href');
-                // Update URL hash without jumping
                 history.pushState(null, null, targetId);
                 switchTab(targetId);
             });
         });
 
-        // Check URL hash on page load to show the correct tab
         const currentHash = window.location.hash;
         if (currentHash) {
             switchTab(currentHash);
         } else {
-            // Default to the 'about' tab if no hash is present
             switchTab('#about');
         }
     });

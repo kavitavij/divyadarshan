@@ -77,7 +77,7 @@
                 <a href="{{ route('sevas.booking.index') }}" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" 
                 role="menuitem">Sevas</a>
-                <a href="{{ route('admin.stays.index') }}"
+                <a href="{{ route('stays.index') }}"
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Accommodation Booking</a>
                 <a href="#" 
@@ -91,10 +91,76 @@
     <!-- Right: Login Button -->
     <div class="flex-shrink-0">
     @guest
-        {{-- This button shows only if the user is a GUEST --}}
-        <button @click="loginModal = true; modalView = 'login'" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      <button id="openLoginModal" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
             Login
         </button>
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md relative">
+        <button id="closeLoginModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+
+        <h2 class="text-xl font-semibold text-center text-gray-800 dark:text-white mb-4">Login</h2>
+
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+            <!-- Email -->
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium">Email</label>
+                <input id="email" type="email" name="email" required class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium">Password</label>
+                <input id="password" type="password" name="password" required class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Login</button>
+                <a href="#" id="showRegister" class="text-sm text-indigo-500 hover:underline">New user? Register</a>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="registerModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md relative">
+        <button id="closeRegisterModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+
+        <h2 class="text-xl font-semibold text-center text-gray-800 dark:text-white mb-4">Register</h2>
+
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
+            <!-- Name -->
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium">Name</label>
+                <input id="name" type="text" name="name" required class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
+            </div>
+
+            <!-- Email -->
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium">Email</label>
+                <input id="email" type="email" name="email" required class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium">Password</label>
+                <input id="password" type="password" name="password" required class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+                <label for="password_confirmation" class="block text-sm font-medium">Confirm Password</label>
+                <input id="password_confirmation" type="password" name="password_confirmation" required class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Register</button>
+                <a href="#" id="showLogin" class="text-sm text-indigo-500 hover:underline">Already registered?</a>
+            </div>
+        </form>
+    </div>
+</div>
+
     @else
         {{-- This dropdown shows only if the user is LOGGED IN --}}
         <div class="relative group">
@@ -322,5 +388,34 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
+<script>
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+
+    document.getElementById('openLoginModal').addEventListener('click', () => {
+        loginModal.classList.remove('hidden');
+    });
+
+    document.getElementById('closeLoginModal').addEventListener('click', () => {
+        loginModal.classList.add('hidden');
+    });
+
+    document.getElementById('closeRegisterModal').addEventListener('click', () => {
+        registerModal.classList.add('hidden');
+    });
+
+    document.getElementById('showRegister').addEventListener('click', (e) => {
+        e.preventDefault();
+        loginModal.classList.add('hidden');
+        registerModal.classList.remove('hidden');
+    });
+
+    document.getElementById('showLogin').addEventListener('click', (e) => {
+        e.preventDefault();
+        registerModal.classList.add('hidden');
+        loginModal.classList.remove('hidden');
+    });
+</script>
+
 </body>
 </html>

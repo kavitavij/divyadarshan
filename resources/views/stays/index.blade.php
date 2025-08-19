@@ -19,7 +19,7 @@
                         @endif
                         <p class="text-gray-700 text-sm flex-grow">{{ Str::limit($hotel->description, 100) }}</p>
                         <div class="mt-4">
-                            <a href="{{ route('admin.stays.show', $hotel) }}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full text-center">
+                            <a href="{{ route('stays.show', $hotel) }}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full text-center">
                                 View Rooms & Details
                             </a>
                         </div>

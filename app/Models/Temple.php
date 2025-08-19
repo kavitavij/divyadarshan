@@ -39,4 +39,8 @@ class Temple extends Model
     {
         return $this->hasManyThrough(SevaBooking::class, Seva::class);
     }
+    public function darshanSlots()
+    {
+        return $this->hasMany(DarshanSlot::class);
+    }
 }

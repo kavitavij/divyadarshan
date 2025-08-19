@@ -22,6 +22,9 @@ use App\Http\Controllers\Admin\SevaController;
 use App\Http\Controllers\SevaBookingController; 
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\HotelManager\DashboardController;
+use App\Http\Controllers\HotelManager\HotelController;
+use App\Http\Controllers\HotelManager\RoomController;
+use App\Http\Controllers\DonationController; 
 
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -40,12 +43,10 @@ Route::get('/info/sevas', [GeneralInfoController::class, 'sevas'])->name('info.s
 Route::get('/seva-booking', [SevaBookingController::class, 'index'])->name('sevas.booking.index');
 Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name('booking.index');
 Route::post('/contact-us', [GeneralInfoController::class, 'handleContactForm'])->name('info.contact.submit');
-Route::prefix('admin')->name('admin.')->group(function () {
-Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-
 Route::get('/stays', [StayController::class, 'index'])->name('stays.index');
 Route::get('/stays/{hotel}', [StayController::class, 'show'])->name('stays.show');
-});
+Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
+Route::post('/donations', [App\Http\Controllers\DonationController::class, 'store'])->name('donations.store');
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
@@ -64,7 +65,7 @@ Route::middleware('auth')->group(function () {
     
     // Bookings
     Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
-    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+
     // Darshan Booking flow
     Route::match(['get', 'post'], '/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
     Route::post('/booking/confirm', [DarshanBookingController::class, 'store'])->name('booking.confirm');
@@ -78,10 +79,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/seva-booking/confirm', [SevaBookingController::class, 'confirm'])->name('sevas.booking.confirm');
 });
 
-    Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name('hotel-manager.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        
-    });
+//## HOTEL MANAGER ROUTES ##
+Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name('hotel-manager.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');        
+    Route::get('/hotel/edit', [HotelController::class, 'edit'])->name('hotel.edit');
+    Route::put('/hotel', [HotelController::class, 'update'])->name('hotel.update');
+    Route::resource('rooms', RoomController::class);
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+});
 
 // ## ADMIN ROUTES ##
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -91,14 +96,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('latest_updates', LatestUpdateController::class);
     Route::resource('complaints', AdminComplaintController::class)->only(['index', 'destroy']);
     Route::patch('/complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.updateStatus');
-    Route::get('/temples/{temple}/slots', [DarshanSlotController::class, 'index'])->name('temples.slots.index');
-    Route::post('/temples/{temple}/slots', [DarshanSlotController::class, 'store'])->name('temples.slots.store');
+    Route::resource('temples.slots', DarshanSlotController::class)->shallow();
     Route::resource('temples.sevas', SevaController::class)->shallow();
     Route::get('/temples/{temple}/darshan-bookings', [AdminTempleController::class, 'showDarshanBookings'])->name('temples.darshan_bookings');
     Route::get('/temples/{temple}/seva-bookings', [AdminTempleController::class, 'showSevaBookings'])->name('temples.seva_bookings');
     Route::resource('hotels', App\Http\Controllers\Admin\HotelController::class);
     Route::resource('hotels.rooms', App\Http\Controllers\Admin\RoomController::class)->shallow();
-    });
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+});
 
 
 // ## BREEZE DASHBOARD & AUTHENTICATION ##

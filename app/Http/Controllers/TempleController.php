@@ -3,51 +3,85 @@
 namespace App\Http\Controllers;
 
 use App\Models\Temple;
+use App\Models\DarshanSlot;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class TempleController extends Controller
 {
     /**
-     * Display a listing of the temples.
-     */
-    public function index()
-    {
-        $temples = Temple::latest()->paginate(10);
-        return view('temples.index', compact('temples'));
-    }
-
-    /**
-     * Display the specified temple page with its calendar.
+     * Display the specified temple page.
      */
     public function show(Request $request, Temple $temple)
     {
         $calendars = $this->generateCalendarData($temple);
-        $slots = [];
+        $slots = collect();
         $selectedDate = null;
 
-        // Check if a date was selected by the user
         if ($request->has('selected_date')) {
             $selectedDate = Carbon::parse($request->selected_date);
-            $dateString = $selectedDate->toDateString();
-            $slotData = $temple->slot_data ?? [];
+            
+            // First, try to find real, custom slots created by the admin for this date.
+            $slots = DarshanSlot::where('temple_id', $temple->id)
+                ->where('slot_date', $selectedDate->toDateString())
+                ->get();
 
-            // Determine the final status of the selected date
-            $dayStatus = 'available'; // Default
-            if (isset($slotData[$dateString])) {
-                $dayStatus = $slotData[$dateString];
-            }
-            if ($selectedDate->isPast() && !$selectedDate->isToday()) {
-                $dayStatus = 'not_available';
-            }
+            // If NO custom slots were found, check the daily availability.
+            if ($slots->isEmpty()) {
+                $dateString = $selectedDate->toDateString();
+                $slotData = $temple->slot_data ?? [];
 
-            // Only generate time slots if the final status is 'available'
-            if ($dayStatus === 'available') {
-                $slots = [
-                    ['id' => 1, 'start_time_formatted' => '09:00 AM', 'end_time_formatted' => '11:00 AM'],
-                    ['id' => 2, 'start_time_formatted' => '11:00 AM', 'end_time_formatted' => '01:00 PM'],
-                    ['id' => 3, 'start_time_formatted' => '03:00 PM', 'end_time_formatted' => '05:00 PM'],
-                ];
+                $dayStatus = 'available';
+                if (isset($slotData[$dateString])) {
+                    $dayStatus = $slotData[$dateString];
+                }
+                if ($selectedDate->isPast() && !$selectedDate->isToday()) {
+                    $dayStatus = 'not_available';
+                }
+
+                // If the day is available, create the default slots.
+                if ($dayStatus === 'available') {
+                    $slots = collect([
+                        (object)[
+                            'id' => 'default_1', // Use a string to differentiate from real IDs
+                            'start_time_formatted' => '09:00 AM',
+                            'end_time_formatted' => '11:00 AM',
+                            'available_capacity' => 1000,
+                        ],
+                        (object)[
+                            'id' => 'default_2',
+                            'start_time_formatted' => '11:00 AM',
+                            'end_time_formatted' => '01:00 PM',
+                            'available_capacity' => 1000,
+                        ],
+                        (object)[
+                            'id' => 'default_3',
+                            'start_time_formatted' => '03:00 PM',
+                            'end_time_formatted' => '05:00 PM',
+                            'available_capacity' => 1000,
+                        ],
+                        (object)[
+                            'id' => 'default_3',
+                            'start_time_formatted' => '05:00 PM',
+                            'end_time_formatted' => '07:00 PM',
+                            'available_capacity' => 1000,
+                        ],
+                        (object)[
+                            'id' => 'default_3',
+                            'start_time_formatted' => '07:00 PM',
+                            'end_time_formatted' => '09:00 PM',
+                            'available_capacity' => 1000,
+                        ],
+                    ]);
+                }
+            } else {
+                // If real slots WERE found, calculate their live capacity.
+                $slots = $slots->map(function ($slot) {
+                    $slot->start_time_formatted = Carbon::parse($slot->start_time)->format('h:i A');
+                    $slot->end_time_formatted = Carbon::parse($slot->end_time)->format('h:i A');
+                    $slot->available_capacity = $slot->total_capacity - $slot->booked_capacity;
+                    return $slot;
+                });
             }
         }
 
@@ -67,24 +101,18 @@ class TempleController extends Controller
             $monthName = $currentDate->format('F Y');
             $daysInMonth = $currentDate->daysInMonth;
             $startOfMonth = $currentDate->copy()->startOfMonth()->dayOfWeek;
-
             $days = array_fill(0, $startOfMonth, null);
 
             for ($day = 1; $day <= $daysInMonth; $day++) {
                 $date = $currentDate->copy()->setDay($day);
                 $dateString = $date->toDateString();
                 
-                // THE FIX IS HERE: The logic is re-ordered to be more explicit.
-                
-                // 1. First, check if the date is in the past. This has the highest priority.
                 if ($date->isPast() && !$date->isToday()) {
                     $status = 'not_available';
                 } 
-                // 2. Next, check if a specific status was saved in the admin panel.
                 elseif (isset($slotData[$dateString])) {
-                    $status = $slotData[$dateString]; // This will be 'full' or 'not_available'
+                    $status = $slotData[$dateString];
                 } 
-                // 3. If neither of the above is true, the date is available by default.
                 else {
                     $status = 'available';
                 }

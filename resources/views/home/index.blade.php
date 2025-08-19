@@ -20,7 +20,7 @@
         ['icon' => '🛌', 'title' => 'Accommodation', 'desc' => 'Book temple or partner hotel rooms.', 'url' => '#'], 
         ['icon' => '🙏', 'title' => 'Sevas & Poojas', 'desc' => 'Participate in poojas online or in-person.', 'url' => route('sevas.booking.index') ], 
         ['icon' => '🚕', 'title' => 'Cab Booking', 'desc' => 'One-way, round trip, or temple packages.', 'url' => url('/online-services')],
-        ['icon' => '💰', 'title' => 'Donations', 'desc' => 'Make donations with instant receipts.', 'url' => '#'],
+        ['icon' => '💰', 'title' => 'Donations', 'desc' => 'Make donations with instant receipts.', 'url' => route('donations.index')],
         ['icon' => '📖', 'title' => 'E-Books', 'desc' => 'View and download spiritual texts.', 'url' => route('ebooks.index')],
         ['icon' => '🌐', 'title' => 'Languages', 'desc' => 'Available in Hindi, Tamil, Telugu & more.', 'url' => route('ebooks.index')],
     ];

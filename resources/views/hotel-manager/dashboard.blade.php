@@ -1,5 +1,5 @@
-@extends('layouts.admin') {{-- We can reuse the admin layout --}}
-
+ @extends('layouts.hotel-manager')
+ 
 @section('content')
 <div class="container-fluid">
     <h1>Hotel Manager Dashboard</h1>
@@ -17,10 +17,10 @@
                 <p>{{ $hotel->description }}</p>
                 <hr>
                 <h5 class="card-title mt-4">Quick Actions</h5>
-                {{-- These links will be made functional in the next steps --}}
-                <a href="#" class="btn btn-primary">Edit Hotel Details</a>
-                <a href="#" class="btn btn-info">Manage Rooms</a>
-                <a href="#" class="btn btn-success">View Bookings</a>
+                
+                <a href="{{ route('hotel-manager.hotel.edit') }}" class="btn btn-primary">Edit Hotel Details</a>
+                <a href="{{ route('hotel-manager.rooms.index') }}" class="btn btn-info">Manage Rooms</a>
+                <a href="{{ route('hotel-manager.bookings.index') }}" class="btn btn-success">View Bookings</a>
             </div>
         </div>
     @endif
