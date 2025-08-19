@@ -3,86 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Temple;
-use App\Models\DarshanSlot;
+use App\Models\DarshanSlot; // Make sure to import the DarshanSlot model
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class TempleController extends Controller
 {
     /**
-     * Display the specified temple page.
+     * Display the specified temple page with its calendar and all slots.
      */
     public function show(Request $request, Temple $temple)
     {
         $calendars = $this->generateCalendarData($temple);
-        $slots = collect();
+        $slots = collect(); // Use an empty collection by default
         $selectedDate = null;
 
         if ($request->has('selected_date')) {
             $selectedDate = Carbon::parse($request->selected_date);
             
-            // First, try to find real, custom slots created by the admin for this date.
+            // This now fetches ALL real slots for the date from the database
             $slots = DarshanSlot::where('temple_id', $temple->id)
                 ->where('slot_date', $selectedDate->toDateString())
-                ->get();
-
-            // If NO custom slots were found, check the daily availability.
-            if ($slots->isEmpty()) {
-                $dateString = $selectedDate->toDateString();
-                $slotData = $temple->slot_data ?? [];
-
-                $dayStatus = 'available';
-                if (isset($slotData[$dateString])) {
-                    $dayStatus = $slotData[$dateString];
-                }
-                if ($selectedDate->isPast() && !$selectedDate->isToday()) {
-                    $dayStatus = 'not_available';
-                }
-
-                // If the day is available, create the default slots.
-                if ($dayStatus === 'available') {
-                    $slots = collect([
-                        (object)[
-                            'id' => 'default_1', // Use a string to differentiate from real IDs
-                            'start_time_formatted' => '09:00 AM',
-                            'end_time_formatted' => '11:00 AM',
-                            'available_capacity' => 1000,
-                        ],
-                        (object)[
-                            'id' => 'default_2',
-                            'start_time_formatted' => '11:00 AM',
-                            'end_time_formatted' => '01:00 PM',
-                            'available_capacity' => 1000,
-                        ],
-                        (object)[
-                            'id' => 'default_3',
-                            'start_time_formatted' => '03:00 PM',
-                            'end_time_formatted' => '05:00 PM',
-                            'available_capacity' => 1000,
-                        ],
-                        (object)[
-                            'id' => 'default_3',
-                            'start_time_formatted' => '05:00 PM',
-                            'end_time_formatted' => '07:00 PM',
-                            'available_capacity' => 1000,
-                        ],
-                        (object)[
-                            'id' => 'default_3',
-                            'start_time_formatted' => '07:00 PM',
-                            'end_time_formatted' => '09:00 PM',
-                            'available_capacity' => 1000,
-                        ],
-                    ]);
-                }
-            } else {
-                // If real slots WERE found, calculate their live capacity.
-                $slots = $slots->map(function ($slot) {
+                ->get()
+                ->map(function ($slot) {
+                    // Add formatted time and available capacity for the view
                     $slot->start_time_formatted = Carbon::parse($slot->start_time)->format('h:i A');
                     $slot->end_time_formatted = Carbon::parse($slot->end_time)->format('h:i A');
                     $slot->available_capacity = $slot->total_capacity - $slot->booked_capacity;
                     return $slot;
                 });
-            }
         }
 
         return view('temples.show', compact('temple', 'calendars', 'slots', 'selectedDate'));
@@ -120,10 +69,12 @@ class TempleController extends Controller
                 $days[] = ['day' => $day, 'date' => $dateString, 'status' => $status];
             }
 
-            $calendars[] = ['month_name' => $monthName, 'days' => $days];
+            $calendars[] = [
+                'month_name' => $monthName,
+                'days' => $days,
+            ];
             $currentDate->addMonth();
         }
-
         return $calendars;
     }
 }

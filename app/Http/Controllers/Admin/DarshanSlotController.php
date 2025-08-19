@@ -6,20 +6,30 @@ use App\Http\Controllers\Controller;
 use App\Models\DarshanSlot;
 use App\Models\Temple;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DarshanSlotController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display the slot management page.
+     * Shows a date picker and lists slots for the selected date.
      */
-    public function index(Temple $temple)
+    public function index(Temple $temple, Request $request)
     {
-        $slots = $temple->darshanSlots()->orderBy('slot_date', 'desc')->paginate(15);
-        return view('admin.slots.index', compact('temple', 'slots'));
+        // Default to today's date if no date is selected
+        $selectedDate = $request->input('date', Carbon::today()->toDateString());
+        
+        // Fetch slots only for the selected date
+        $slots = $temple->darshanSlots()
+                       ->where('slot_date', $selectedDate)
+                       ->orderBy('start_time')
+                       ->get();
+        
+        return view('admin.slots.index', compact('temple', 'slots', 'selectedDate'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new darshan slot in the database for a specific date.
      */
     public function store(Request $request, Temple $temple)
     {
@@ -32,7 +42,9 @@ class DarshanSlotController extends Controller
 
         $temple->darshanSlots()->create($request->all());
 
-        return back()->with('success', 'Darshan slot created successfully!');
+        // Redirect back to the same date view to see the new slot
+        return redirect()->route('admin.temples.slots.index', ['temple' => $temple, 'date' => $request->slot_date])
+                         ->with('success', 'Slot created successfully!');
     }
 
     /**
@@ -40,7 +52,6 @@ class DarshanSlotController extends Controller
      */
     public function edit(DarshanSlot $slot)
     {
-        // Pass the slot to the edit view
         return view('admin.slots.edit', compact('slot'));
     }
 
@@ -58,8 +69,8 @@ class DarshanSlotController extends Controller
 
         $slot->update($request->all());
 
-        // Redirect back to the index page for that temple
-        return redirect()->route('admin.temples.slots.index', $slot->temple_id)->with('success', 'Darshan slot updated successfully!');
+        return redirect()->route('admin.temples.slots.index', ['temple' => $slot->temple_id, 'date' => $slot->slot_date->format('Y-m-d')])
+                         ->with('success', 'Slot updated successfully!');
     }
 
     /**
@@ -67,9 +78,11 @@ class DarshanSlotController extends Controller
      */
     public function destroy(DarshanSlot $slot)
     {
-        $templeId = $slot->temple_id; // Get the temple ID before deleting
+        $templeId = $slot->temple_id;
+        $slotDate = $slot->slot_date->format('Y-m-d');
         $slot->delete();
 
-        return redirect()->route('admin.temples.slots.index', $templeId)->with('success', 'Darshan slot deleted successfully!');
+        return redirect()->route('admin.temples.slots.index', ['temple' => $templeId, 'date' => $slotDate])
+                         ->with('success', 'Slot deleted successfully!');
     }
 }

@@ -25,6 +25,8 @@ use App\Http\Controllers\HotelManager\DashboardController;
 use App\Http\Controllers\HotelManager\HotelController;
 use App\Http\Controllers\HotelManager\RoomController;
 use App\Http\Controllers\DonationController; 
+use App\Http\Controllers\PaymentController;
+
 
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -47,6 +49,8 @@ Route::get('/stays', [StayController::class, 'index'])->name('stays.index');
 Route::get('/stays/{hotel}', [StayController::class, 'show'])->name('stays.show');
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
 Route::post('/donations', [App\Http\Controllers\DonationController::class, 'store'])->name('donations.store');
+Route::get('/payment', [PaymentController::class, 'show'])->name('payment.show');
+
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
@@ -77,6 +81,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/seva-booking/{sevaBooking}/summary', [SevaBookingController::class, 'summary'])->name('sevas.booking.summary');
     Route::get('/seva-booking/{sevaBooking}/payment', [SevaBookingController::class, 'payment'])->name('sevas.booking.payment');
     Route::post('/seva-booking/confirm', [SevaBookingController::class, 'confirm'])->name('sevas.booking.confirm');
+
+    //Donations
+    Route::get('/donations/{donation}/payment', [App\Http\Controllers\DonationController::class, 'payment'])->name('donations.payment');
+    Route::post('/donations/confirm', [App\Http\Controllers\DonationController::class, 'confirm'])->name('donations.confirm');
 });
 
 //## HOTEL MANAGER ROUTES ##

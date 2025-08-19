@@ -17,15 +17,11 @@ class TempleController extends Controller
 
     public function create()
     {
-        // Pass an empty temple object and empty calendar data to the create view
         $temple = new Temple();
         $adminCalendars = $this->generateAdminCalendarData($temple);
         return view('admin.temples.create', compact('temple', 'adminCalendars'));
     }
 
-    /**
-     * Store a newly created temple in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -74,9 +70,6 @@ class TempleController extends Controller
         return view('admin.temples.edit', compact('temple', 'adminCalendars'));
     }
 
-    /**
-     * Update the specified temple in storage.
-     */
     public function update(Request $request, Temple $temple)
     {
         $request->validate([
@@ -85,10 +78,8 @@ class TempleController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
-        // 1. Update the simple text fields directly on the model
         $temple->fill($request->only(['name', 'location', 'description', 'about', 'online_services', 'social_services']));
 
-        // 2. Process and update the News array
         $newsData = [];
         if ($request->has('news_items')) {
             foreach ($request->news_items as $index => $text) {
@@ -102,7 +93,6 @@ class TempleController extends Controller
         }
         $temple->news = $newsData;
 
-        // 3. Process and update the Slot Booking data
         if ($request->has('slot_data')) {
             $filteredSlots = array_filter($request->slot_data, fn($status) => $status !== 'available');
             $temple->slot_data = $filteredSlots;
@@ -110,7 +100,6 @@ class TempleController extends Controller
             $temple->slot_data = null;
         }
 
-        // 4. Handle the Image Upload
         if ($request->hasFile('image')) {
             if ($temple->image && file_exists(public_path($temple->image))) {
                 unlink(public_path($temple->image));
@@ -120,7 +109,6 @@ class TempleController extends Controller
             $temple->image = 'images/temples/' . $imageName;
         }
 
-        // 5. Save all the changes to the database
         $temple->save();
 
         return redirect()->route('admin.temples.index')->with('success', 'Temple updated successfully.');
@@ -170,15 +158,4 @@ class TempleController extends Controller
         }
         return $calendars;
     }
-    public function showDarshanBookings(Temple $temple)
-    {
-        $bookings = $temple->darshanBookings()->with('user')->latest()->paginate(15);
-        return view('admin.temples.darshan_bookings', compact('temple', 'bookings'));
-    }
-        public function showSevaBookings(Temple $temple)
-    {
-        $bookings = $temple->sevaBookings()->with(['user', 'seva'])->latest()->paginate(15);
-        return view('admin.temples.seva_bookings', compact('temple', 'bookings'));
-    }
-    
 }

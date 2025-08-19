@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Donation;
+use App\Models\Temple; // 1. Import the Temple model
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DonationController extends Controller
 {
@@ -11,21 +14,55 @@ class DonationController extends Controller
      */
     public function index()
     {
-        // For now, this just loads the view.
-        // Later, you can pass data like donation campaigns from the database.
-        return view('donations.index');
+        // 2. Fetch all temples to pass to the view
+        $temples = Temple::orderBy('name')->get();
+        return view('donations.index', compact('temples'));
     }
 
-public function store(Request $request)
-{
-    $request->validate([
-        'amount' => 'required|numeric|min:1',
-    ]);
+    /**
+     * Store the donation and proceed to payment.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'temple_id' => 'nullable|exists:temples,id', // 3. Validate the new field
+        ]);
 
-    // In a real application, this is where you would
-    // process the payment with a gateway like Razorpay or Stripe.
-    
-    // For now, we'll just redirect back with a success message.
-    return back()->with('success', 'Thank you for your generous donation!');
-}
+        $donation = Donation::create([
+            'user_id' => Auth::id(),
+            'amount' => $request->amount,
+            'temple_id' => $request->temple_id, // 4. Save the temple ID
+            'status' => 'Pending Payment',
+        ]);
+
+        return redirect()->route('donations.payment', $donation);
+    }
+
+    /**
+     * Display the payment page.
+     */
+    public function payment(Donation $donation)
+    {
+        if ($donation->user_id !== Auth::id()) {
+            abort(403);
+        }
+        // Eager load the temple relationship if it exists
+        $donation->load('temple');
+        return view('donations.payment', compact('donation'));
+    }
+
+    /**
+     * Confirm the donation after payment.
+     */
+    public function confirm(Request $request)
+    {
+        $request->validate(['donation_id' => 'required|exists:donations,id']);
+        
+        $donation = Donation::findOrFail($request->donation_id);
+        $donation->status = 'Completed';
+        $donation->save();
+
+        return redirect()->route('home')->with('success', 'Thank you for your generous donation!');
+    }
 }

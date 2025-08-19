@@ -131,8 +131,7 @@
                             
                             {{-- Payment Button --}}
                             <div class="text-center mt-4">
-                                <a href="{{ route('booking.payment', $booking) }}" class="btn btn-success btn-lg btn-proceed">Proceed to Payment</a>
-                            </div>
+                                <a href="{{ route('payment.show', ['type' => 'darshan', 'id' => $booking->id]) }}" class="btn btn-success btn-lg">Proceed to Payment</a>
                         </div>
                     </div>
                 </div>

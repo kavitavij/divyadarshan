@@ -21,7 +21,6 @@
                     <div class="text-center mt-4">
                         {{-- THE FIX: Using the correct variable and route --}}
                         <a href="{{ route('sevas.booking.payment', $sevaBooking) }}" class="btn btn-success btn-lg">Proceed to Payment</a>
-                    </div>
                 </div>
             </div>
         </div>

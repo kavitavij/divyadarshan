@@ -394,28 +394,36 @@ s0.parentNode.insertBefore(s1,s0);
 
     document.getElementById('openLoginModal').addEventListener('click', () => {
         loginModal.classList.remove('hidden');
+        loginModal.classList.add('flex');
     });
 
     document.getElementById('closeLoginModal').addEventListener('click', () => {
+        loginModal.classList.remove('flex');
         loginModal.classList.add('hidden');
     });
 
     document.getElementById('closeRegisterModal').addEventListener('click', () => {
+        registerModal.classList.remove('flex');
         registerModal.classList.add('hidden');
     });
 
     document.getElementById('showRegister').addEventListener('click', (e) => {
         e.preventDefault();
+        loginModal.classList.remove('flex');
         loginModal.classList.add('hidden');
         registerModal.classList.remove('hidden');
+        registerModal.classList.add('flex');
     });
 
     document.getElementById('showLogin').addEventListener('click', (e) => {
         e.preventDefault();
+        registerModal.classList.remove('flex');
         registerModal.classList.add('hidden');
         loginModal.classList.remove('hidden');
+        loginModal.classList.add('flex');
     });
 </script>
+
 
 </body>
 </html>

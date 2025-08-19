@@ -21,7 +21,6 @@
     </div>
 
     <div class="max-w-2xl mx-auto mt-10 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
-        <h3 class="text-2xl font-semibold mb-6 text-center">Choose a Donation Amount</h3>
         
         @if(session('success'))
             <div class="alert alert-success mb-4">
@@ -31,6 +30,19 @@
 
         <form action="{{ route('donations.store') }}" method="POST">
             @csrf
+
+            {{-- Dropdown to select donation target --}}
+            <div class="mb-6">
+                <label for="temple_id" class="block text-lg font-medium text-gray-700 dark:text-gray-200">1. Choose where to donate</label>
+                <select name="temple_id" id="temple_id" class="form-control mt-2">
+                    <option value="">General Donation (for DivyaDarshan)</option>
+                    @foreach($temples as $temple)
+                        <option value="{{ $temple->id }}">{{ $temple->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <h3 class="text-2xl font-semibold mb-4 text-center">2. Choose an Amount</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <button type="button" class="donation-amount-btn p-4 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-amount="101">₹101</button>
                 <button type="button" class="donation-amount-btn p-4 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-amount="251">₹251</button>
@@ -49,9 +61,8 @@
             </div>
 
             <div class="mt-6">
-                {{-- THE FIX: Changed the button text --}}
                 <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700">
-                    Donate Now
+                    Proceed to Payment
                 </button>
             </div>
         </form>

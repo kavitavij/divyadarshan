@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class SevaBookingController extends Controller
 {
     /**
-     * Display the Seva booking page where users select a temple.
+     * Display the Seva booking page.
      */
     public function index(Request $request)
     {
@@ -49,7 +49,7 @@ class SevaBookingController extends Controller
     }
 
     /**
-     * Display the booking summary page.
+     * Display the booking summary.
      */
     public function summary(SevaBooking $sevaBooking)
     {
@@ -58,12 +58,25 @@ class SevaBookingController extends Controller
     }
 
     /**
-     * Display the payment page.
+     * Display the payment page using the shared payment view.
      */
     public function payment(SevaBooking $sevaBooking)
     {
         $sevaBooking->load('seva.temple');
-        return view('sevas.payment', compact('sevaBooking'));
+
+        // Prepare the data for the universal payment page
+        $summary = [
+            'title' => 'Seva Booking Summary',
+            'details' => [
+                'Temple' => $sevaBooking->seva->temple->name,
+                'Seva' => $sevaBooking->seva->name,
+            ],
+            'amount' => $sevaBooking->amount,
+            'confirm_route' => route('sevas.booking.confirm'),
+            'booking_id' => $sevaBooking->id,
+        ];
+
+        return view('shared.payment', compact('summary'));
     }
 
     /**
