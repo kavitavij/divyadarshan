@@ -26,7 +26,7 @@ use App\Http\Controllers\HotelManager\HotelController;
 use App\Http\Controllers\HotelManager\RoomController;
 use App\Http\Controllers\DonationController; 
 use App\Http\Controllers\PaymentController;
-
+use App\Http\Controllers\HotelManager\GuestListController;
 
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -66,7 +66,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
     Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
-    
+    Route::post('/ebooks/confirm-purchase', [App\Http\Controllers\EbookController::class, 'confirmPurchase'])->name('ebooks.confirmPurchase');
+
     // Bookings
     Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
 
@@ -93,7 +94,7 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::get('/hotel/edit', [HotelController::class, 'edit'])->name('hotel.edit');
     Route::put('/hotel', [HotelController::class, 'update'])->name('hotel.update');
     Route::resource('rooms', RoomController::class);
-    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/guest-list', [GuestListController::class, 'index'])->name('guest-list.index');
 });
 
 // ## ADMIN ROUTES ##
@@ -111,6 +112,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('hotels', App\Http\Controllers\Admin\HotelController::class);
     Route::resource('hotels.rooms', App\Http\Controllers\Admin\RoomController::class)->shallow();
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
 });
 
 

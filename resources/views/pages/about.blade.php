@@ -193,6 +193,7 @@
                 ['📖', 'E-Books & Resources', 'Read holy texts and temple histories.'],
                 ['💰', 'Donations', 'Contribute to temples and receive 80G receipt.']
             ] as $offer)
+            
             <div class="bg-white p-6 rounded shadow text-center hover:shadow-md transition">
                 <div class="text-4xl mb-2">{{ $offer[0] }}</div>
                 <h3 class="text-lg font-semibold text-blue-700">{{ $offer[1] }}</h3>

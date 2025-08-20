@@ -1,6 +1,3 @@
-@extends('layouts.app')
-
-@push('styles')
 <style>
     .payment-card {
         border: none;
@@ -37,9 +34,7 @@
         padding: 0.75rem;
     }
 </style>
-@endpush
 
-@section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -47,10 +42,9 @@
                 <div class="card-header"><h2>Complete Your Payment</h2></div>
                 <div class="card-body">
                     <div class="alert alert-info text-center">
-                        This is a mock payment gateway for demonstration purposes.
+                        
                     </div>
 
-                    {{-- This section dynamically displays the correct summary --}}
                     <div class="mb-4 summary-box">
                         <h4 class="font-weight-bold">{{ $summary['title'] }}</h4>
                         <hr>
@@ -60,14 +54,13 @@
                         <p class="total-amount"><strong>Total Amount:</strong> ₹{{ number_format($summary['amount'], 2) }}</p>
                     </div>
 
-                    {{-- This form will handle the final confirmation --}}
                     <form action="{{ $summary['confirm_route'] }}" method="POST">
                         @csrf
-                        <input type="hidden" name="booking_id" value="{{ $summary['booking_id'] }}">
+                        {{-- THE FIX: Added a fallback to null for all possible IDs --}}
+                        <input type="hidden" name="booking_id" value="{{ $summary['booking_id'] ?? null }}">
                         <input type="hidden" name="donation_id" value="{{ $summary['donation_id'] ?? null }}">
+                        <input type="hidden" name="ebook_id" value="{{ $summary['ebook_id'] ?? null }}">
                         
-                        {{-- Add mock card fields here if you wish --}}
-
                         <button type="submit" class="btn btn-success btn-lg w-100 mt-3 btn-pay-now">Pay Now</button>
                     </form>
                 </div>
@@ -75,4 +68,4 @@
         </div>
     </div>
 </div>
-@endsection
+

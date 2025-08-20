@@ -14,6 +14,7 @@
             <a href="{{ route('admin.complaints.index') }}" class="btn btn-info">Manage Complaint</a>
             <a href="{{ route('admin.bookings.index') }}" class="btn btn-info">Bookings of darshan and sevas </a>
             <a href="{{ route('admin.hotels.index') }}" class="btn btn-info">Manage Hotels</a>
+            <a href="{{ route('admin.contact-submissions.index') }}" class="btn btn-info">Contact Messages</a>
         </div>
     </div>
 @endsection

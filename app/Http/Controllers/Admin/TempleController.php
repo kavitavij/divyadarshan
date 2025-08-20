@@ -123,6 +123,24 @@ class TempleController extends Controller
         return redirect()->route('admin.temples.index')->with('success', 'Temple deleted successfully.');
     }
 
+    /**
+     * Display all Darshan bookings for a specific temple.
+     */
+    public function showDarshanBookings(Temple $temple)
+    {
+        $bookings = $temple->darshanBookings()->with('user')->latest()->paginate(20);
+        return view('admin.temples.darshan_bookings', compact('temple', 'bookings'));
+    }
+
+    /**
+     * Display all Seva bookings for a specific temple.
+     */
+    public function showSevaBookings(Temple $temple)
+    {
+        $bookings = $temple->sevaBookings()->with('user', 'seva')->latest()->paginate(20);
+        return view('admin.temples.seva_bookings', compact('temple', 'bookings'));
+    }
+
     private function generateAdminCalendarData(Temple $temple)
     {
         $calendars = [];

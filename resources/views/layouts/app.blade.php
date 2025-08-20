@@ -6,88 +6,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <script>
+        
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
 </head>
 <body x-data="{ loginModal: false, modalView: 'login', mobileMenuOpen: false }" 
       :class="{ 'overflow-hidden': loginModal || mobileMenuOpen }" 
-      class="bg-gray-100 font-sans text-gray-800">
+      class="bg-gray-100 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-300">
     
     <script src="//unpkg.com/alpinejs" defer></script>
 
-<header class="bg-white shadow">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-    <!-- Left: Logo -->
-    <div class="flex-shrink-0">
-      <a href="/" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
+    <header class="bg-white dark:bg-gray-800 shadow sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+  <!-- Left: Logo -->
+  <div class="flex-shrink-0">
+    <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">DivyaDarshan</a>
+  </div>
+
+  <!-- Middle: Navigation -->
+  <nav class="flex-1 flex justify-center items-center gap-8 text-sm font-medium">
+    <a href="/" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+    <a href="/about" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">About</a>
+
+    <!-- Temples Dropdown -->
+    <div class="relative group">
+      <button class="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
+        <span>Temples</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </button>
+      <div class="absolute hidden group-hover:block bg-white dark:bg-gray-700 border dark:border-gray-600 rounded shadow mt-1 min-w-max z-20">
+        @foreach($allTemples as $temple)
+          <a href="{{ route('temples.show', $temple->id) }}" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 whitespace-nowrap">{{ $temple->name }}</a>
+        @endforeach
+      </div>
     </div>
 
-    <!-- Middle: Navigation -->
-    <nav class="flex items-center gap-8 text-sm font-medium text-gray-700">
-      <a href="/" class="hover:text-blue-600">Home</a>
-      <a href="/about" class="hover:text-blue-600">About</a>
-
-      <!-- Temples Dropdown -->
-      <div class="relative group">
-        <button 
-          aria-haspopup="true" 
-          aria-expanded="false" 
-          class="inline-flex items-center gap-1 px-3 py-2 text-gray-700 hover:text-blue-600 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 rounded"
-          id="templesDropdownBtn">
-          Temples
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-
-        <div 
-          class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
-          role="menu" 
-          aria-labelledby="templesDropdownBtn">
-          @foreach($allTemples as $temple)
-            <a href="{{ route('temples.show', $temple->id) }}" 
-              class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-              role="menuitem">
-              {{ $temple->name }}
-            </a>
-          @endforeach
-        </div>
-      </div>
-
-      <!-- Online Services Dropdown -->
-      <div class="relative group">
-          <button 
-              aria-haspopup="true" 
-              aria-expanded="false" 
-              class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
-              style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
-              id="servicesDropdownBtn">
-              <span>Online Services</span>
-              <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" 
-                  viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M19 9l-7 7-7-7"></path>
-              </svg>
-          </button>
-
-          <div 
-              class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
-              role="menu" 
-              aria-labelledby="servicesDropdownBtn">
-              <a href="{{ route('booking.index') }}" 
-                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                role="menuitem">Darshan Booking</a>
-                <a href="{{ route('sevas.booking.index') }}" 
-                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" 
-                role="menuitem">Sevas</a>
-                <a href="{{ route('stays.index') }}"
-                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                role="menuitem">Accommodation Booking</a>
-                <a href="#" 
+    <!-- Online Services Dropdown -->
+    <div class="relative group">
+      <button class="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
+        <span>Online Services</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </button>
+      <div class="absolute hidden group-hover:block bg-white dark:bg-gray-700 border dark:border-gray-600 rounded shadow mt-1 min-w-max z-20">
+        <a href="{{ route('booking.index') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 whitespace-nowrap">Darshan Booking</a>
+        <a href="{{ route('sevas.booking.index') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 whitespace-nowrap">Sevas</a>
+        <a href="{{ route('stays.index') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 whitespace-nowrap">Accommodation Booking</a>
+        <a href="#" 
                 class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                 role="menuitem">Cab Booking</a>
-          </div>
       </div>
-      <a href="{{ route('ebooks.index') }}" class="hover:text-blue-600">eBooks</a>
-    </nav>
-
+    </div>
+    <div>
+         <a href="{{ route('ebooks.index') }}" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Ebooks</a>
+    </div>
+  </nav>
     <!-- Right: Login Button -->
     <div class="flex-shrink-0">
     @guest

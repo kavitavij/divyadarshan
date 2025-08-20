@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Donation;
+use App\Models\Ebook; // 1. Import the Ebook model
 use App\Models\SevaBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,21 @@ class PaymentController extends Controller
                     'amount' => $donation->amount,
                     'confirm_route' => route('donations.confirm'),
                     'donation_id' => $donation->id,
+                ];
+                break;
+            
+            // 2. THE FIX: Added the logic for eBook purchases
+            case 'ebook':
+                $ebook = Ebook::findOrFail($id);
+                $summary = [
+                    'title' => 'eBook Purchase Summary',
+                    'details' => [
+                        'Title' => $ebook->title,
+                        'Author' => $ebook->author,
+                    ],
+                    'amount' => $ebook->price,
+                    'confirm_route' => route('ebooks.confirmPurchase'),
+                    'ebook_id' => $ebook->id, // Use a specific key for ebooks
                 ];
                 break;
         }

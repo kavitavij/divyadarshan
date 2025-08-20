@@ -144,7 +144,7 @@
         <a href="{{ route('hotel-manager.dashboard') }}" class="{{ request()->routeIs('hotel-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
         <a href="{{ route('hotel-manager.hotel.edit') }}" class="{{ request()->routeIs('hotel-manager.hotel.edit') ? 'active' : '' }}">My Hotel Details</a>
         <a href="{{ route('hotel-manager.rooms.index') }}" class="{{ request()->routeIs('hotel-manager.rooms.*') ? 'active' : '' }}">Manage Rooms</a>
-        <a href="{{ route('hotel-manager.bookings.index') }}" class="{{ request()->routeIs('hotel-manager.bookings.index') ? 'active' : '' }}">View Bookings</a>
+        <a href="{{ route('hotel-manager.guest-list.index') }}" class="{{ request()->routeIs('hotel-manager.bookings.index') ? 'active' : '' }}">View Bookings</a>
     </div>
 
     <!-- Content -->
