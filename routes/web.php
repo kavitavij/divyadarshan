@@ -112,7 +112,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('hotels', App\Http\Controllers\Admin\HotelController::class);
     Route::resource('hotels.rooms', App\Http\Controllers\Admin\RoomController::class)->shallow();
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-    Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
+
+Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
 });
 
 
