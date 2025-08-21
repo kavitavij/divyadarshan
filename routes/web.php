@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\StayController;
 use App\Http\Controllers\AboutController;
@@ -51,7 +52,10 @@ Route::get('/stays/{hotel}', [StayController::class, 'show'])->name('stays.show'
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
 Route::post('/donations', [App\Http\Controllers\DonationController::class, 'store'])->name('donations.store');
 Route::get('/payment', [PaymentController::class, 'show'])->name('payment.show');
-
+Route::get('/stays/book/{room}', [StayController::class, 'details'])->name('stays.details');
+Route::post('/stays/book/{room}', [StayController::class, 'store'])->name('stays.store');
+Route::get('/stays/summary/{booking}', [StayController::class, 'summary'])->name('stays.summary');
+Route::get('/payment/create/{id}/{type}', [PaymentController::class, 'create'])->name('payment.create');
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
@@ -119,9 +123,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 // ## BREEZE DASHBOARD & AUTHENTICATION ##
 Route::get('/dashboard', function () {
-    if (auth()->user()->role === 'admin') {
+    // THE FIX: Changed auth()->user() to Auth::user()
+    if (Auth::user()->role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
+    // Add this line if your hotel managers should also be redirected
+    if (Auth::user()->role === 'hotel_manager') {
+        return redirect()->route('hotel-manager.dashboard');
+    }
+
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 

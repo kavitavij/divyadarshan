@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin; // This namespace MUST be exactly correct
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ContactSubmission;
