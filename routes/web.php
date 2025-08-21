@@ -17,16 +17,17 @@ use App\Http\Controllers\Admin\EbookController as AdminEbookController;
 use App\Http\Controllers\Admin\LatestUpdateController;
 use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\DarshanSlotController;
-use App\Http\Controllers\GeneralInfoController; 
+use App\Http\Controllers\GeneralInfoController;
 use App\Http\Controllers\Admin\SevaController;
-use App\Http\Controllers\SevaBookingController; 
+use App\Http\Controllers\SevaBookingController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\HotelManager\DashboardController;
 use App\Http\Controllers\HotelManager\HotelController;
 use App\Http\Controllers\HotelManager\RoomController;
-use App\Http\Controllers\DonationController; 
+use App\Http\Controllers\DonationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\HotelManager\GuestListController;
+use App\Http\Controllers\Admin\ContactSubmissionController;
 
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -56,12 +57,12 @@ Route::get('/payment', [PaymentController::class, 'show'])->name('payment.show')
 Route::middleware('auth')->group(function () {
     // Temple
     Route::post('/temples/{id}/favorite', [TempleController::class, 'favorite'])->name('temples.favorite');
-    
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     // Ebooks
     Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
     Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
@@ -90,7 +91,7 @@ Route::middleware('auth')->group(function () {
 
 //## HOTEL MANAGER ROUTES ##
 Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name('hotel-manager.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');        
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/hotel/edit', [HotelController::class, 'edit'])->name('hotel.edit');
     Route::put('/hotel', [HotelController::class, 'update'])->name('hotel.update');
     Route::resource('rooms', RoomController::class);
@@ -103,7 +104,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('temples', AdminTempleController::class);
     Route::resource('ebooks', AdminEbookController::class);
     Route::resource('latest_updates', LatestUpdateController::class);
-    Route::resource('complaints', AdminComplaintController::class)->only(['index', 'destroy']);
+    Route::resource('complaints', AdminComplaintController::class)->only(['index', 'show', 'destroy']);
     Route::patch('/complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.updateStatus');
     Route::resource('temples.slots', DarshanSlotController::class)->shallow();
     Route::resource('temples.sevas', SevaController::class)->shallow();
@@ -112,8 +113,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('hotels', App\Http\Controllers\Admin\HotelController::class);
     Route::resource('hotels.rooms', App\Http\Controllers\Admin\RoomController::class)->shallow();
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-
-Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
+    Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
 });
 
 

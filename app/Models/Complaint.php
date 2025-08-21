@@ -16,4 +16,9 @@ class Complaint extends Model
         'issue_type',
         'message',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

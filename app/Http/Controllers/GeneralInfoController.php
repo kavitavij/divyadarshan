@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\ContactSubmission; // THE FIX: Add this line to import the model
 
 class GeneralInfoController extends Controller
 {
@@ -44,14 +45,15 @@ class GeneralInfoController extends Controller
      */
     public function handleContactForm(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'message' => 'required|string',
         ]);
 
-        // In a real application, you would send an email or save this to the database.
-        // For now, we'll just redirect back with a success message.
+        // This line will now work correctly
+        ContactSubmission::create($validatedData);
+
         return back()->with('success', 'Thank you for your message! We will get back to you shortly.');
     }
 }
