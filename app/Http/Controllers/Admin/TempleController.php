@@ -176,4 +176,9 @@ class TempleController extends Controller
         }
         return $calendars;
     }
+    public function dashboard()
+{
+//     $temple = Temple::where('manager_id', Auth::id())->first(); // Adjust logic as needed
+    return view('temple-manager.dashboard', compact('temple'));
+}
 }

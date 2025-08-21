@@ -121,6 +121,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 
+// Temple Manager
+Route::get('/temple-manager/dashboard', function () {return view('temple-manager.dashboard');})->name('temple-manager.dashboard');
+Route::prefix('temple-manager')->name('temple-manager.')->middleware(['auth', 'role:temple-manager'])->group(function () {
+
+    // Temple CRUD
+    Route::resource('temples', TempleController::class);
+});
+
+
+
+
 // ## BREEZE DASHBOARD & AUTHENTICATION ##
 Route::get('/dashboard', function () {
     // THE FIX: Changed auth()->user() to Auth::user()
