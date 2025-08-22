@@ -27,7 +27,6 @@ use App\Http\Controllers\HotelManager\HotelController as HotelManagerHotelContro
 use App\Http\Controllers\HotelManager\RoomController as HotelManagerRoomController;
 use App\Http\Controllers\HotelManager\GuestListController;
 use App\Http\Controllers\DonationController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TempleManager\DashboardController as TempleManagerDashboardController;
 use App\Http\Controllers\TempleManager\TempleController as TempleManagerController;
 use App\Http\Controllers\TempleManager\DarshanBookingController as TempleManagerDarshanBookingController;
@@ -55,7 +54,6 @@ Route::post('/contact-us', [GeneralInfoController::class, 'handleContactForm'])-
 Route::get('/stays', [StayController::class, 'index'])->name('stays.index');
 Route::get('/stays/{hotel}', [StayController::class, 'show'])->name('stays.show');
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
-Route::get('/payment', [PaymentController::class, 'show'])->name('payment.show');
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
@@ -63,10 +61,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/temples/{id}/favorite', [TempleController::class, 'favorite'])->name('temples.favorite');
 
     // Stays Booking
-    Route::post('/stays/confirm', [StayController::class, 'confirm'])->name('stays.confirm');
     Route::get('/stays/book/{room}', [StayController::class, 'details'])->name('stays.details');
     Route::post('/stays/book/{room}', [StayController::class, 'store'])->name('stays.store');
     Route::get('/stays/summary/{booking}', [StayController::class, 'summary'])->name('stays.summary');
+    Route::post('/stays/confirm', [StayController::class, 'confirm'])->name('stays.confirm');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -77,27 +75,23 @@ Route::middleware('auth')->group(function () {
     Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
     Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
-    Route::post('/ebooks/confirm-purchase', [EbookController::class, 'confirmPurchase'])->name('ebooks.confirmPurchase');
 
-    // Bookings
+    // My Bookings Page
     Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
 
     // Darshan Booking flow
-    Route::match(['get', 'post'], '/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
-    Route::post('/booking/confirm', [DarshanBookingController::class, 'store'])->name('booking.confirm');
+    Route::post('/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
+    Route::post('/booking/store', [DarshanBookingController::class, 'store'])->name('booking.store');
     Route::get('/booking/{booking}/summary', [DarshanBookingController::class, 'summary'])->name('booking.summary');
-    Route::get('/booking/{booking}/payment', [DarshanBookingController::class, 'payment'])->name('booking.payment');
+    Route::post('/booking/confirm', [DarshanBookingController::class, 'confirmBooking'])->name('booking.confirm');
 
     // Seva Booking Flow
     Route::post('/seva-booking', [SevaBookingController::class, 'store'])->name('sevas.booking.store');
     Route::get('/seva-booking/{sevaBooking}/summary', [SevaBookingController::class, 'summary'])->name('sevas.booking.summary');
-    Route::get('/seva-booking/{sevaBooking}/payment', [SevaBookingController::class, 'payment'])->name('sevas.booking.payment');
     Route::post('/seva-booking/confirm', [SevaBookingController::class, 'confirm'])->name('sevas.booking.confirm');
 
     //Donations
     Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
-    Route::get('/donations/{donation}/payment', [DonationController::class, 'payment'])->name('donations.payment');
-    Route::post('/donations/confirm', [DonationController::class, 'confirm'])->name('donations.confirm');
 });
 
 //## HOTEL MANAGER ROUTES ##

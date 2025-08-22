@@ -85,11 +85,12 @@ class SevaBookingController extends Controller
     public function confirm(Request $request)
     {
         $request->validate(['booking_id' => 'required|exists:seva_bookings,id']);
-        
+
         $sevaBooking = SevaBooking::findOrFail($request->booking_id);
         $sevaBooking->status = 'Confirmed';
         $sevaBooking->save();
 
-        return redirect()->route('home')->with('success', 'Your Seva has been booked successfully!');
+
+    return redirect()->route('payment.create', ['id' => $sevaBooking->id, 'type' => 'seva']);
     }
 }

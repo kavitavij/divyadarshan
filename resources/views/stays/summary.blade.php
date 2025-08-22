@@ -27,8 +27,7 @@
 
                         <div class="text-center mt-4">
                             {{-- THE FIX: Changed $sevaBooking to the correct $stayBooking variable --}}
-                            <a href="{{ route('payment.show', ['type' => 'accommodation', 'id' => $stayBooking->id]) }}"
-                                class="btn btn-success btn-lg">Proceed to Payment</a>
+                            <a href="#" class="btn btn-success btn-lg">Proceed to Payment</a>
                         </div>
                     </div>
                 </div>

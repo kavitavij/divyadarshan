@@ -23,8 +23,7 @@
                         </div>
 
                         <div class="text-center mt-4">
-                            <a href="{{ route('payment.show', ['type' => 'seva', 'id' => $sevaBooking->id]) }}" ...>Proceed
-                                to Payment</a>
+                            <a href="#">Proceed to Payment</a>
                         </div>
                     </div>
                 </div>

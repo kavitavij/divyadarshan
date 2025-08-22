@@ -58,7 +58,7 @@ class DonationController extends Controller
     public function confirm(Request $request)
     {
         $request->validate(['donation_id' => 'required|exists:donations,id']);
-        
+
         $donation = Donation::findOrFail($request->donation_id);
         $donation->status = 'Completed';
         $donation->save();
