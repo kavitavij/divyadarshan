@@ -72,7 +72,7 @@ class StayController extends Controller
     public function summary(AccommodationBooking $booking)
     {
         $booking->load('room.hotel');
-        return view('stays.summary', ['stayBooking' => $booking]);
+        return redirect()->route('payment.create', ['type' => 'stay', 'id' => $booking->id]);
     }
     public function confirm(Request $request)
 {

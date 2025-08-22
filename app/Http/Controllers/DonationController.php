@@ -24,9 +24,8 @@ class DonationController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'amount' => 'required|numeric|min:1',
-            'temple_id' => 'nullable|exists:temples,id', // 3. Validate the new field
         ]);
 
         $donation = Donation::create([
@@ -49,7 +48,7 @@ class DonationController extends Controller
         }
         // Eager load the temple relationship if it exists
         $donation->load('temple');
-        return view('donations.payment', compact('donation'));
+        return redirect()->route('payment.create', ['type' => 'donation', 'id' => $donation->id]);
     }
 
     /**

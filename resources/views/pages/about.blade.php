@@ -163,8 +163,6 @@
                     </div>
                 @endguest
     </header>
-
-
     <main class="max-w-6xl mx-auto px-4 py-10 space-y-16">
         <section class="text-center animate-fadeInUp">
             <h2 class="text-3xl font-bold text-blue-800 mb-4 tracking-wide">“सर्वे भवन्तु सुखिनः, सर्वे सन्तु
@@ -252,7 +250,8 @@
             <div>
                 <a href="{{ route('terms') }}" class="text-blue-600 hover:underline">Terms & Condition</a> |
                 <a href="{{ route('guidelines') }}" class="text-blue-600 hover:underline">Guidelines</a> |
-                <a href="{{ route('complaint.form') }}" class="text-blue-600 hover:underline">Complaint</a>
+                <a href="{{ route('complaint.form') }}" class="text-blue-600 hover:underline">Complaint</a>|
+                <a href="/reviews" class="text-blue-600 hover:underline">Reviews</a>
             </div>
             <div class="flex gap-2">
                 <a href="#" class="hover:text-blue-600">Facebook</a>
@@ -261,7 +260,6 @@
             </div>
         </div>
     </footer>
-
 </body>
 
 </html>

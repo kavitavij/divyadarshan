@@ -26,12 +26,14 @@
                         </div>
 
                         <div class="text-center mt-4">
-                            {{-- THE FIX: Changed $sevaBooking to the correct $stayBooking variable --}}
-                            <a href="#" class="btn btn-success btn-lg">Proceed to Payment</a>
+                            <a href="{{ route('payment.create', ['type' => 'stay', 'id' => $booking->id]) }}">
+                                Proceed to Payment
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 @endsection

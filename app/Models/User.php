@@ -4,7 +4,10 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+/**
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Ebook[] $ebooks
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereRole($value)
+ */
 class User extends Authenticatable
 {
     use Notifiable;

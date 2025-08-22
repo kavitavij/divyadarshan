@@ -7,10 +7,10 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
-{
-    $this->call([
-        AdminUserSeeder::class,
-        TempleSeeder::class, // <-- Add this line
-    ]);
-}
+    {
+        $this->call([
+            RolesTableSeeder::class,
+            UsersTableSeeder::class,
+        ]);
+    }
 }

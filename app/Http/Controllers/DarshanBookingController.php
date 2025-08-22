@@ -30,7 +30,7 @@ class DarshanBookingController extends Controller
 
                 if ($request->has('selected_date')) {
                     $selectedDate = Carbon::parse($request->selected_date);
-                    
+
                     // First, try to find real, custom slots created by the admin.
                     $slots = DarshanSlot::where('temple_id', $selectedTemple->id)
                         ->where('slot_date', $selectedDate->toDateString())
@@ -94,13 +94,10 @@ class DarshanBookingController extends Controller
      */
     public function details(Request $request)
     {
-        if ($request->isMethod('get')) {
-            return redirect()->route('booking.index')->with('error', 'There was a problem with your selection. Please try again.');
-        }
 
         $bookingData = $request->validate([
             'temple_id' => 'required|exists:temples,id',
-            'darshan_slot_id' => 'required', // Can be integer or string
+            'darshan_slot_id' => 'required',
             'number_of_people' => 'required|integer|min:1|max:5',
         ]);
 
@@ -187,7 +184,7 @@ class DarshanBookingController extends Controller
 
         return redirect()->route('home')->with('success', 'Your payment was successful and your Darshan has been confirmed!');
     }
-    
+
     private function generateCalendarData(Temple $temple)
     {
         $calendars = [];
@@ -203,13 +200,13 @@ class DarshanBookingController extends Controller
             for ($day = 1; $day <= $daysInMonth; $day++) {
                 $date = $currentDate->copy()->setDay($day);
                 $dateString = $date->toDateString();
-                
+
                 if ($date->isPast() && !$date->isToday()) {
                     $status = 'not_available';
-                } 
+                }
                 elseif (isset($slotData[$dateString])) {
                     $status = $slotData[$dateString];
-                } 
+                }
                 else {
                     $status = 'available';
                 }

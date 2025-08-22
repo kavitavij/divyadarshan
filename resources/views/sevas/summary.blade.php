@@ -23,7 +23,9 @@
                         </div>
 
                         <div class="text-center mt-4">
-                            <a href="#">Proceed to Payment</a>
+                            <a href="{{ route('payment.create', ['type' => 'seva', 'id' => $sevaBooking->id]) }}">
+                                Proceed to Payment
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -3,16 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Show login page
      */
     public function create(): View
     {
@@ -20,42 +19,50 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Handle login request
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $request->authenticate();
+        // Validate login fields
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-        $request->session()->regenerate();
+        // Try to authenticate
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        // THE FIX: Add logic to redirect users based on their role.
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+            // Redirect by role
+            switch ($user->role) {
+                case 'Admin':
+                    return redirect()->route('admin.dashboard');
+                case 'Temple Manager':
+                    return redirect()->route('temple.dashboard');
+                case 'Hotel Manager':
+                    return redirect()->route('hotel.dashboard');
+                case 'Driver':
+                    return redirect()->route('driver.dashboard');
+                default:
+                    return redirect()->route('home');
+            }
         }
 
-        if ($user->role === 'hotel_manager') {
-            return redirect()->route('hotel-manager.dashboard');
-        }
-
-        if ($user->role === 'temple_manager') {
-            return redirect()->route('temple-manager.dashboard');
-        }
-
-        // Default redirect for regular users.
-        return redirect()->intended(route('dashboard', absolute: false));
+        // If login fails
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
     }
 
     /**
-     * Destroy an authenticated session.
+     * Logout
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
-
+        Auth::logout();
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

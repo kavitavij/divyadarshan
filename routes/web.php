@@ -33,10 +33,32 @@ use App\Http\Controllers\TempleManager\DarshanBookingController as TempleManager
 use App\Http\Controllers\TempleManager\SevaController as TempleManagerSevaController;
 use App\Http\Controllers\TempleManager\DarshanSlotController as TempleManagerDarshanSlotController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\StayBookingController;
 
-// ## PUBLIC ROUTES ##
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\PageController;
+Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'hi'])) {
+        Session::put('locale', $locale);
+        App::setLocale($locale);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
+
+// ## PUBLIC ROUTES
+Route::post('/stays/confirm', [StayBookingController::class, 'confirm'])->name('stays.confirm');
+Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
+Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
+Route::post('/donations/confirm', [DonationController::class, 'confirm'])->name('donations.confirm');
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/ebooks', [EbookController::class, 'index'])->name('ebooks.index');
 Route::get('/temples', [TempleController::class, 'index'])->name('temples.index');
 Route::get('/temples/{temple}', [TempleController::class, 'show'])->name('temples.show');
@@ -54,6 +76,18 @@ Route::post('/contact-us', [GeneralInfoController::class, 'handleContactForm'])-
 Route::get('/stays', [StayController::class, 'index'])->name('stays.index');
 Route::get('/stays/{hotel}', [StayController::class, 'show'])->name('stays.show');
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
+Route::post('/razorpay/callback', [App\Http\Controllers\PaymentController::class, 'callback'])->name('razorpay.callback');
+Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
+
+Route::get('/payment/{type}/{id}', [PaymentController::class, 'create'])->name('payment.create')->middleware('auth');
+Route::post('/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm')->middleware('auth');
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::get('/temple/dashboard', [TempleController::class, 'index'])->name('temple.dashboard');
+Route::get('/hotel/dashboard', [HotelController::class, 'index'])->name('hotel.dashboard');
+Route::get('/driver/dashboard', [DriverController::class, 'index'])->name('driver.dashboard');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
@@ -64,8 +98,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/stays/book/{room}', [StayController::class, 'details'])->name('stays.details');
     Route::post('/stays/book/{room}', [StayController::class, 'store'])->name('stays.store');
     Route::get('/stays/summary/{booking}', [StayController::class, 'summary'])->name('stays.summary');
-    Route::post('/stays/confirm', [StayController::class, 'confirm'])->name('stays.confirm');
-
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -80,6 +112,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
 
     // Darshan Booking flow
+    Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name('booking.index');
     Route::post('/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
     Route::post('/booking/store', [DarshanBookingController::class, 'store'])->name('booking.store');
     Route::get('/booking/{booking}/summary', [DarshanBookingController::class, 'summary'])->name('booking.summary');

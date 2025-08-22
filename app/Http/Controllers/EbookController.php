@@ -37,8 +37,8 @@ class EbookController extends Controller
         return view('ebooks.index', [
             'ebooks' => $ebooks,
             'languages' => $languages,
-            'selectedLanguage' => $request->language, 
-            'selectedType' => $request->type,         
+            'selectedLanguage' => $request->language,
+            'selectedType' => $request->type,
         ]);
     }
 
@@ -93,5 +93,5 @@ class EbookController extends Controller
         }
 
         return response()->download($filePath);
-    }    
+    }
 }

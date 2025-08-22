@@ -154,7 +154,10 @@
 
                             {{-- Payment Button --}}
                             <div class="text-center mt-4">
-                                <a href="#" class="btn btn-success btn-lg">Proceed to Payment</a>
+                                <a
+                                    href="{{ route('payment.create', ['type' => 'darshan', 'id' => $darshanBooking->id]) }}">
+                                    Proceed to Payment
+                                </a>
                             </div>
                         </div>
                     </div>

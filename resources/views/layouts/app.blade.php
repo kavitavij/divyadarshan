@@ -252,7 +252,8 @@
             <div>
                 <a href="{{ route('terms') }}" class="text-blue-600 hover:underline">Terms & Condition</a> |
                 <a href="{{ route('guidelines') }}" class="text-blue-600 hover:underline">Guidelines</a> |
-                <a href="{{ route('complaint.form') }}" class="text-blue-600 hover:underline">Complaint</a>
+                <a href="{{ route('complaint.form') }}" class="text-blue-600 hover:underline">Complaint</a>|
+                <a href="/reviews" class="text-blue-600 hover:underline">Reviews</a>
             </div>
             <div class="flex gap-2">
                 <a href="#" class="hover:text-blue-600">Facebook</a>
@@ -260,6 +261,7 @@
                 <a href="#" class="hover:text-blue-600">Instagram</a>
             </div>
         </div>
+
     </footer>
 
     </div>
