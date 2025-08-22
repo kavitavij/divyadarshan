@@ -26,9 +26,9 @@
                         </div>
 
                         <div class="text-center mt-4">
-                            {{-- This will link to your universal payment page --}}
-                            <a href="{{ route('payment.create', ['id' => $stayBooking->id, 'type' => 'stay']) }}"
-                                class="btn btn-payment">Proceed to Payment</a>
+                            {{-- THE FIX: Changed $sevaBooking to the correct $stayBooking variable --}}
+                            <a href="{{ route('payment.show', ['type' => 'accommodation', 'id' => $stayBooking->id]) }}"
+                                class="btn btn-success btn-lg">Proceed to Payment</a>
                         </div>
                     </div>
                 </div>

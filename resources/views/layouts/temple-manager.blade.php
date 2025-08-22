@@ -144,10 +144,14 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <a href="{{ route('temple-manager.dashboard') }}"
-            class="{{ request()->routeIs('#') ? 'active' : '' }}">Dashboard</a>
-        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">Temple Details</a>
-        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">Manage Rooms</a>
-        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">View Bookings</a>
+            class="{{ request()->routeIs('temple-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
+        <a href="{{ route('temple-manager.temple.edit') }}"
+            class="{{ request()->routeIs('temple-manager.temple.edit') ? 'active' : '' }}">My temple Details</a>
+        <a href="{{ route('temple-manager.slots.index') }}"
+            class="{{ request()->routeIs('temple-manager.slots.index*') ? 'active' : '' }}">Manage Darshan Slots</a>
+        <a href="{{ route('temple-manager.sevas.index') }}"
+            class="{{ request()->routeIs('temple-manager.sevas.index') ? 'active' : '' }}">Manage Sevas</a>
+
     </div>
 
     <!-- Content -->
@@ -161,7 +165,7 @@
             </div>
             <div class="widget" style="background-color: #e67e22;">
                 <h3>45</h3>
-                <p>Available Darshan</p>
+                <p>Available Rooms</p>
             </div>
             <div class="widget" style="background-color: #9b59b6;">
                 <h3>₹1,20,000</h3>

@@ -10,15 +10,15 @@ class Temple extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'location', 'description', 'image', 'about', 
-        'online_services', 'news', 'social_services', 'slot_data', 
+        'name', 'location', 'description', 'image', 'about',
+        'online_services', 'news', 'social_services', 'slot_data',
     ];
 
     protected $casts = [
         'slot_data' => 'array',
         'news' => 'array',
     ];
-    
+
     public function sevas()
     {
         return $this->hasMany(Seva::class);
@@ -42,5 +42,9 @@ class Temple extends Model
     public function darshanSlots()
     {
         return $this->hasMany(DarshanSlot::class);
+    }
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
     }
 }

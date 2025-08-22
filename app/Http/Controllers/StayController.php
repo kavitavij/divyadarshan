@@ -74,4 +74,23 @@ class StayController extends Controller
         $booking->load('room.hotel');
         return view('stays.summary', ['stayBooking' => $booking]);
     }
+    public function confirm(Request $request)
+{
+    $request->validate([
+        'booking_id' => 'required|exists:accommodation_bookings,id',
+    ]);
+
+    $booking = AccommodationBooking::findOrFail($request->booking_id);
+
+    // Security check: ensure the user is confirming their own booking
+    if ($booking->user_id !== Auth::id()) {
+        abort(403);
+    }
+
+    // Update the status from 'Pending Payment' to 'Confirmed'
+    $booking->status = 'Confirmed';
+    $booking->save();
+
+    return redirect()->route('home')->with('success', 'Your accommodation has been confirmed!');
+}
 }

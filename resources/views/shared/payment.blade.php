@@ -1,71 +1,49 @@
-<style>
-    .payment-card {
-        border: none;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-    }
-    .payment-card .card-header {
-        background-color: #4a148c; /* Deep purple */
-        color: white;
-        text-align: center;
-        font-size: 1.5rem;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        padding: 1.25rem;
-    }
-    .payment-card .card-body {
-        padding: 2rem;
-    }
-    .summary-box {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 1.5rem;
-    }
-    .summary-box .total-amount {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #2c3e50;
-    }
-    .btn-pay-now {
-        background: linear-gradient(135deg, #28a745, #218838);
-        border: none;
-        font-size: 1.2rem;
-        padding: 0.75rem;
-    }
-</style>
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card payment-card">
-                <div class="card-header"><h2>Complete Your Payment</h2></div>
-                <div class="card-body">
-                    <div class="alert alert-info text-center">
-                        
-                    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment | DivyaDarshan</title>
+</head>
 
-                    <div class="mb-4 summary-box">
-                        <h4 class="font-weight-bold">{{ $summary['title'] }}</h4>
-                        <hr>
-                        @foreach($summary['details'] as $key => $value)
-                            <p><strong>{{ $key }}:</strong> {{ $value }}</p>
-                        @endforeach
-                        <p class="total-amount"><strong>Total Amount:</strong> ₹{{ number_format($summary['amount'], 2) }}</p>
-                    </div>
+<body>
+    <h2>Complete Your Payment</h2>
+    <button id="rzp-button1">Pay ₹{{ $summary['amount'] }}</button>
 
-                    <form action="{{ $summary['confirm_route'] }}" method="POST">
-                        @csrf
-                        {{-- THE FIX: Added a fallback to null for all possible IDs --}}
-                        <input type="hidden" name="booking_id" value="{{ $summary['booking_id'] ?? null }}">
-                        <input type="hidden" name="donation_id" value="{{ $summary['donation_id'] ?? null }}">
-                        <input type="hidden" name="ebook_id" value="{{ $summary['ebook_id'] ?? null }}">
-                        
-                        <button type="submit" class="btn btn-success btn-lg w-100 mt-3 btn-pay-now">Pay Now</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        var options = {
+            "key": "{{ config('services.razorpay.key') }}",
+            "amount": "{{ $summary['amount'] * 100 }}", // paise
+            "currency": "INR",
+            "name": "DivyaDarshan",
+            "description": "{{ $summary['title'] }}",
+            "order_id": "{{ $orderId }}",
+            "handler": function(response) {
+                fetch("{{ route('razorpay.callback') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify(response)
+                    })
+                    .then(res => res.json())
+                    .then(data => alert(data.message))
+                    .catch(err => console.error(err));
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button1').onclick = function(e) {
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
 
+</body>
+
+</html>

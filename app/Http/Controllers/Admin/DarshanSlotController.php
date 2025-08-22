@@ -11,40 +11,54 @@ use Carbon\Carbon;
 class DarshanSlotController extends Controller
 {
     /**
-     * Display the slot management page.
-     * Shows a date picker and lists slots for the selected date.
+     * Show the form for creating/viewing slots for a temple.
      */
     public function index(Temple $temple, Request $request)
     {
+        // Define the default slots that will appear on the form
+        $defaultSlots = [
+            ['start_time' => '09:00', 'end_time' => '11:00'],
+            ['start_time' => '11:00', 'end_time' => '13:00'],
+            ['start_time' => '15:00', 'end_time' => '17:00'],
+        ];
+
         // Default to today's date if no date is selected
         $selectedDate = $request->input('date', Carbon::today()->toDateString());
-        
+
         // Fetch slots only for the selected date
         $slots = $temple->darshanSlots()
                        ->where('slot_date', $selectedDate)
                        ->orderBy('start_time')
                        ->get();
-        
-        return view('admin.slots.index', compact('temple', 'slots', 'selectedDate'));
+
+        return view('admin.slots.index', compact('temple', 'slots', 'defaultSlots', 'selectedDate'));
     }
 
     /**
-     * Store a new darshan slot in the database for a specific date.
+     * Store multiple new darshan slots from the form.
      */
     public function store(Request $request, Temple $temple)
     {
         $request->validate([
             'slot_date' => 'required|date',
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
-            'total_capacity' => 'required|integer|min:1',
+            'slots' => 'required|array', // Expecting an array of selected slots
         ]);
 
-        $temple->darshanSlots()->create($request->all());
+        foreach ($request->slots as $index => $slotData) {
+            // Only create a slot if the checkbox for it was selected
+            if (isset($slotData['create']) && $slotData['create'] == '1') {
+                DarshanSlot::create([
+                    'temple_id' => $temple->id,
+                    'slot_date' => $request->slot_date,
+                    'start_time' => $slotData['start_time'],
+                    'end_time' => $slotData['end_time'],
+                    'total_capacity' => $slotData['total_capacity'],
+                ]);
+            }
+        }
 
-        // Redirect back to the same date view to see the new slot
         return redirect()->route('admin.temples.slots.index', ['temple' => $temple, 'date' => $request->slot_date])
-                         ->with('success', 'Slot created successfully!');
+                         ->with('success', 'Selected slots created successfully!');
     }
 
     /**

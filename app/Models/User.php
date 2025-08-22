@@ -13,7 +13,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',     
+        'role',
     ];
 
     protected $hidden = [
@@ -33,20 +33,24 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function favorites() 
+    public function favorites()
     {
         return $this->belongsToMany(Temple::class, 'favorites');
     }
     public function ebooks()
     {
         return $this->belongsToMany(Ebook::class);
-    }   
+    }
     public function bookings()
     {
         return $this->hasMany(Booking::class);
     }
     public function hotel()
-{
-    return $this->hasOne(Hotel::class, 'manager_id');
-}
+    {
+        return $this->hasOne(Hotel::class, 'manager_id');
+    }
+    public function temple()
+    {
+        return $this->hasOne(Temple::class, 'manager_id');
+    }
 }

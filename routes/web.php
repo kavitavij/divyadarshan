@@ -17,17 +17,22 @@ use App\Http\Controllers\Admin\TempleController as AdminTempleController;
 use App\Http\Controllers\Admin\EbookController as AdminEbookController;
 use App\Http\Controllers\Admin\LatestUpdateController;
 use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
-use App\Http\Controllers\Admin\DarshanSlotController;
+use App\Http\Controllers\Admin\DarshanSlotController as AdminDarshanSlotController;
 use App\Http\Controllers\GeneralInfoController;
-use App\Http\Controllers\Admin\SevaController;
+use App\Http\Controllers\Admin\SevaController as AdminSevaController;
 use App\Http\Controllers\SevaBookingController;
-use App\Http\Controllers\Admin\BookingController;
-use App\Http\Controllers\HotelManager\DashboardController;
-use App\Http\Controllers\HotelManager\HotelController;
-use App\Http\Controllers\HotelManager\RoomController;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\HotelManager\DashboardController as HotelManagerDashboardController;
+use App\Http\Controllers\HotelManager\HotelController as HotelManagerHotelController;
+use App\Http\Controllers\HotelManager\RoomController as HotelManagerRoomController;
+use App\Http\Controllers\HotelManager\GuestListController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\HotelManager\GuestListController;
+use App\Http\Controllers\TempleManager\DashboardController as TempleManagerDashboardController;
+use App\Http\Controllers\TempleManager\TempleController as TempleManagerController;
+use App\Http\Controllers\TempleManager\DarshanBookingController as TempleManagerDarshanBookingController;
+use App\Http\Controllers\TempleManager\SevaController as TempleManagerSevaController;
+use App\Http\Controllers\TempleManager\DarshanSlotController as TempleManagerDarshanSlotController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
 
 // ## PUBLIC ROUTES ##
@@ -50,17 +55,18 @@ Route::post('/contact-us', [GeneralInfoController::class, 'handleContactForm'])-
 Route::get('/stays', [StayController::class, 'index'])->name('stays.index');
 Route::get('/stays/{hotel}', [StayController::class, 'show'])->name('stays.show');
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
-Route::post('/donations', [App\Http\Controllers\DonationController::class, 'store'])->name('donations.store');
 Route::get('/payment', [PaymentController::class, 'show'])->name('payment.show');
-Route::get('/stays/book/{room}', [StayController::class, 'details'])->name('stays.details');
-Route::post('/stays/book/{room}', [StayController::class, 'store'])->name('stays.store');
-Route::get('/stays/summary/{booking}', [StayController::class, 'summary'])->name('stays.summary');
-Route::get('/payment/create/{id}/{type}', [PaymentController::class, 'create'])->name('payment.create');
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
     // Temple
     Route::post('/temples/{id}/favorite', [TempleController::class, 'favorite'])->name('temples.favorite');
+
+    // Stays Booking
+    Route::post('/stays/confirm', [StayController::class, 'confirm'])->name('stays.confirm');
+    Route::get('/stays/book/{room}', [StayController::class, 'details'])->name('stays.details');
+    Route::post('/stays/book/{room}', [StayController::class, 'store'])->name('stays.store');
+    Route::get('/stays/summary/{booking}', [StayController::class, 'summary'])->name('stays.summary');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -71,7 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
     Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
-    Route::post('/ebooks/confirm-purchase', [App\Http\Controllers\EbookController::class, 'confirmPurchase'])->name('ebooks.confirmPurchase');
+    Route::post('/ebooks/confirm-purchase', [EbookController::class, 'confirmPurchase'])->name('ebooks.confirmPurchase');
 
     // Bookings
     Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
@@ -89,17 +95,28 @@ Route::middleware('auth')->group(function () {
     Route::post('/seva-booking/confirm', [SevaBookingController::class, 'confirm'])->name('sevas.booking.confirm');
 
     //Donations
-    Route::get('/donations/{donation}/payment', [App\Http\Controllers\DonationController::class, 'payment'])->name('donations.payment');
-    Route::post('/donations/confirm', [App\Http\Controllers\DonationController::class, 'confirm'])->name('donations.confirm');
+    Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
+    Route::get('/donations/{donation}/payment', [DonationController::class, 'payment'])->name('donations.payment');
+    Route::post('/donations/confirm', [DonationController::class, 'confirm'])->name('donations.confirm');
 });
 
 //## HOTEL MANAGER ROUTES ##
 Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name('hotel-manager.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/hotel/edit', [HotelController::class, 'edit'])->name('hotel.edit');
-    Route::put('/hotel', [HotelController::class, 'update'])->name('hotel.update');
-    Route::resource('rooms', RoomController::class);
+    Route::get('/dashboard', [HotelManagerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/hotel/edit', [HotelManagerHotelController::class, 'edit'])->name('hotel.edit');
+    Route::put('/hotel', [HotelManagerHotelController::class, 'update'])->name('hotel.update');
+    Route::resource('rooms', HotelManagerRoomController::class);
     Route::get('/guest-list', [GuestListController::class, 'index'])->name('guest-list.index');
+});
+
+// ## TEMPLE MANAGER ROUTES ##
+Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {
+    Route::get('/dashboard', [TempleManagerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/temple/edit', [TempleManagerController::class, 'edit'])->name('temple.edit');
+    Route::put('/temple', [TempleManagerController::class, 'update'])->name('temple.update');
+    Route::resource('slots', TempleManagerDarshanSlotController::class);
+    Route::resource('sevas', TempleManagerSevaController::class);
+    Route::get('/darshan-bookings', [TempleManagerDarshanBookingController::class, 'index'])->name('darshan-bookings.index');
 });
 
 // ## ADMIN ROUTES ##
@@ -110,39 +127,27 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('latest_updates', LatestUpdateController::class);
     Route::resource('complaints', AdminComplaintController::class)->only(['index', 'show', 'destroy']);
     Route::patch('/complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.updateStatus');
-    Route::resource('temples.slots', DarshanSlotController::class)->shallow();
-    Route::resource('temples.sevas', SevaController::class)->shallow();
+    Route::resource('temples.slots', AdminDarshanSlotController::class)->shallow();
+    Route::resource('temples.sevas', AdminSevaController::class)->shallow();
     Route::get('/temples/{temple}/darshan-bookings', [AdminTempleController::class, 'showDarshanBookings'])->name('temples.darshan_bookings');
     Route::get('/temples/{temple}/seva-bookings', [AdminTempleController::class, 'showSevaBookings'])->name('temples.seva_bookings');
     Route::resource('hotels', App\Http\Controllers\Admin\HotelController::class);
     Route::resource('hotels.rooms', App\Http\Controllers\Admin\RoomController::class)->shallow();
-    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
 });
 
-
-// Temple Manager
-Route::get('/temple-manager/dashboard', function () {return view('temple-manager.dashboard');})->name('temple-manager.dashboard');
-Route::prefix('temple-manager')->name('temple-manager.')->middleware(['auth', 'role:temple-manager'])->group(function () {
-
-    // Temple CRUD
-    Route::resource('temples', TempleController::class);
-});
-
-
-
-
 // ## BREEZE DASHBOARD & AUTHENTICATION ##
 Route::get('/dashboard', function () {
-    // THE FIX: Changed auth()->user() to Auth::user()
     if (Auth::user()->role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
-    // Add this line if your hotel managers should also be redirected
     if (Auth::user()->role === 'hotel_manager') {
         return redirect()->route('hotel-manager.dashboard');
     }
-
+    if (Auth::user()->role === 'temple_manager') {
+        return redirect()->route('temple-manager.dashboard');
+    }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 

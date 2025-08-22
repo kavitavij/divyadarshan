@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.temple-manager') {{-- Or your dedicated temple manager layout --}}
 
 @section('content')
     <div class="container-fluid">
@@ -15,7 +15,7 @@
             <div class="col-12 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('admin.temples.slots.index', $temple) }}" method="GET">
+                        <form action="{{ route('temple-manager.slots.index') }}" method="GET">
                             <div class="row align-items-end">
                                 <div class="col-md-4">
                                     <label for="date" class="form-label">Select a Date to Manage Slots</label>
@@ -31,49 +31,11 @@
                 </div>
             </div>
 
-            <!-- Add New Slots Form -->
-            <div class="col-md-5">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Add Default Slots for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('admin.temples.slots.store', $temple) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="slot_date" value="{{ $selectedDate }}">
-                            <p>Select the slots you want to create for the chosen date:</p>
-
-                            @foreach ($defaultSlots as $index => $slot)
-                                <div class="input-group mb-3">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" type="checkbox"
-                                            name="slots[{{ $index }}][create]" value="1" checked>
-                                    </div>
-                                    <input type="text" class="form-control"
-                                        value="{{ \Carbon\Carbon::parse($slot['start_time'])->format('h:i A') }} - {{ \Carbon\Carbon::parse($slot['end_time'])->format('h:i A') }}"
-                                        readonly>
-                                    <input type="number" class="form-control"
-                                        name="slots[{{ $index }}][total_capacity]" value="1000"
-                                        placeholder="Capacity">
-                                    {{-- Hidden fields to pass the times --}}
-                                    <input type="hidden" name="slots[{{ $index }}][start_time]"
-                                        value="{{ $slot['start_time'] }}">
-                                    <input type="hidden" name="slots[{{ $index }}][end_time]"
-                                        value="{{ $slot['end_time'] }}">
-                                </div>
-                            @endforeach
-
-                            <button type="submit" class="btn btn-primary w-100">Add Selected Slots</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
             <!-- Existing Slots for Selected Date -->
-            <div class="col-md-7">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Existing Slots for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}</h3>
+                        <h3>Slots for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}</h3>
                     </div>
                     <div class="card-body">
                         <table class="table table-bordered">
@@ -92,8 +54,9 @@
                                         <td>{{ $slot->total_capacity - $slot->booked_capacity }} /
                                             {{ $slot->total_capacity }}</td>
                                         <td>
-                                            <form action="{{ route('admin.slots.destroy', $slot->id) }}" method="POST">
-                                                <a href="{{ route('admin.slots.edit', $slot->id) }}"
+                                            <form action="{{ route('temple-manager.slots.destroy', $slot->id) }}"
+                                                method="POST">
+                                                <a href="{{ route('temple-manager.slots.edit', $slot->id) }}"
                                                     class="btn btn-sm btn-primary">Edit</a>
                                                 @csrf
                                                 @method('DELETE')
@@ -109,6 +72,35 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Slot Form -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Add New Slot for this Date</h3>
+                    </div>
+                    <div class="card-body">
+                        {{-- THE FIX: The form action now points to the correct route --}}
+                        <form action="{{ route('temple-manager.slots.store') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="slot_date" value="{{ $selectedDate }}">
+                            <div class="form-group mb-3">
+                                <label>Start Time</label>
+                                <input type="time" name="start_time" class="form-control" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>End Time</label>
+                                <input type="time" name="end_time" class="form-control" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Total Capacity</label>
+                                <input type="number" name="total_capacity" class="form-control" value="1000" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Slot</button>
+                        </form>
                     </div>
                 </div>
             </div>

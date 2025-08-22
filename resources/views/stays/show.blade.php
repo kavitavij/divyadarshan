@@ -29,9 +29,18 @@
                                     ₹{{ number_format($room->price_per_night, 2) }} <span
                                         class="text-sm font-normal text-gray-500">/ night</span></p>
                                 <div class="mt-3">
-                                    {{-- THE FIX: This now links to the details page --}}
-                                    <a href="{{ route('stays.details', $room) }}" class="btn btn-success w-full">Book
-                                        Now</a>
+                                    {{-- THE FIX: Show different buttons for guests and logged-in users --}}
+                                    @auth
+                                        {{-- This button shows for LOGGED-IN users --}}
+                                        <a href="{{ route('stays.details', $room) }}" class="btn btn-success w-full">Book
+                                            Now</a>
+                                    @else
+                                        {{-- This button shows for GUESTS and opens the login modal --}}
+                                        <button type="button" @click="loginModal = true; modalView = 'login'"
+                                            class="btn btn-primary w-full">
+                                            Login to Book
+                                        </button>
+                                    @endguest
                                 </div>
                             </div>
                         @empty
