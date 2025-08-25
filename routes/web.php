@@ -43,6 +43,12 @@ use App\Http\Controllers\SevaController;
 use App\Http\Controllers\CartController;
 
 
+// For showing temple page
+Route::get('/temples/{temple}', [TempleController::class, 'show'])->name('temples.show');
+
+Route::post('/temples/details', [TempleController::class, 'details'])->name('temples.detail');
+
+
 // ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');

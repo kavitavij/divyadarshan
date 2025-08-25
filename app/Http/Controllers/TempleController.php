@@ -123,7 +123,7 @@ class TempleController extends Controller
         'number_of_people' => $request->input('number_of_people'),
     ];
 
-    return view('booking.details', compact('bookingData'));
+    return view('temples.details', compact('bookingData'));
 }
 
 }
