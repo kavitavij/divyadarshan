@@ -11,187 +11,132 @@ use Carbon\Carbon;
 
 class DarshanBookingController extends Controller
 {
-    /**
-     * Display the booking page.
-     */
     public function index(Request $request)
     {
         $temples = Temple::orderBy('name')->get();
         $selectedTemple = null;
-        $calendars = [];
-        $slots = collect(); // Use an empty collection
+        $slots = collect();
         $selectedDate = null;
+        $calendars = [];
 
         if ($request->has('temple_id')) {
-            $selectedTemple = Temple::find($request->input('temple_id'));
+            $selectedTemple = Temple::findOrFail($request->input('temple_id'));
+            $calendars = $this->generateCalendarData($selectedTemple);
 
-            if ($selectedTemple) {
-                $calendars = $this->generateCalendarData($selectedTemple);
-
-                if ($request->has('selected_date')) {
-                    $selectedDate = Carbon::parse($request->selected_date);
-
-                    // First, try to find real, custom slots created by the admin.
-                    $slots = DarshanSlot::where('temple_id', $selectedTemple->id)
-                        ->where('slot_date', $selectedDate->toDateString())
-                        ->get();
-
-                    // If NO custom slots were found, check the daily availability.
-                    if ($slots->isEmpty()) {
-                        $dateString = $selectedDate->toDateString();
-                        $slotData = $selectedTemple->slot_data ?? [];
-
-                        $dayStatus = 'available';
-                        if (isset($slotData[$dateString])) {
-                            $dayStatus = $slotData[$dateString];
-                        }
-                        if ($selectedDate->isPast() && !$selectedDate->isToday()) {
-                            $dayStatus = 'not_available';
-                        }
-
-                        // If the day is available, create the default slots.
-                        if ($dayStatus === 'available') {
-                            // THE FIX: Changed from (object)[] to [] to create arrays
-                            $slots = collect([
-                                [
-                                    'id' => 'default_1',
-                                    'start_time_formatted' => '09:00 AM',
-                                    'end_time_formatted' => '11:00 AM',
-                                    'available_capacity' => 1000,
-                                ],
-                                [
-                                    'id' => 'default_2',
-                                    'start_time_formatted' => '11:00 AM',
-                                    'end_time_formatted' => '01:00 PM',
-                                    'available_capacity' => 1000,
-                                ],
-                                [
-                                    'id' => 'default_3',
-                                    'start_time_formatted' => '03:00 PM',
-                                    'end_time_formatted' => '05:00 PM',
-                                    'available_capacity' => 1000,
-                                ],
-                            ]);
-                        }
-                    } else {
-                        // If real slots WERE found, calculate their live capacity.
-                        $slots = $slots->map(function ($slot) {
-                            $slot->start_time_formatted = Carbon::parse($slot->start_time)->format('h:i A');
-                            $slot->end_time_formatted = Carbon::parse($slot->end_time)->format('h:i A');
-                            $slot->available_capacity = $slot->total_capacity - $slot->booked_capacity;
-                            return $slot;
-                        });
-                    }
-                }
+            if ($request->has('selected_date')) {
+                $selectedDate = Carbon::parse($request->selected_date);
+                $slots = $this->getAvailableSlots($selectedTemple, $selectedDate);
             }
         }
 
         return view('booking.index', compact('temples', 'selectedTemple', 'calendars', 'slots', 'selectedDate'));
     }
+    //     public function details(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'temple_id' => 'required|exists:temples,id',
+    //         'darshan_slot_id' => 'required|string',
+    //         'selected_date' => 'required|date',
+    //         'slot_details' => 'required|string',
+    //         'number_of_people' => 'required|integer|min:1|max:10',
+    //     ]);
 
-    /**
-     * Show the form for entering user details.
-     */
+
+    //     $temple = Temple::findOrFail($validated['temple_id']);
+    //     $chargePerPerson = $temple->darshan_charge ?? 0;
+
+
+    //     $validated['darshan_charge'] = $chargePerPerson;
+    //     $validated['total_charge'] = $chargePerPerson * $validated['number_of_people'];
+
+    //     return view('booking.details', ['bookingData' => $validated,'temple' => $temple,]);
+    // }
+
+
     public function details(Request $request)
-    {
+{
+    $validated = $request->validate([
+        'temple_id' => 'required|exists:temples,id',
+        'darshan_slot_id' => 'required|string',
+        'selected_date' => 'required|date',
+        'slot_details' => 'required|string',
+        'number_of_people' => 'required|integer|min:1|max:10',
+    ]);
 
-        $bookingData = $request->validate([
-            'temple_id' => 'required|exists:temples,id',
-            'darshan_slot_id' => 'required',
-            'number_of_people' => 'required|integer|min:1|max:5',
-        ]);
+    $temple = Temple::findOrFail($validated['temple_id']);
+    $chargePerPerson = $temple->darshan_charge ?? 0;
 
-        return view('booking.details', compact('bookingData'));
-    }
+    $validated['darshan_charge'] = $chargePerPerson;
+    $validated['total_charge'] = $chargePerPerson * $validated['number_of_people'];
 
-    /**
-     * Store the booking details and redirect to the summary page.
-     */
+    return view('booking.details', [
+        'bookingData' => $validated,
+        'temple' => $temple,
+    ]);
+}
+
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'temple_id' => 'required|exists:temples,id',
-            'darshan_slot_id' => 'required',
-            'number_of_people' => 'required|integer|min:1|max:5',
+            'darshan_slot_id' => 'required|string',
+            'selected_date' => 'required|date',
+            'number_of_people' => 'required|integer|min:1',
             'devotees' => 'required|array',
+            'devotees.*.first_name' => 'required|string|max:255',
+            'devotees.*.last_name' => 'required|string|max:255',
+            'devotees.*.age' => 'required|integer|min:1',
+            'devotees.*.phone_number' => 'required|string|max:15',
+            'devotees.*.id_type' => 'required|string',
+            'devotees.*.id_number' => 'required|string',
         ]);
 
-        // If the slot ID is one of the defaults, we don't save it as a foreign key.
-        // In a real system, you might create a "default" slot record on the fly here.
-        $slotIdToSave = is_numeric($request->darshan_slot_id) ? $request->darshan_slot_id : null;
+        $slotIdToSave = is_numeric($validatedData['darshan_slot_id']) ? $validatedData['darshan_slot_id'] : null;
 
         $booking = Booking::create([
             'user_id' => Auth::id(),
-            'temple_id' => $request->temple_id,
+            'temple_id' => $validatedData['temple_id'],
             'darshan_slot_id' => $slotIdToSave,
-            'number_of_people' => $request->number_of_people,
+            'booking_date' => $validatedData['selected_date'],
+            'number_of_people' => $validatedData['number_of_people'],
             'status' => 'Pending Payment',
-            'devotee_details' => $request->devotees,
+            'devotee_details' => $validatedData['devotees'],
         ]);
 
-        return redirect()->route('booking.summary', $booking);
+        return redirect()->route('payment.create', ['type' => 'darshan', 'id' => $booking->id]);
     }
-
-    /**
-     * Display the booking summary page.
-     */
-    public function summary(Booking $booking)
+    // Helper function to get slots for a given day
+    private function getAvailableSlots(Temple $temple, Carbon $date)
     {
-        if ($booking->user_id !== Auth::id()) {
-            abort(403);
+        $slots = DarshanSlot::where('temple_id', $temple->id)
+            ->where('slot_date', $date->toDateString())
+            ->get();
+
+        if ($slots->isEmpty()) {
+            return collect([
+                ['id' => 'default_09:00-11:00', 'time' => '09:00 AM - 11:00 AM', 'capacity' => 1000],
+                ['id' => 'default_11:00-13:00', 'time' => '11:00 AM - 01:00 PM', 'capacity' => 1000],
+                ['id' => 'default_15:00-17:00', 'time' => '03:00 PM - 05:00 PM', 'capacity' => 1000],
+            ]);
         }
-        $booking->load('temple');
-        return view('booking.summary', compact('booking'));
+
+        return $slots->map(function ($slot) {
+            return [
+                'id' => $slot->id,
+                'time' => Carbon::parse($slot->start_time)->format('h:i A') . ' - ' . Carbon::parse($slot->end_time)->format('h:i A'),
+                'capacity' => $slot->total_capacity - $slot->booked_capacity,
+            ];
+        });
     }
 
-    /**
-     * Display the mock payment page.
-     */
-    public function payment(Booking $booking)
-    {
-        if ($booking->user_id !== Auth::id()) {
-            abort(403);
-        }
-        $booking->load('temple');
-        $amount = $booking->number_of_people * 100; // Example fee
-        $confirmRoute = route('booking.confirm');
-        return view('shared.payment', compact('booking', 'amount', 'confirmRoute'));
-    }
-
-    /**
-     * This is the final confirmation step after the "payment" is made.
-     */
-    public function confirmBooking(Request $request)
-    {
-        $request->validate(['booking_id' => 'required|exists:bookings,id']);
-        $booking = Booking::findOrFail($request->booking_id);
-
-        if ($booking->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        // If it was a real slot, update its booked capacity
-        if ($booking->darshan_slot_id) {
-            $slot = DarshanSlot::find($booking->darshan_slot_id);
-            if ($slot) {
-                $slot->booked_capacity += $booking->number_of_people;
-                $slot->save();
-            }
-        }
-
-        $booking->status = 'Confirmed';
-        $booking->save();
-
-        return redirect()->route('home')->with('success', 'Your payment was successful and your Darshan has been confirmed!');
-    }
-
+    // Helper function to generate calendar data
     private function generateCalendarData(Temple $temple)
     {
         $calendars = [];
         $currentDate = Carbon::now()->startOfMonth();
         $slotData = $temple->slot_data ?? [];
 
-        for ($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $monthName = $currentDate->format('F Y');
             $daysInMonth = $currentDate->daysInMonth;
             $startOfMonth = $currentDate->copy()->startOfMonth()->dayOfWeek;
@@ -200,24 +145,18 @@ class DarshanBookingController extends Controller
             for ($day = 1; $day <= $daysInMonth; $day++) {
                 $date = $currentDate->copy()->setDay($day);
                 $dateString = $date->toDateString();
+                $status = 'available';
 
                 if ($date->isPast() && !$date->isToday()) {
                     $status = 'not_available';
-                }
-                elseif (isset($slotData[$dateString])) {
+                } elseif (isset($slotData[$dateString])) {
                     $status = $slotData[$dateString];
                 }
-                else {
-                    $status = 'available';
-                }
-
                 $days[] = ['day' => $day, 'date' => $dateString, 'status' => $status];
             }
-
             $calendars[] = ['month_name' => $monthName, 'days' => $days];
             $currentDate->addMonth();
         }
-
         return $calendars;
     }
 }

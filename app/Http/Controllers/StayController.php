@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Hotel;
 use App\Models\Room;
-use App\Models\AccommodationBooking;
+// THE FIX: Changed from AccommodationBooking to the correct StayBooking model
+use App\Models\StayBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -12,16 +13,16 @@ use Carbon\Carbon;
 class StayController extends Controller
 {
     /**
-     * Display a listing of all available hotels.
+     * Display a listing of the hotels.
      */
     public function index()
     {
-        $hotels = Hotel::latest()->paginate(12);
+        $hotels = Hotel::with('rooms')->where('is_approved', true)->paginate(10);
         return view('stays.index', compact('hotels'));
     }
 
     /**
-     * Display the specified hotel and its available rooms.
+     * Display the specified hotel.
      */
     public function show(Hotel $hotel)
     {
@@ -30,7 +31,7 @@ class StayController extends Controller
     }
 
     /**
-     * Show the form for entering booking details (check-in, etc.).
+     * Show the form for creating a new booking.
      */
     public function details(Room $room)
     {
@@ -38,7 +39,7 @@ class StayController extends Controller
     }
 
     /**
-     * Store the booking and redirect to the summary page.
+     * Store a newly created booking in storage.
      */
     public function store(Request $request, Room $room)
     {
@@ -51,46 +52,22 @@ class StayController extends Controller
         $checkIn = Carbon::parse($request->check_in_date);
         $checkOut = Carbon::parse($request->check_out_date);
         $nights = $checkOut->diffInDays($checkIn);
-        $totalAmount = $nights * $room->price_per_night;
 
-        $booking = AccommodationBooking::create([
+        if ($nights < 1) {
+            return back()->with('error', 'The check-out date must be after the check-in date.');
+        }
+
+        // THE FIX: Using the correct StayBooking model here
+        $booking = StayBooking::create([
             'user_id' => Auth::id(),
             'room_id' => $room->id,
             'check_in_date' => $request->check_in_date,
             'check_out_date' => $request->check_out_date,
             'number_of_guests' => $request->number_of_guests,
-            'total_amount' => $totalAmount,
+            'total_amount' => $nights * $room->price_per_night,
             'status' => 'Pending Payment',
         ]);
 
-        return redirect()->route('stays.summary', $booking);
-    }
-
-    /**
-     * Display the booking summary.
-     */
-    public function summary(AccommodationBooking $booking)
-    {
-        $booking->load('room.hotel');
         return redirect()->route('payment.create', ['type' => 'stay', 'id' => $booking->id]);
     }
-    public function confirm(Request $request)
-{
-    $request->validate([
-        'booking_id' => 'required|exists:accommodation_bookings,id',
-    ]);
-
-    $booking = AccommodationBooking::findOrFail($request->booking_id);
-
-    // Security check: ensure the user is confirming their own booking
-    if ($booking->user_id !== Auth::id()) {
-        abort(403);
-    }
-
-    // Update the status from 'Pending Payment' to 'Confirmed'
-    $booking->status = 'Confirmed';
-    $booking->save();
-
-    return redirect()->route('home')->with('success', 'Your accommodation has been confirmed!');
-}
 }

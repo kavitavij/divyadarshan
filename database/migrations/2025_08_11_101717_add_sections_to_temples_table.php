@@ -17,6 +17,7 @@ return new class extends Migration
             $table->longText('slot_booking')->nullable();
             $table->longText('news')->nullable();
             $table->longText('social_services')->nullable();
+            $table->decimal('darshan_charge', 8, 2)->default(0);
         });
     }
 
@@ -27,7 +28,7 @@ return new class extends Migration
     {
         Schema::table('temples', function (Blueprint $table) {
             // ✅ CORRECTED: Matching the columns from the up() method
-            $table->dropColumn(['about', 'online_services', 'slot_booking', 'news', 'social_services']);
+            $table->dropColumn(['about', 'online_services', 'slot_booking', 'news', 'social_services','darshan_charge']);
         });
     }
 };

@@ -144,7 +144,6 @@
                                 <a href="{{ route('admin.dashboard') }}"
                                     class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
                             @endif
-
                             <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
                             <a href="{{ route('profile.ebooks') }}"

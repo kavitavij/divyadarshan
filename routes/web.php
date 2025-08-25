@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\StayController;
-use App\Http\Controllers\AboutController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\TempleController;
 use App\Http\Controllers\ProfileController;
@@ -34,29 +33,17 @@ use App\Http\Controllers\TempleManager\SevaController as TempleManagerSevaContro
 use App\Http\Controllers\TempleManager\DarshanSlotController as TempleManagerDarshanSlotController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\StayBookingController;
-
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\Admin\HotelController as AdminHotelController;
+use App\Http\Controllers\Admin\RoomController as AdminRoomController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PageController;
-Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-
-Route::get('/lang/{locale}', function ($locale) {
-    if (in_array($locale, ['en', 'hi'])) {
-        Session::put('locale', $locale);
-        App::setLocale($locale);
-    }
-    return redirect()->back();
-})->name('lang.switch');
+use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\SevaController;
+use App\Http\Controllers\CartController;
 
 
-// ## PUBLIC ROUTES
-Route::post('/stays/confirm', [StayBookingController::class, 'confirm'])->name('stays.confirm');
-Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
-Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
-Route::post('/donations/confirm', [DonationController::class, 'confirm'])->name('donations.confirm');
+// ## PUBLIC ROUTES ##
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/ebooks', [EbookController::class, 'index'])->name('ebooks.index');
@@ -67,64 +54,119 @@ Route::get('/complaint', [ComplaintController::class, 'index'])->name('complaint
 Route::post('/complaint', [ComplaintController::class, 'store'])->name('complaint.store');
 Route::get('/terms', [TermsController::class, 'index'])->name('terms');
 Route::get('/info/faq', [GeneralInfoController::class, 'faq'])->name('info.faq');
+Route::get('/sevas', [SevaController::class, 'index'])->name('info.sevas');
 Route::get('/info/dress-code', [GeneralInfoController::class, 'dressCode'])->name('info.dress-code');
 Route::get('/info/contact', [GeneralInfoController::class, 'contact'])->name('info.contact');
-Route::get('/info/sevas', [GeneralInfoController::class, 'sevas'])->name('info.sevas');
-Route::get('/seva-booking', [SevaBookingController::class, 'index'])->name('sevas.booking.index');
-Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name('booking.index');
 Route::post('/contact-us', [GeneralInfoController::class, 'handleContactForm'])->name('info.contact.submit');
-Route::get('/stays', [StayController::class, 'index'])->name('stays.index');
-Route::get('/stays/{hotel}', [StayController::class, 'show'])->name('stays.show');
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
-Route::post('/razorpay/callback', [App\Http\Controllers\PaymentController::class, 'callback'])->name('razorpay.callback');
 Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
 
-Route::get('/payment/{type}/{id}', [PaymentController::class, 'create'])->name('payment.create')->middleware('auth');
-Route::post('/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm')->middleware('auth');
-Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-Route::get('/temple/dashboard', [TempleController::class, 'index'])->name('temple.dashboard');
-Route::get('/hotel/dashboard', [HotelController::class, 'index'])->name('hotel.dashboard');
-Route::get('/driver/dashboard', [DriverController::class, 'index'])->name('driver.dashboard');
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::post('/sevas/add-to-cart', [SevaBookingController::class, 'addToCart'])->name('sevas.addToCart');
+Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/cart/update/{index}', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::post('/cart/pay', [CartController::class, 'pay'])->name('cart.pay');
 
 
+Route::patch('/cart/update/{index}', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+
+
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'viewCart'])->name('index');
+    Route::post('/add/seva', [CartController::class, 'addSeva'])->name('addSeva');
+    Route::post('/add/ebook', [CartController::class, 'addEbook'])->name('addEbook');
+    Route::delete('/remove/{index}', [CartController::class, 'removeFromCart'])->name('remove');
+});
+
+
+Route::prefix('seva-booking')->name('sevas.booking.')->group(function () {
+    Route::get('/', [SevaBookingController::class, 'index'])->name('index');
+    Route::post('/confirm', [SevaBookingController::class, 'confirm'])->name('confirm');
+});
 
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware('auth')->group(function () {
-    // Temple
-    Route::post('/temples/{id}/favorite', [TempleController::class, 'favorite'])->name('temples.favorite');
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
+        if ($user->role === 'admin') return redirect()->route('admin.dashboard');
+        if ($user->role === 'hotel_manager') return redirect()->route('hotel-manager.dashboard');
+        if ($user->role === 'temple_manager') return redirect()->route('temple-manager.dashboard');
+        return view('dashboard');
+    })->middleware(['verified'])->name('dashboard');
 
-    // Stays Booking
-    Route::get('/stays/book/{room}', [StayController::class, 'details'])->name('stays.details');
-    Route::post('/stays/book/{room}', [StayController::class, 'store'])->name('stays.store');
-    Route::get('/stays/summary/{booking}', [StayController::class, 'summary'])->name('stays.summary');
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
+    Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
 
     // Ebooks
     Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
     Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
-    Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
 
-    // My Bookings Page
-    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
+    // ## BOOKING FLOW ROUTES (NOW PROTECTED) ##
+    Route::prefix('darshan-booking')->name('booking.')->group(function () {
+        Route::get('/', [DarshanBookingController::class, 'index'])->name('index');
+        Route::match(['get', 'post'], '/details', [DarshanBookingController::class, 'details'])->name('details');
+        Route::post('/store', [DarshanBookingController::class, 'store'])->name('store');
+    });
 
-    // Darshan Booking flow
-    Route::get('/darshan-booking', [DarshanBookingController::class, 'index'])->name('booking.index');
-    Route::post('/booking/details', [DarshanBookingController::class, 'details'])->name('booking.details');
-    Route::post('/booking/store', [DarshanBookingController::class, 'store'])->name('booking.store');
-    Route::get('/booking/{booking}/summary', [DarshanBookingController::class, 'summary'])->name('booking.summary');
-    Route::post('/booking/confirm', [DarshanBookingController::class, 'confirmBooking'])->name('booking.confirm');
+   Route::prefix('seva-booking')->name('sevas.booking.')->group(function () {
+    Route::get('/', [SevaBookingController::class, 'index'])->name('index');
+    Route::post('/store', [SevaBookingController::class, 'store'])->name('store');
+    Route::get('/{id}/summary', [SevaBookingController::class, 'summary'])->name('summary');
+    Route::get('/{id}/payment', [SevaBookingController::class, 'payment'])->name('payment');
+    Route::post('/confirm', [SevaBookingController::class, 'confirm'])->name('confirm');
+});
+Route::prefix('seva-booking')->name('sevas.booking.')->group(function () {
+    Route::get('/', [SevaBookingController::class, 'index'])->name('index');
 
-    // Seva Booking Flow
-    Route::post('/seva-booking', [SevaBookingController::class, 'store'])->name('sevas.booking.store');
-    Route::get('/seva-booking/{sevaBooking}/summary', [SevaBookingController::class, 'summary'])->name('sevas.booking.summary');
-    Route::post('/seva-booking/confirm', [SevaBookingController::class, 'confirm'])->name('sevas.booking.confirm');
+    // cart routes
+    Route::post('/cart/add/{id}', [SevaBookingController::class, 'addToCart'])->name('cart.add');
+    Route::get('/cart', [SevaBookingController::class, 'viewCart'])->name('cart');
+    Route::delete('/cart/remove/{id}', [SevaBookingController::class, 'removeFromCart'])->name('cart.remove');
 
-    //Donations
-    Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
+    // checkout flow
+    Route::post('/store', [SevaBookingController::class, 'store'])->name('store');
+    Route::get('/{id}/summary', [SevaBookingController::class, 'summary'])->name('summary');
+    Route::get('/{id}/payment', [SevaBookingController::class, 'payment'])->name('payment');
+    Route::post('/confirm', [SevaBookingController::class, 'confirm'])->name('confirm');
+});
+
+
+    Route::prefix('stays')->name('stays.')->group(function () {
+        Route::get('/', [StayController::class, 'index'])->name('index');
+        Route::get('/{hotel}', [StayController::class, 'show'])->name('show');
+        Route::get('/room/{room}', [StayController::class, 'details'])->name('details');
+        Route::post('/room/{room}/store', [StayController::class, 'store'])->name('store');
+    });
+
+    // ## PAYMENT ROUTES ##
+    Route::get('/payment/{type}/{id}', [PaymentController::class, 'create'])->name('payment.create');
+    Route::post('/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm');
+});
+
+
+// ## ADMIN, MANAGER, AND BREEZE AUTH ROUTES ##
+require __DIR__.'/auth.php';
+
+// ## ADMIN ROUTES ##
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::resource('temples', AdminTempleController::class);
+    Route::resource('ebooks', AdminEbookController::class);
+    Route::resource('latest_updates', LatestUpdateController::class);
+    Route::resource('complaints', AdminComplaintController::class)->only(['index', 'show', 'destroy']);
+    Route::patch('/complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.updateStatus');
+    Route::resource('temples.slots', AdminDarshanSlotController::class)->shallow();
+    Route::resource('temples.sevas', AdminSevaController::class)->shallow();
+    Route::get('/temples/{temple}/darshan-bookings', [AdminTempleController::class, 'showDarshanBookings'])->name('temples.darshan_bookings');
+    Route::resource('hotels', AdminHotelController::class);
+    Route::resource('hotels.rooms', AdminRoomController::class)->shallow();
+    Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
+    Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
 });
 
 //## HOTEL MANAGER ROUTES ##
@@ -145,6 +187,7 @@ Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->na
     Route::resource('sevas', TempleManagerSevaController::class);
     Route::get('/darshan-bookings', [TempleManagerDarshanBookingController::class, 'index'])->name('darshan-bookings.index');
 });
+
 
 // ## ADMIN ROUTES ##
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {

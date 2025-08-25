@@ -14,12 +14,16 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('darshan_slot_id')->constrained()->onDelete('cascade');
+            $table->foreignId('temple_id')->constrained()->onDelete('cascade');
+            $table->foreignId('darshan_slot_id')->nullable()->constrained()->onDelete('set null');
+            $table->date('booking_date')->nullable();
             $table->integer('number_of_people');
-            $table->string('status')->default('Confirmed'); // e.g., Confirmed, Cancelled
+            $table->json('devotee_details');
+            $table->string('status')->default('Pending');
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */

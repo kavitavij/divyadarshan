@@ -43,37 +43,30 @@ class EbookController extends Controller
     }
 
     /**
-     * Handle the purchase of an ebook by redirecting to the payment page.
-     */
-    public function purchase(Request $request, Ebook $ebook)
-    {
-        $user = Auth::user();
-
-        if ($user->ebooks()->where('ebook_id', $ebook->id)->exists()) {
-            return redirect()->route('profile.ebooks')->with('info', 'You already own this eBook.');
-        }
-
-        // THE FIX: Redirect to the universal payment page
-        return redirect()->route('payment.show', ['type' => 'ebook', 'id' => $ebook->id]);
-    }
-
-    /**
      * NEW METHOD: Confirm the purchase after "payment" and attach the ebook to the user.
      */
     public function confirmPurchase(Request $request)
-    {
-        $request->validate([
-            'ebook_id' => 'required|exists:ebooks,id',
-        ]);
+{
+    $user = Auth::user();
 
-        $user = Auth::user();
-        $ebook = Ebook::findOrFail($request->ebook_id);
+    $cart = Session::get('cart', []);
 
-        // Attach the book to the user
-        $user->ebooks()->attach($ebook->id);
-
-        return redirect()->route('profile.ebooks')->with('success', 'eBook purchased successfully! It is now available in your account.');
+    if (empty($cart)) {
+        return redirect()->route('ebooks.index')->with('error', 'No items to purchase.');
     }
+
+    foreach ($cart as $ebookId => $item) {
+        // attach only if not already owned
+        if (!$user->ebooks()->where('ebook_id', $ebookId)->exists()) {
+            $user->ebooks()->attach($ebookId);
+        }
+    }
+
+    // clear cart
+    Session::forget('cart');
+
+    return redirect()->route('profile.ebooks')->with('success', 'Purchase successful! Your eBooks are now available.');
+}
 
     /**
      * Handle the download of a purchased ebook.

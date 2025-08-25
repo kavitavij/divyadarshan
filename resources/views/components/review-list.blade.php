@@ -17,6 +17,14 @@
                     <input type="text" name="name" id="name" required
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
+                @guest
+                    <div class="mb-4">
+                        <label for="email"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                        <input type="email" name="email" id="email" required
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                @endguest
 
                 <div class="mb-4">
                     <label for="rating"
@@ -43,19 +51,23 @@
         </div>
 
         <!-- Review List -->
-        <div class="space-y-6">
-            @forelse ($reviews as $review)
-                <div
-                    class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center justify-between">
-                        <strong class="text-lg text-gray-800 dark:text-white">{{ $review->name }}</strong>
-                        <span class="text-yellow-500 font-semibold">★ {{ $review->rating }}/5</span>
-                    </div>
-                    <p class="mt-2 text-gray-700 dark:text-gray-300">{{ $review->message }}</p>
+        @forelse ($reviews as $review)
+            <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <strong class="text-lg text-gray-800 dark:text-white">{{ $review->name }}</strong>
+                    <span class="text-yellow-500 font-semibold">★ {{ $review->rating }}/5</span>
                 </div>
-            @empty
-                <p class="text-gray-600 dark:text-gray-400">No reviews yet. Be the first to share your thoughts!</p>
-            @endforelse
-        </div>
+
+                @if ($review->email)
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Email: {{ $review->email }}</p>
+                @endif
+
+                <p class="mt-2 text-gray-700 dark:text-gray-300">{{ $review->message }}</p>
+            </div>
+        @empty
+            <p class="text-gray-600 dark:text-gray-400">No reviews yet. Be the first to share your thoughts!</p>
+        @endforelse
+
+    </div>
     </div>
 </x-guest-layout>

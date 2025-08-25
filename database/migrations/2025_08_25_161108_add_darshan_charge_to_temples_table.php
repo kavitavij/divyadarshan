@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('bookings', function (Blueprint $table) {
-
-            $table->foreignId('temple_id')->constrained()->onDelete('cascade')->after('user_id');
+        Schema::table('temples', function (Blueprint $table) {
+            $table->decimal('darshan_charge', 8, 2)->default(0);
         });
     }
 
@@ -22,10 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('bookings', function (Blueprint $table) {
-            
-            $table->dropForeign(['temple_id']);
-            $table->dropColumn('temple_id');
+        Schema::table('temples', function (Blueprint $table) {
+            $table->dropColumn(['darshan_charge']);
         });
     }
 };

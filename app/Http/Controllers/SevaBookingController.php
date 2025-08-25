@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class SevaBookingController extends Controller
 {
-    /**
-     * Display the Seva booking page.
-     */
     public function index(Request $request)
     {
         $temples = Temple::orderBy('name')->get();
@@ -30,67 +27,38 @@ class SevaBookingController extends Controller
     }
 
     /**
-     * Store the initial Seva booking and redirect to the summary page.
+     * Add seva to cart (session) without redirecting.
      */
-    public function store(Request $request)
+    public function addToCart(Request $request)
+{
+    // Validate input
+    $request->validate([
+        'seva_id' => 'required|exists:sevas,id',
+    ]);
+
+    // Get the Seva model
+    $seva = Seva::findOrFail($request->input('seva_id'));
+
+    // Get existing cart from session or empty array
+    $cart = session()->get('cart', []);
+
+    // Add/update cart item
+    $cart[$seva->id]['quantity'] = ($cart[$seva->id]['quantity'] ?? 0) + 1;
+    $cart[$seva->id]['name'] = $seva->name;
+    $cart[$seva->id]['price'] = $seva->price;
+
+    // Save back to session
+    session()->put('cart', $cart);
+
+    return response()->json([
+        'success' => true,
+        'message' => $seva->name . ' added to cart'
+    ]);
+}
+
+    public function viewCart()
     {
-        $request->validate(['seva_id' => 'required|exists:sevas,id']);
-
-        $seva = Seva::findOrFail($request->seva_id);
-
-        $sevaBooking = SevaBooking::create([
-            'user_id' => Auth::id(),
-            'seva_id' => $seva->id,
-            'amount' => $seva->price,
-            'status' => 'Pending Payment',
-        ]);
-
-        return redirect()->route('sevas.booking.summary', $sevaBooking);
-    }
-
-    /**
-     * Display the booking summary.
-     */
-    public function summary(SevaBooking $sevaBooking)
-    {
-        $sevaBooking->load('seva.temple');
-        return view('sevas.summary', compact('sevaBooking'));
-    }
-
-    /**
-     * Display the payment page using the shared payment view.
-     */
-    public function payment(SevaBooking $sevaBooking)
-    {
-        $sevaBooking->load('seva.temple');
-
-        // Prepare the data for the universal payment page
-        $summary = [
-            'title' => 'Seva Booking Summary',
-            'details' => [
-                'Temple' => $sevaBooking->seva->temple->name,
-                'Seva' => $sevaBooking->seva->name,
-            ],
-            'amount' => $sevaBooking->amount,
-            'confirm_route' => route('sevas.booking.confirm'),
-            'booking_id' => $sevaBooking->id,
-        ];
-
-        return view('shared.payment', compact('summary'));
-    }
-
-    /**
-     * Confirm the booking after "payment".
-     */
-    public function confirm(Request $request)
-    {
-        $request->validate(['booking_id' => 'required|exists:seva_bookings,id']);
-
-        $sevaBooking = SevaBooking::findOrFail($request->booking_id);
-        $sevaBooking->status = 'Confirmed';
-        $sevaBooking->save();
-
-
-    return redirect()->route('payment.create', ['id' => $sevaBooking->id, 'type' => 'seva']);
+        $cart = session()->get('cart', []);
+        return view('sevas.cart', compact('cart'));
     }
 }

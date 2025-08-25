@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Donation;
-use App\Models\AccommodationBooking;
-use App\Models\SevaBooking;
-use App\Models\Booking as DarshanBooking; // Using an alias to prevent class name conflicts
+use App\Models\StayBooking;
+use App\Models\Sevabooking;
+use App\Models\Booking as DarshanBooking;
+use App\Models\Ebook;
+use App\Models\Payment;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -22,49 +25,66 @@ class PaymentController extends Controller
 
         $summary = [];
 
-        // This switch statement figures out what the user is paying for
         switch ($type) {
-            case 'donation':
-                $donation = Donation::findOrFail($id);
+            case 'darshan':
+                $booking = DarshanBooking::with('temple')->findOrFail($id);
                 $summary = [
-                    'title' => 'Donation Summary',
-                    'item_name' => 'Temple Donation',
-                    'amount' => $donation->amount,
-                    'type' => 'donation',
-                    'id' => $donation->id,
-                ];
-                break;
-
-            case 'stay':
-                $booking = AccommodationBooking::with('room.hotel')->findOrFail($id);
-                $summary = [
-                    'title' => 'Accommodation Booking Summary',
-                    'item_name' => 'Stay at ' . $booking->room->hotel->name,
-                    'amount' => $booking->total_amount,
-                    'type' => 'stay',
+                    'title' => 'Darshan Booking Summary',
+                    'details' => [
+                        'Temple' => $booking->temple->name,
+                        'Date' => Carbon::parse($booking->booking_date)->format('d M, Y'),
+                        'Devotees' => $booking->number_of_people,
+                    ],
+                    'amount' => 50.00 * $booking->number_of_people, // Example: ₹50 per person
+                    'type' => 'darshan',
                     'id' => $booking->id,
                 ];
                 break;
 
             case 'seva':
-                $booking = SevaBooking::with('seva.temple')->findOrFail($id);
+                $booking = Sevabooking::with('seva.temple')->findOrFail($id);
                 $summary = [
                     'title' => 'Seva Booking Summary',
-                    'item_name' => $booking->seva->name . ' at ' . $booking->seva->temple->name,
+                    'details' => [
+                        'Temple' => $booking->seva->temple->name,
+                        'Seva' => $booking->seva->name,
+                        'Date' => Carbon::parse($booking->booking_date)->format('d M, Y'),
+                        'Devotee Name' => $booking->devotee_name,
+                    ],
                     'amount' => $booking->amount,
                     'type' => 'seva',
                     'id' => $booking->id,
                 ];
                 break;
 
-            case 'darshan':
-                $booking = DarshanBooking::with('temple')->findOrFail($id);
+            case 'stay':
+                $booking = StayBooking::with('room.hotel')->findOrFail($id);
                 $summary = [
-                    'title' => 'Darshan Booking Summary',
-                    'item_name' => 'Darshan at ' . $booking->temple->name,
-                    'amount' => $booking->total_amount, // Ensure this column exists and is correct
-                    'type' => 'darshan',
+                    'title' => 'Accommodation Booking Summary',
+                    'details' => [
+                        'Hotel' => $booking->room->hotel->name,
+                        'Room Type' => $booking->room->type,
+                        'Check-in' => Carbon::parse($booking->check_in_date)->format('d M, Y'),
+                        'Check-out' => Carbon::parse($booking->check_out_date)->format('d M, Y'),
+                        'Guests' => $booking->number_of_guests,
+                    ],
+                    'amount' => $booking->total_amount,
+                    'type' => 'stay',
                     'id' => $booking->id,
+                ];
+                break;
+
+            case 'ebook':
+                $ebook = Ebook::findOrFail($id);
+                $summary = [
+                    'title' => 'Ebook Purchase Summary',
+                    'details' => [
+                        'Title' => $ebook->title,
+                        'Author' => $ebook->author,
+                    ],
+                    'amount' => $ebook->price,
+                    'type' => 'ebook',
+                    'id' => $ebook->id,
                 ];
                 break;
 
@@ -86,35 +106,55 @@ class PaymentController extends Controller
             'order_id' => 'required|integer',
         ]);
 
-        // This switch statement updates the correct database record
+        $order = null;
+        $amount = 0;
+
         switch ($validated['order_type']) {
-            case 'donation':
-                $order = Donation::findOrFail($validated['order_id']);
-                $order->status = 'Completed';
-                $order->payment_id = $validated['payment_id'];
-                $order->save();
-                return redirect()->route('home')->with('success', 'Thank you for your generous donation!');
-
-            case 'stay':
-                $order = AccommodationBooking::findOrFail($validated['order_id']);
-                $order->status = 'Confirmed';
-                $order->payment_id = $validated['payment_id'];
-                $order->save();
-                return redirect()->route('home')->with('success', 'Your accommodation is confirmed!');
-
-            case 'seva':
-                $order = SevaBooking::findOrFail($validated['order_id']);
-                $order->status = 'Confirmed';
-                $order->payment_id = $validated['payment_id'];
-                $order->save();
-                return redirect()->route('home')->with('success', 'Your Seva booking is confirmed!');
-
             case 'darshan':
                 $order = DarshanBooking::findOrFail($validated['order_id']);
+                $amount = 50.00 * $order->number_of_people;
                 $order->status = 'Confirmed';
-                $order->payment_id = $validated['payment_id'];
-                $order->save();
-                return redirect()->route('home')->with('success', 'Your Darshan booking is confirmed!');
+                $redirectRoute = 'profile.bookings';
+                $successMessage = 'Your Darshan booking is confirmed!';
+                break;
+            case 'seva':
+                $order = Sevabooking::findOrFail($validated['order_id']);
+                $amount = $order->amount;
+                $order->status = 'Confirmed';
+                $redirectRoute = 'profile.bookings';
+                $successMessage = 'Your Seva booking is confirmed!';
+                break;
+            case 'stay':
+                $order = StayBooking::findOrFail($validated['order_id']);
+                $amount = $order->total_amount;
+                $order->status = 'Confirmed';
+                $redirectRoute = 'profile.bookings';
+                $successMessage = 'Your accommodation is confirmed!';
+                break;
+            case 'ebook':
+                $order = Ebook::findOrFail($validated['order_id']);
+                $amount = $order->price;
+                Auth::user()->ebooks()->attach($order->id);
+                $redirectRoute = 'profile.ebooks';
+                $successMessage = 'eBook purchased successfully!';
+                break;
+        }
+
+        if ($order) {
+            $order->save();
+
+            // Create a record in the payments table
+            Payment::create([
+                'user_id' => Auth::id(),
+                'payment_id' => $validated['payment_id'],
+                'entity_type' => get_class($order),
+                'entity_id' => $order->id,
+                'amount' => $amount,
+                'currency' => 'INR',
+                'status' => 'Completed',
+            ]);
+
+            return redirect()->route($redirectRoute)->with('success', $successMessage);
         }
 
         return redirect()->route('home')->with('error', 'Could not confirm your payment.');

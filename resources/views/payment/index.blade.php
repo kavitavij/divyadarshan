@@ -3,31 +3,41 @@
 @section('content')
     <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>{{ $summary['title'] }}</h2>
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white text-center">
+                        <h2>Confirm Your Booking & Complete Payment</h2>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-4">
-                            <p><strong>Item:</strong> {{ $summary['item_name'] }}</p>
-                            <p class="h4 mt-3">
-                                <strong>Total Amount:</strong>
-                                ₹{{ number_format($summary['amount'], 2) }}
-                            </p>
-                        </div>
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">{{ $summary['title'] }}</h4>
 
-                        <button id="pay-button" class="btn btn-primary btn-lg w-100">Pay Now</button>
+                        {{-- Dynamically display summary details --}}
+                        <ul class="list-group list-group-flush mb-4">
+                            @foreach ($summary['details'] as $label => $value)
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>{{ $label }}:</strong>
+                                    <span>{{ $value }}</span>
+                                </li>
+                            @endforeach
+                            <li class="list-group-item d-flex justify-content-between align-items-center h4">
+                                <strong>Total Amount:</strong>
+                                <span class="text-success">₹{{ number_format($summary['amount'], 2) }}</span>
+                            </li>
+                        </ul>
+
+                        <div class="text-center">
+                            <button id="pay-button" class="btn btn-primary btn-lg w-100">Pay Now with Razorpay</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- This hidden form will be submitted on successful payment --}}
+    {{-- Hidden form to confirm payment --}}
     <form id="confirmation-form" action="{{ route('payment.confirm') }}" method="POST" style="display: none;">
         @csrf
-        <input type="hidden" id="payment_id" name="payment_id" value="">
+        <input type="hidden" id="payment_id" name="payment_id">
         <input type="hidden" name="order_type" value="{{ $summary['type'] }}">
         <input type="hidden" name="order_id" value="{{ $summary['id'] }}">
     </form>
@@ -44,9 +54,8 @@
                 "amount": {{ $summary['amount'] * 100 }}, // Amount in paise
                 "currency": "INR",
                 "name": "Divyadarshan Trust",
-                "description": "Payment for {{ $summary['item_name'] }}",
+                "description": "Payment for {{ $summary['title'] }}",
                 "handler": function(response) {
-                    // On success, fill the payment ID and submit the form
                     document.getElementById('payment_id').value = response.razorpay_payment_id;
                     document.getElementById('confirmation-form').submit();
                 },
@@ -55,7 +64,7 @@
                     "email": "{{ Auth::user()->email ?? '' }}",
                 },
                 "theme": {
-                    "color": "#F97316"
+                    "color": "#4a148c"
                 }
             };
             var rzp1 = new Razorpay(options);

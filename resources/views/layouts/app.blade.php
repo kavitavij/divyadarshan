@@ -17,8 +17,9 @@
     </script>
 </head>
 
-<body x-data="{ loginModal: false, modalView: 'login', mobileMenuOpen: false }" :class="{ 'overflow-hidden': loginModal || mobileMenuOpen }"
+<body x-data="appState()" x-init="initCart()" :class="{ 'overflow-hidden': loginModal || cartOpen }"
     class="bg-gray-100 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-300">
+
 
     <script src="//unpkg.com/alpinejs" defer></script>
 
@@ -85,96 +86,13 @@
                         class="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Ebooks</a>
                 </div>
             </nav>
-            <!-- Right: Login Button -->
-            <div class="flex-shrink-0">
+            <div class="flex-shrink-0 flex items-center gap-4">
                 @guest
-                    <button id="openLoginModal" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                    <button @click="loginModal = true"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                         Login
                     </button>
-                    <div id="loginModal"
-                        class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md relative">
-                            <button id="closeLoginModal"
-                                class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-
-                            <h2 class="text-xl font-semibold text-center text-gray-800 dark:text-white mb-4">Login</h2>
-
-                            <form method="POST" action="{{ route('login') }}">
-                                @csrf
-                                <!-- Email -->
-                                <div class="mb-4">
-                                    <label for="email" class="block text-sm font-medium">Email</label>
-                                    <input id="email" type="email" name="email" required
-                                        class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
-                                </div>
-
-                                <!-- Password -->
-                                <div class="mb-4">
-                                    <label for="password" class="block text-sm font-medium">Password</label>
-                                    <input id="password" type="password" name="password" required
-                                        class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
-                                </div>
-
-                                <div class="flex justify-between items-center">
-                                    <button type="submit"
-                                        class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Login</button>
-                                    <a href="#" id="showRegister" class="text-sm text-indigo-500 hover:underline">New
-                                        user? Register</a>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div id="registerModal"
-                        class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md relative">
-                            <button id="closeRegisterModal"
-                                class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-
-                            <h2 class="text-xl font-semibold text-center text-gray-800 dark:text-white mb-4">Register</h2>
-
-                            <form method="POST" action="{{ route('register') }}">
-                                @csrf
-                                <!-- Name -->
-                                <div class="mb-4">
-                                    <label for="name" class="block text-sm font-medium">Name</label>
-                                    <input id="name" type="text" name="name" required
-                                        class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
-                                </div>
-
-                                <!-- Email -->
-                                <div class="mb-4">
-                                    <label for="email" class="block text-sm font-medium">Email</label>
-                                    <input id="email" type="email" name="email" required
-                                        class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
-                                </div>
-
-                                <!-- Password -->
-                                <div class="mb-4">
-                                    <label for="password" class="block text-sm font-medium">Password</label>
-                                    <input id="password" type="password" name="password" required
-                                        class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
-                                </div>
-
-                                <!-- Confirm Password -->
-                                <div class="mb-4">
-                                    <label for="password_confirmation" class="block text-sm font-medium">Confirm
-                                        Password</label>
-                                    <input id="password_confirmation" type="password" name="password_confirmation"
-                                        required
-                                        class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white" />
-                                </div>
-
-                                <div class="flex justify-between items-center">
-                                    <button type="submit"
-                                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Register</button>
-                                    <a href="#" id="showLogin"
-                                        class="text-sm text-indigo-500 hover:underline">Already registered?</a>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                 @else
-                    {{-- This dropdown shows only if the user is LOGGED IN --}}
                     <div class="relative group">
                         <button class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                             <span>{{ Auth::user()->name }}</span>
@@ -183,21 +101,20 @@
                                 </path>
                             </svg>
                         </button>
-
                         <div
                             class="absolute hidden group-hover:block right-0 bg-white border rounded shadow-lg mt-1 min-w-max z-20">
-
                             @if (Auth::user()->role === 'admin')
                                 <a href="{{ route('admin.dashboard') }}"
                                     class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
                             @endif
-
                             <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
                             <a href="{{ route('profile.ebooks') }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My eBooks</a>
                             <a href="{{ route('profile.bookings') }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
+                            <a href='{{ route('cart.index') }}' class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My
+                                cart</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <a href="{{ route('logout') }}"
@@ -209,9 +126,24 @@
                         </div>
                     </div>
                 @endguest
-            </div>
 
-        </div>
+                <!-- Cart Icon -->
+                <!-- Cart Icon -->
+                <a href="{{ route('cart.index') }}" class="relative">
+                    <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                    @if (session('cart') && count(session('cart')) > 0)
+                        <span
+                            class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ count(session('cart')) }}
+                        </span>
+                    @endif
+                </a>
+            </div>
         </div>
     </header>
 
@@ -220,12 +152,12 @@
         <div class="swiper mySwiper" style="max-width: 400px;">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="{{ asset('images/temple1.jpg') }}"
-                        style="height: 150px; width: 100%; object-fit: cover;" class="rounded" alt="Temple 1">
+                    <img src="{{ asset('images/temple1.jpg') }}" style="height: 150px; width: 100%; object-fit: cover;"
+                        class="rounded" alt="Temple 1">
                 </div>
                 <div class="swiper-slide">
-                    <img src="{{ asset('images/temple2.jpg') }}"
-                        style="height: 150px; width: 100%; object-fit: cover;" class="rounded" alt="Temple 2">
+                    <img src="{{ asset('images/temple2.jpg') }}" style="height: 150px; width: 100%; object-fit: cover;"
+                        class="rounded" alt="Temple 2">
                 </div>
                 <div class="swiper-slide">
                     <img src="{{ asset('images/temple3.jpg') }}"
@@ -265,7 +197,156 @@
     </footer>
 
     </div>
-
+    <!-- Cart Flyout Panel -->
+    <div x-show="cartOpen" @click.away="cartOpen = false" class="fixed inset-0 z-50 overflow-hidden"
+        x-transition.opacity style="display: none;">
+        <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <section class="absolute inset-y-0 right-0 pl-10 max-w-full flex">
+            <div class="w-screen max-w-md" x-show="cartOpen"
+                x-transition:enter="transform transition ease-in-out duration-500"
+                x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+                x-transition:leave="transform transition ease-in-out duration-500"
+                x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+                <div class="h-full flex flex-col bg-white dark:bg-gray-800 shadow-xl overflow-y-scroll">
+                    <div class="flex-1 py-6 overflow-y-auto px-4 sm:px-6">
+                        <div class="flex items-start justify-between">
+                            <h2 class="text-lg font-medium text-gray-900 dark:text-white">Shopping cart</h2>
+                            <div class="ml-3 h-7 flex items-center">
+                                <button @click="cartOpen = false" type="button"
+                                    class="-m-2 p-2 text-gray-400 hover:text-gray-500">
+                                    <span class="sr-only">Close panel</span>
+                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <div class="flow-root">
+                                <ul role="list" class="-my-6 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <template x-for="(item, index) in cartItems" :key="index">
+                                        <li class="py-6 flex">
+                                            <div class="ml-4 flex-1 flex flex-col">
+                                                <div>
+                                                    <div
+                                                        class="flex justify-between text-base font-medium text-gray-900 dark:text-white">
+                                                        <h3 x-text="item.name"></h3>
+                                                        <p class="ml-4" x-text="`₹${item.price.toFixed(2)}`"></p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 flex items-end justify-between text-sm">
+                                                    <p class="text-gray-500 dark:text-gray-400"
+                                                        x-text="`Qty ${item.quantity}`"></p>
+                                                    <div class="flex">
+                                                        <button @click="removeFromCart(index)" type="button"
+                                                            class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </template>
+                                    <li x-show="cartItems.length === 0"
+                                        class="py-6 text-center text-gray-500 dark:text-gray-400">
+                                        Your cart is empty.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div x-show="cartItems.length > 0"
+                        class="border-t border-gray-200 dark:border-gray-700 py-6 px-4 sm:px-6">
+                        <div class="flex justify-between text-base font-medium text-gray-900 dark:text-white">
+                            <p>Subtotal</p>
+                            <p x-text="`₹${total.toFixed(2)}`"></p>
+                        </div>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Shipping and taxes calculated at
+                            checkout.</p>
+                        <div class="mt-6">
+                            <a href="#"
+                                class="flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Cart Flyout Panel -->
+    <div x-show="cartOpen" @click.away="cartOpen = false" class="fixed inset-0 z-50 overflow-hidden"
+        x-transition.opacity style="display: none;">
+        <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <section class="absolute inset-y-0 right-0 pl-10 max-w-full flex">
+            <div class="w-screen max-w-md" x-show="cartOpen"
+                x-transition:enter="transform transition ease-in-out duration-500"
+                x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+                x-transition:leave="transform transition ease-in-out duration-500"
+                x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+                <div class="h-full flex flex-col bg-white dark:bg-gray-800 shadow-xl overflow-y-scroll">
+                    <div class="flex-1 py-6 overflow-y-auto px-4 sm:px-6">
+                        <div class="flex items-start justify-between">
+                            <h2 class="text-lg font-medium text-gray-900 dark:text-white">Shopping cart</h2>
+                            <div class="ml-3 h-7 flex items-center">
+                                <button @click="cartOpen = false" type="button"
+                                    class="-m-2 p-2 text-gray-400 hover:text-gray-500">
+                                    <span class="sr-only">Close panel</span>
+                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <div class="flow-root">
+                                <ul role="list" class="-my-6 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <template x-for="(item, index) in cartItems" :key="index">
+                                        <li class="py-6 flex">
+                                            <div class="ml-4 flex-1 flex flex-col">
+                                                <div>
+                                                    <div
+                                                        class="flex justify-between text-base font-medium text-gray-900 dark:text-white">
+                                                        <h3 x-text="item.name"></h3>
+                                                        <p class="ml-4" x-text="`₹${item.price.toFixed(2)}`"></p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 flex items-end justify-between text-sm">
+                                                    <p class="text-gray-500 dark:text-gray-400"
+                                                        x-text="`Qty ${item.quantity}`"></p>
+                                                    <div class="flex">
+                                                        <button @click="removeFromCart(index)" type="button"
+                                                            class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </template>
+                                    <li x-show="cartItems.length === 0"
+                                        class="py-6 text-center text-gray-500 dark:text-gray-400">
+                                        Your cart is empty.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div x-show="cartItems.length > 0"
+                        class="border-t border-gray-200 dark:border-gray-700 py-6 px-4 sm:px-6">
+                        <div class="flex justify-between text-base font-medium text-gray-900 dark:text-white">
+                            <p>Subtotal</p>
+                            <p x-text="`₹${total.toFixed(2)}`"></p>
+                        </div>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Shipping and taxes calculated at
+                            checkout.</p>
+                        <div class="mt-6">
+                            <a href="#"
+                                class="flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
     {{-- 🔷 Swiper JS --}}
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
@@ -399,13 +480,10 @@
                 </div>
             </template>
         </div>
-
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
-
-
     <!--Start of Tawk.to Script-->
     <script type="text/javascript">
         var Tawk_API = Tawk_API || {},
@@ -456,8 +534,50 @@
             loginModal.classList.add('flex');
         });
     </script>
+    <script>
+        function appState() {
+            return {
+                // State for Modals
+                loginModal: false,
+                modalView: 'login', // Can be 'login', 'register', or 'forgot'
 
+                // State for Cart
+                cartOpen: false,
+                cartItems: [],
+                total: 0,
 
+                // Initialize cart from localStorage
+                initCart() {
+                    this.cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                    this.updateTotal();
+                },
+                addToCart(item) {
+                    let existingItem = this.cartItems.find(i => i.id === item.id && i.type === item.type);
+                    if (existingItem) {
+                        existingItem.quantity++;
+                    } else {
+                        this.cartItems.push({
+                            ...item,
+                            quantity: 1
+                        });
+                    }
+                    this.saveCart();
+                    this.cartOpen = true;
+                },
+                removeFromCart(index) {
+                    this.cartItems.splice(index, 1);
+                    this.saveCart();
+                },
+                saveCart() {
+                    localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
+                    this.updateTotal();
+                },
+                updateTotal() {
+                    this.total = this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

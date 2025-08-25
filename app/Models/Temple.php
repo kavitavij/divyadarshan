@@ -11,7 +11,8 @@ class Temple extends Model
 
     protected $fillable = [
         'name', 'location', 'description', 'image', 'about',
-        'online_services', 'news', 'social_services', 'slot_data',
+        'online_services', 'news', 'social_services', 'slot_data', 'darshan_charge',
+
     ];
 
     protected $casts = [

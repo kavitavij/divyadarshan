@@ -20,7 +20,7 @@ class TempleController extends Controller
 
         if ($request->has('selected_date')) {
             $selectedDate = Carbon::parse($request->selected_date);
-            
+
             // First, try to find real, custom slots created by the admin for this date.
             $slots = DarshanSlot::where('temple_id', $temple->id)
                 ->where('slot_date', $selectedDate->toDateString())
@@ -94,13 +94,13 @@ class TempleController extends Controller
             for ($day = 1; $day <= $daysInMonth; $day++) {
                 $date = $currentDate->copy()->setDay($day);
                 $dateString = $date->toDateString();
-                
+
                 if ($date->isPast() && !$date->isToday()) {
                     $status = 'not_available';
-                } 
+                }
                 elseif (isset($slotData[$dateString])) {
                     $status = $slotData[$dateString];
-                } 
+                }
                 else {
                     $status = 'available';
                 }
@@ -114,4 +114,16 @@ class TempleController extends Controller
 
         return $calendars;
     }
+    public function details(Request $request)
+{
+    $bookingData = [
+        'temple_id' => $request->input('temple_id'),
+        'selected_date' => $request->input('selected_date'),
+        'darshan_slot_id' => $request->input('darshan_slot_id'),
+        'number_of_people' => $request->input('number_of_people'),
+    ];
+
+    return view('booking.details', compact('bookingData'));
+}
+
 }

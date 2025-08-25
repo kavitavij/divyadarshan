@@ -28,9 +28,10 @@ class TempleController extends Controller
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048',
+            'darshan_charge' => 'nullable|numeric|min:2',
         ]);
 
-        $data = $request->only(['name', 'location', 'description', 'about', 'online_services', 'social_services']);
+        $data = $request->only(['name', 'location','darshan_charge', 'description', 'about', 'online_services', 'social_services']);
 
         // Process News Items
         $newsData = [];
@@ -76,9 +77,10 @@ class TempleController extends Controller
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048',
+            'darshan_charge' => 'nullable|numeric|min:2',
         ]);
 
-        $temple->fill($request->only(['name', 'location', 'description', 'about', 'online_services', 'social_services']));
+        $temple->fill($request->only(['name','darshan_charge', 'location', 'description', 'about', 'online_services', 'social_services']));
 
         $newsData = [];
         if ($request->has('news_items')) {

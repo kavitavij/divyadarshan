@@ -54,13 +54,11 @@
                             <div class="mt-4">
                                 @if ($ebook->type == 'paid')
                                     <p class="text-xl font-bold text-blue-700 mb-2">₹{{ $ebook->price }}</p>
-                                    {{-- THE FIX: This form now correctly wraps the "Buy Now" button --}}
-                                    <form action="{{ route('ebooks.purchase', $ebook) }}" method="POST">
+                                    {{-- ADD TO CART --}}
+                                    <form action="{{ route('cart.addEbook') }}" method="POST">
                                         @csrf
-                                        <button type="submit"
-                                            class="inline-block bg-amber-500 text-white px-4 py-2 rounded hover:bg-amber-600 w-full text-center">
-                                            Buy Now
-                                        </button>
+                                        <input type="hidden" name="ebook_id" value="{{ $ebook->id }}">
+                                        <button type="submit" class="btn btn-success">Add to Cart</button>
                                     </form>
                                 @else
                                     <a href="{{ Storage::url($ebook->ebook_file_path) }}" target="_blank"
@@ -69,6 +67,7 @@
                                     </a>
                                 @endif
                             </div>
+
                         </div>
                     </div>
                 @endforeach
@@ -80,3 +79,8 @@
         @endif
     </div>
 @endsection
+@if (session('success'))
+    <script>
+        alert("{{ session('success') }}");
+    </script>
+@endif
