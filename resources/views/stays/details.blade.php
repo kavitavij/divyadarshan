@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enter Guest Details</title>
-    {{-- Link to Bootstrap CSS to provide base styling --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         body {
             background-color: #f4f7f6;
@@ -19,32 +19,23 @@
             border-radius: 15px;
             margin-top: 2rem;
             overflow: hidden;
-            /* Ensures child elements conform to border-radius */
         }
 
         .details-card .card-header {
             background-color: #0056b3;
-            /* A professional blue */
             color: white;
             text-align: center;
             font-size: 1.6rem;
             font-weight: 600;
-            border-bottom: 0;
             padding: 1.5rem;
         }
 
-        .details-card .card-body {
-            padding: 2.5rem;
-        }
-
-        /* This is the new class for the styled guest forms */
         .guest-details-card {
             background-color: #f8f9fa;
             border: 1px solid #e9ecef;
             border-radius: 10px;
             padding: 1.5rem;
             margin-top: 1.5rem;
-            /* Replaces the old mt-4 */
         }
 
         .guest-details-card h4 {
@@ -61,7 +52,6 @@
             gap: 1.25rem;
         }
 
-        /* Responsive grid for larger screens */
         @media (min-width: 768px) {
             .details-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -69,7 +59,6 @@
 
             .grid-full-width {
                 grid-column: 1 / -1;
-                /* Makes an item span the full grid width */
             }
         }
 
@@ -120,11 +109,6 @@
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
-
-        .room-summary p {
-            margin-bottom: 0.25rem;
-            color: #333;
-        }
     </style>
 </head>
 
@@ -137,36 +121,50 @@
                         <h2>Enter Your Details</h2>
                     </div>
                     <div class="card-body">
-                        <div class="room-summary">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <div class="room-summary mb-4">
                             <h3>{{ $room->type }} Room at {{ $room->hotel->name }}</h3>
-                            <p class="text-gray-600">Price:
-                                <strong>₹{{ number_format($room->price_per_night, 2) }}</strong> / night
-                            </p>
+                            <p>Price: <strong>₹{{ number_format($room->price_per_night, 2) }}</strong> / night</p>
                         </div>
 
-                        <form action="{{ route('stays.store', $room) }}" method="POST">
+                        <form action="{{ route('cart.addStay') }}" method="POST">
                             @csrf
+                            <input type="hidden" name="room_id" value="{{ $room->id }}">
+
                             <div class="row">
-                                <div class="col-md-6 form-group mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="check_in_date">Check-in Date</label>
-                                    <input type="date" name="check_in_date" class="form-control" required>
+                                    <input type="date" name="check_in_date" id="check_in_date" class="form-control"
+                                        value="{{ old('check_in_date') }}" required min="{{ date('Y-m-d') }}">
                                 </div>
-                                <div class="col-md-6 form-group mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="check_out_date">Check-out Date</label>
-                                    <input type="date" name="check_out_date" class="form-control" required>
+                                    <input type="date" name="check_out_date" id="check_out_date" class="form-control"
+                                        value="{{ old('check_out_date') }}" required>
                                 </div>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label for="number_of_guests">Number of Guests (Max: {{ $room->capacity }})</label>
-                                <input type="number" name="number_of_guests" id="number_of_guests" class="form-control"
-                                    min="1" max="{{ $room->capacity }}" required>
                             </div>
 
-                            {{-- Container for dynamically shown guest forms --}}
+                            <div class="mb-3">
+                                <label for="number_of_guests">Number of Guests (Max: {{ $room->capacity }})</label>
+                                <input type="number" name="number_of_guests" id="number_of_guests" class="form-control"
+                                    value="{{ old('number_of_guests', 1) }}" min="1"
+                                    max="{{ $room->capacity }}" required>
+                            </div>
+
+                            {{-- Guest Forms --}}
                             <div id="guest-forms-container">
                                 @for ($i = 0; $i < $room->capacity; $i++)
                                     <div class="guest-details-card" id="guest-form-{{ $i }}"
-                                        style="display: {{ $i === 0 ? 'block' : 'none' }};">
+                                        style="display:none;">
                                         <h4>Guest {{ $i + 1 }} Details</h4>
                                         <div class="details-grid">
                                             <div class="form-group">
@@ -193,61 +191,81 @@
                                 @endfor
                             </div>
 
-                            <div class="form-group mb-3 mt-4">
+                            <div class="mt-4 mb-3">
                                 <label for="phone_number">Contact Phone Number</label>
-                                <input type="tel" name="phone_number" class="form-control" required>
+                                <input type="tel" name="phone_number" class="form-control"
+                                    value="{{ old('phone_number') }}" required>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100 mt-3 btn-proceed">Proceed to
-                                Summary</button>
+                            <button type="submit" class="btn btn-proceed">Add to Cart</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    @if (session('success'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                alert("{{ session('success') }}");
+                window.location.href = "{{ route('cart.view') }}"; // or route('home')
+            });
+        </script>
+    @endif
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const numberOfGuestsInput = document.getElementById('number_of_guests');
-            const guestFormsContainer = document.getElementById('guest-forms-container');
+        document.addEventListener("DOMContentLoaded", function() {
+            const numberOfGuestsInput = document.getElementById("number_of_guests");
             const maxGuests = {{ $room->capacity }};
 
             function toggleGuestForms() {
-                // Default to 1 if the input is empty or invalid
                 const guestCount = parseInt(numberOfGuestsInput.value, 10) || 1;
-
                 for (let i = 0; i < maxGuests; i++) {
                     const form = document.getElementById(`guest-form-${i}`);
                     const nameInput = document.getElementById(`guest_name_${i}`);
-                    const idNumberInput = document.getElementById(`guest_id_number_${i}`);
+                    const idType = document.getElementById(`guest_id_type_${i}`);
+                    const idNum = document.getElementById(`guest_id_number_${i}`);
 
-                    if (form) {
-                        if (i < guestCount) {
-                            form.style.display = 'block';
-                            nameInput.required = true;
-                            idNumberInput.required = true;
-                        } else {
-                            form.style.display = 'none';
-                            nameInput.required = false;
-                            idNumberInput.required = false;
-                        }
+                    if (i < guestCount) {
+                        form.style.display = "block";
+                        nameInput.required = true;
+                        idType.required = true;
+                        idNum.required = true;
+                        nameInput.disabled = false;
+                        idType.disabled = false;
+                        idNum.disabled = false;
+                    } else {
+                        form.style.display = "none";
+                        nameInput.required = false;
+                        idType.required = false;
+                        idNum.required = false;
+                        nameInput.disabled = true;
+                        idType.disabled = true;
+                        idNum.disabled = true;
                     }
                 }
             }
 
-            numberOfGuestsInput.addEventListener('input', toggleGuestForms);
-
-            // Set initial state based on default value
-            if (!numberOfGuestsInput.value) {
-                numberOfGuestsInput.value = 1;
-            }
-
-            // Initialize on page load
+            numberOfGuestsInput.addEventListener("input", toggleGuestForms);
             toggleGuestForms();
+
+            // Date validation
+            const checkIn = document.getElementById("check_in_date");
+            const checkOut = document.getElementById("check_out_date");
+
+            function validateDates() {
+                if (checkIn.value) {
+                    let minDate = new Date(checkIn.value);
+                    minDate.setDate(minDate.getDate() + 1);
+                    checkOut.min = minDate.toISOString().split("T")[0];
+                    if (checkOut.value && checkOut.value < checkOut.min) {
+                        checkOut.value = "";
+                    }
+                }
+            }
+            checkIn.addEventListener("change", validateDates);
+            validateDates();
         });
     </script>
-
 </body>
 
 </html>

@@ -31,26 +31,6 @@ class DarshanBookingController extends Controller
 
         return view('booking.index', compact('temples', 'selectedTemple', 'calendars', 'slots', 'selectedDate'));
     }
-    //     public function details(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'temple_id' => 'required|exists:temples,id',
-    //         'darshan_slot_id' => 'required|string',
-    //         'selected_date' => 'required|date',
-    //         'slot_details' => 'required|string',
-    //         'number_of_people' => 'required|integer|min:1|max:10',
-    //     ]);
-
-
-    //     $temple = Temple::findOrFail($validated['temple_id']);
-    //     $chargePerPerson = $temple->darshan_charge ?? 0;
-
-
-    //     $validated['darshan_charge'] = $chargePerPerson;
-    //     $validated['total_charge'] = $chargePerPerson * $validated['number_of_people'];
-
-    //     return view('booking.details', ['bookingData' => $validated,'temple' => $temple,]);
-    // }
 
 
     public function details(Request $request)

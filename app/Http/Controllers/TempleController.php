@@ -114,8 +114,12 @@ class TempleController extends Controller
 
         return $calendars;
     }
-    public function details(Request $request)
+
+public function details(Request $request)
 {
+    // 1. Find the temple in the database using the ID from the form
+    $temple = Temple::findOrFail($request->input('temple_id'));
+
     $bookingData = [
         'temple_id' => $request->input('temple_id'),
         'selected_date' => $request->input('selected_date'),
@@ -123,7 +127,8 @@ class TempleController extends Controller
         'number_of_people' => $request->input('number_of_people'),
     ];
 
-    return view('temples.details', compact('bookingData'));
+    // 2. Pass BOTH the $bookingData AND the $temple object to the view
+    return view('temples.details', compact('bookingData', 'temple'));
+}
 }
 
-}

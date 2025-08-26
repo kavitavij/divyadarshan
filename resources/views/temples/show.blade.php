@@ -40,8 +40,7 @@
 
         {{-- Slot Booking Tab Content --}}
         <div id="slots" class="tab-content hidden">
-            <form id="bookingForm" action="{{ route('temples.detail') }}" method="POST">
-
+            <form id="bookingForm" action="{{ route('temples.details') }}" method="POST">
                 @csrf
                 <input type="hidden" name="temple_id" value="{{ $temple->id }}">
 

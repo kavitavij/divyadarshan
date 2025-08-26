@@ -73,8 +73,9 @@
                         <h2>Enter Devotee Details</h2>
                     </div>
                     <div class="card-body">
-                        <form id="devotee-form" action="{{ route('booking.store') }}" method="POST">
+                        <form id="devotee-form" action="{{ route('cart.addDarshan') }}" method="POST">
                             @csrf
+                            <input type="hidden" name="selected_date" value="{{ $bookingData['selected_date'] }}">
                             <input type="hidden" name="temple_id" value="{{ $bookingData['temple_id'] }}">
                             <input type="hidden" name="darshan_slot_id" value="{{ $bookingData['darshan_slot_id'] }}">
                             <input type="hidden" name="number_of_people"
@@ -127,13 +128,14 @@
                                 </div>
                             @endfor
 
-                            <button type="submit" class="btn btn-primary w-100">Submit Booking</button>
+                            <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
                         </form>
+
                     </div>
                 </div>
             </div>
 
-            {{-- Summary --}}
+            {{-- Summary (No changes needed here) --}}
             <div class="col-lg-4">
                 <div class="card details-card">
                     <div class="card-header">
@@ -162,8 +164,7 @@
             </div>
         </div>
     </div>
-
-    {{-- Summary Script --}}
+    {{-- Summary Script (No changes needed here) --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const summaryList = document.getElementById('devotee-summary-list');
@@ -171,7 +172,8 @@
             const summaryTotal = document.getElementById('summary-total');
 
             const numPeople = parseInt(summaryCount.textContent) || 0;
-            const chargePerPerson = parseFloat(document.getElementById('summary-charge').textContent) || 0;
+            const chargePerPerson = parseFloat(document.getElementById('summary-charge').textContent.replace(/,/g,
+                '')) || 0;
             let devoteeData = Array(numPeople).fill({}).map(() => ({
                 first_name: '',
                 last_name: '',
@@ -193,10 +195,7 @@
                         summaryList.appendChild(li);
                     }
                 });
-
-                summaryTotal.textContent = (chargePerPerson * numPeople).toFixed(2);
             }
-
             document.getElementById('devotee-form').addEventListener('input', function(e) {
                 if (e.target.classList.contains('devotee-input')) {
                     const index = parseInt(e.target.dataset.index);

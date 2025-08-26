@@ -113,7 +113,7 @@
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My eBooks</a>
                             <a href="{{ route('profile.bookings') }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
-                            <a href='{{ route('cart.index') }}' class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My
+                            <a href='{{ route('cart.view') }}' class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My
                                 cart</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -129,7 +129,7 @@
 
                 <!-- Cart Icon -->
                 <!-- Cart Icon -->
-                <a href="{{ route('cart.index') }}" class="relative">
+                <a href="{{ route('cart.view') }}" class="relative">
                     <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -347,30 +347,6 @@
             </div>
         </section>
     </div>
-    {{-- 🔷 Swiper JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            new Swiper('.mySwiper', {
-                loop: true,
-                spaceBetween: 30,
-                centeredSlides: true,
-                autoplay: {
-                    delay: 2500,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-            });
-        });
-    </script>
-
     <!-- Login/Register/Forgot Password Modal -->
     <div x-show="loginModal" @click.away="loginModal = false"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" x-transition.opacity
@@ -577,6 +553,29 @@
                 }
             }
         }
+    </script>
+    {{-- 🔷 Swiper JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new Swiper('.mySwiper', {
+                loop: true,
+                spaceBetween: 30,
+                centeredSlides: true,
+                autoplay: {
+                    delay: 2500,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+        });
     </script>
 </body>
 

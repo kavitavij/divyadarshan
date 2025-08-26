@@ -29,11 +29,10 @@
 
         @if (count($cart) > 0)
             <div class="mt-4">
-                <a href="{{ route('cart.checkout') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                    Proceed to Checkout
+                <a href="{{ route('cart.pay') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Make Payment
                 </a>
             </div>
         @endif
-
     </div>
 @endsection
