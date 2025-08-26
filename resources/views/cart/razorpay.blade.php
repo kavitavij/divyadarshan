@@ -8,7 +8,11 @@
             Pay ₹{{ $amount }}
         </button>
     </div>
-
+    @if (session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         var options = {

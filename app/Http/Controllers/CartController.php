@@ -109,7 +109,6 @@ class CartController extends Controller
     //     return redirect()->route('cart.view')->with('success', "Payment of ₹$totalAmount completed!");
     // }
 
-    // ## NEW METHOD TO ADD DARSHAN BOOKINGS ##
     public function addDarshan(Request $request)
     {
         $validatedData = $request->validate([
@@ -236,7 +235,7 @@ public function paymentSuccess(Request $request)
 {
     // Save payment to DB if needed
     // session()->forget('cart');
-
-    return response()->json(['success' => true]);
+    session()->forget('cart');
+    return redirect()->route('cart.view')->with('success', 'Payment successful! Your order has been placed.');
 }
 }
