@@ -47,6 +47,22 @@
                     </select>
                 </div>
 
+                {{-- Donation Purpose (hidden by default, only shows when a temple is selected) --}}
+                <div id="donation-purpose-section" class="mt-6 hidden">
+                    <label for="donation_purpose" class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">
+                        Donation Purpose
+                    </label>
+                    <select name="donation_purpose" id="donation_purpose"
+                        class="w-full border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500">
+                        <option value="">Select Purpose</option>
+                        <option value="seva">🙏 Seva</option>
+                        <option value="annadaan">🍛 Annadaan</option>
+                        <option value="orphan">👶 Donation for Orphans</option>
+                        <option value="maintenance">🏛️ Temple Maintenance</option>
+                    </select>
+                </div>
+
+
                 {{-- Donation Amount Buttons --}}
                 <div>
                     <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">Choose Amount</label>
@@ -113,4 +129,39 @@
             });
         });
     </script>
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const amountButtons = document.querySelectorAll('.donation-amount-btn');
+                const customAmountInput = document.getElementById('custom-amount');
+                const templeSelect = document.getElementById('temple_id');
+                const donationPurposeSection = document.getElementById('donation-purpose-section');
+
+                // Handle donation amount buttons
+                amountButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const amount = this.dataset.amount;
+                        customAmountInput.value = amount;
+                        amountButtons.forEach(btn => btn.classList.remove('selected'));
+                        this.classList.add('selected');
+                    });
+                });
+
+                // Clear button selection when typing custom amount
+                customAmountInput.addEventListener('input', function() {
+                    amountButtons.forEach(btn => btn.classList.remove('selected'));
+                });
+
+                // Show donation purpose when temple is selected
+                templeSelect.addEventListener('change', function() {
+                    if (this.value) {
+                        donationPurposeSection.classList.remove('hidden');
+                    } else {
+                        donationPurposeSection.classList.add('hidden');
+                    }
+                });
+            });
+        </script>
+    @endpush
 @endpush

@@ -105,10 +105,6 @@
 
             </div>
         </div>
-
-
-        {{-- Slot Booking Tab Content --}}
-
         {{-- Slot Booking Tab Content --}}
         <div id="slots" class="tab-content hidden">
             <div class="form-group mt-4">
