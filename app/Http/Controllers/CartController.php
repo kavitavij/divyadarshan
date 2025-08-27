@@ -7,12 +7,18 @@ use App\Models\Seva;
 use App\Models\Ebook;
 use App\Models\Temple;
 use App\Models\Room;
+use App\Models\Booking;
+use App\Models\SevaBooking;
+use App\Models\StayBooking;
+use App\Models\StayBookingGuest;
+use App\Models\Payment;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\StayBooking;
-use App\Models\StayBookingGuest;
+use Illuminate\Support\Facades\Log;
 use Razorpay\Api\Api;
+use Exception;
 
 class CartController extends Controller
 {
@@ -123,6 +129,11 @@ class CartController extends Controller
             'devotees.*.phone_number' => 'required|string|max:15',
             'devotees.*.id_type' => 'required|string',
             'devotees.*.id_number' => 'required|string',
+            'guests.*.name' => 'required|string|max:255',
+            'guests.*.age' => 'required|integer|min:1',
+            'guests.*.gender' => 'required|in:male,female,other',
+            'guests.*.id_type' => 'required|in:aadhar,pan,passport',
+            'guests.*.id_number' => 'required|string|max:50',
         ]);
 
         $temple = Temple::findOrFail($validatedData['temple_id']);
@@ -238,4 +249,111 @@ public function paymentSuccess(Request $request)
     session()->forget('cart');
     return redirect()->route('cart.view')->with('success', 'Payment successful! Your order has been placed.');
 }
+    // public function paymentSuccess(Request $request)
+    // {
+    //     // 1. VALIDATE THE INCOMING RAZORPAY DATA
+    //     $request->validate([
+    //         'razorpay_payment_id' => 'required|string',
+    //         'razorpay_order_id'   => 'required|string',
+    //         'razorpay_signature'  => 'required|string',
+    //     ]);
+
+    //     // 2. ADD A CRITICAL AUTHENTICATION CHECK
+    //     if (!Auth::check()) {
+    //         // If no user is logged in, we cannot proceed.
+    //         Log::error('Payment success callback received, but user is not authenticated.');
+    //         return redirect()->route('login')->with('error', 'You must be logged in to complete a booking.');
+    //     }
+
+    //     $cart = session()->get('cart', []);
+    //     if (empty($cart)) {
+    //         // Handle case where cart is empty but callback is hit
+    //         return redirect()->route('home')->with('info', 'Your session has expired, but your payment may have been processed.');
+    //     }
+
+    //     $totalAmount = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+    //     $api = new Api(
+    //             config('services.razorpay.key'),
+    //             config('services.razorpay.secret')
+    //         );
+
+    //     try {
+    //         // 3. VERIFY THE PAYMENT SIGNATURE
+    //         $attributes = [
+    //             'razorpay_order_id'   => $request->razorpay_order_id,
+    //             'razorpay_payment_id' => $request->razorpay_payment_id,
+    //             'razorpay_signature'  => $request->razorpay_signature
+    //         ];
+    //         $api->utility->verifyPaymentSignature($attributes);
+
+    //         // 4. USE A DATABASE TRANSACTION TO CREATE BOOKINGS AND PAYMENT RECORD
+    //         DB::transaction(function () use ($cart, $request, $totalAmount) {
+    //             $userId = Auth::id(); // Get user ID once
+
+    //             foreach ($cart as $item) {
+    //                 if ($item['type'] === 'darshan') {
+    //                     Booking::create([
+    //                         'user_id'          => $userId,
+    //                         'temple_id'        => $item['details']['temple_id'],
+    //                         'darshan_slot_id'  => $item['details']['darshan_slot_id'],
+    //                         'number_of_people' => $item['details']['number_of_people'],
+    //                         'booking_date'     => $item['details']['selected_date'],
+    //                         'status'           => 'confirmed',
+    //                     ]);
+    //                 } elseif ($item['type'] === 'seva') {
+    //                     SevaBooking::create([
+    //                         'user_id'      => $userId,
+    //                         'seva_id'      => $item['id'],
+    //                         'booking_date' => now(),
+    //                         'status'       => 'confirmed',
+    //                     ]);
+    //                 } elseif ($item['type'] === 'stay') {
+    //                     $stayBooking = StayBooking::create([
+    //                         'user_id'        => $userId,
+    //                         'room_id'        => $item['details']['room_id'],
+    //                         'check_in_date'  => $item['details']['check_in_date'],
+    //                         'check_out_date' => $item['details']['check_out_date'],
+    //                         'total_amount'   => $item['price'],
+    //                         'status'         => 'confirmed',
+    //                     ]);
+
+    //                     foreach ($item['details']['guests'] as $guestData) {
+    //                         StayBookingGuest::create([
+    //                             'stay_booking_id' => $stayBooking->id,
+    //                             'name'            => $guestData['name'],
+    //                             'age'             => $guestData['age'] ?? 0,
+    //                             'gender'          => $guestData['gender'] ?? 'other',
+    //                         ]);
+    //                     }
+    //                 } elseif ($item['type'] === 'ebook') {
+    //                     Auth::user()->ebooks()->attach($item['id']);
+    //                 }
+    //             }
+
+    //             Payment::create([
+    //             'user_id'    => $userId,
+    //             'type'       => 'booking',
+    //             'reference_id' => null, // or link to a booking if needed
+    //             'payment_id' => $request->razorpay_payment_id,
+    //             'order_id'   => $request->razorpay_order_id,
+    //             'signature'  => $request->razorpay_signature,
+    //             'status'     => 'success', // ✅ match enum in migration
+    //             'payload'    => $request->all(), // optional: store whole response
+    //             'amount'     => $totalAmount,
+    //         ]);
+    //         });
+
+    //         // 5. CLEAR THE CART AND REDIRECT ON SUCCESS
+    //         session()->forget('cart'); // Forgetting just the cart is enough
+
+    //         return redirect()->route('profile.my-bookings')->with('success', 'Payment successful! Your booking is confirmed.');
+
+    //     } catch (Exception $e) {
+    //         // If anything fails (signature verification, DB error), log it and redirect
+    //         Log::error('Payment failed during processing: ' . $e->getMessage(), [
+    //             'trace' => $e->getTraceAsString()
+    //         ]);
+    //         return redirect()->route('cart.view')->with('error', 'Payment failed during processing. Please contact support.');
+    //     }
+    // }
 }

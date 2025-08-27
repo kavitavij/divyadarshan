@@ -9,6 +9,11 @@ class Payment extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'type',
@@ -18,13 +23,12 @@ class Payment extends Model
         'signature',
         'amount',
         'status',
-        'payload'
+        'payload',
     ];
 
-    protected $casts = [
-        'payload' => 'array',
-    ];
-
+    /**
+     * Get the user that owns the payment.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

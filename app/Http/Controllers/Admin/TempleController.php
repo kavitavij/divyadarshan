@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Temple;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\User;
 
 class TempleController extends Controller
 {
@@ -17,41 +18,24 @@ class TempleController extends Controller
 
     public function create()
     {
-        $temple = new Temple();
-        $adminCalendars = $this->generateAdminCalendarData($temple);
-        return view('admin.temples.create', compact('temple', 'adminCalendars'));
+        $managers = User::where('role', 'temple_manager','admin')->get();
+        return view('admin.temples.create', compact('managers'));
     }
 
-    public function store(Request $request)
+        public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'image' => 'nullable|image|max:2048',
-            'darshan_charge' => 'nullable|numeric|min:2',
+            'image' => 'required|image|max:2048',
+            'darshan_charge' => 'nullable|numeric|min:0',
+            'offered_services' => 'nullable|array' // Validation for services
         ]);
 
         $data = $request->only(['name', 'location','darshan_charge', 'description', 'about', 'online_services', 'social_services']);
 
-        // Process News Items
-        $newsData = [];
-        if ($request->has('news_items')) {
-            foreach ($request->news_items as $index => $text) {
-                if (!empty($text)) {
-                    $newsData[] = [
-                        'text' => $text,
-                        'show_on_ticker' => in_array($index, $request->input('news_tickers', [])),
-                    ];
-                }
-            }
-        }
-        $data['news'] = $newsData;
-
-        // Process Slot Data
-        if ($request->has('slot_data')) {
-            $filteredSlots = array_filter($request->slot_data, fn($status) => $status !== 'available');
-            $data['slot_data'] = $filteredSlots;
-        }
+        // Handle Offered Services
+        $data['offered_services'] = $request->input('offered_services', []);
 
         // Handle Image Upload
         if ($request->hasFile('image')) {
@@ -66,55 +50,70 @@ class TempleController extends Controller
     }
 
     public function edit(Temple $temple)
-    {
-        $adminCalendars = $this->generateAdminCalendarData($temple);
-        return view('admin.temples.edit', compact('temple', 'adminCalendars'));
-    }
+{
+    $managers = User::whereIn('role', ['temple_manager', 'admin'])->get();
+
+    // Generate calendar data
+    $adminCalendars = $this->generateAdminCalendarData($temple);
+
+    return view('admin.temples.edit', compact('temple', 'managers', 'adminCalendars'));
+}
+
 
     public function update(Request $request, Temple $temple)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
-            'image' => 'nullable|image|max:2048',
-            'darshan_charge' => 'nullable|numeric|min:2',
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'location' => 'required|string|max:255',
+        'image' => 'nullable|image|max:2048',
+        'darshan_charge' => 'nullable|numeric|min:0',
+        'about' => 'nullable|string',
+        'online_services' => 'nullable|string',
+        'social_services' => 'nullable|string',
+        'offered_services' => 'nullable|array',
+        'slot_data' => 'nullable|array',
+        'news_items' => 'nullable|array',
+        'news_tickers' => 'nullable|array',
+    ]);
 
-        $temple->fill($request->only(['name','darshan_charge', 'location', 'description', 'about', 'online_services', 'social_services']));
+    $data = $request->only([
+        'name','location','darshan_charge','description','about','online_services','social_services'
+    ]);
 
-        $newsData = [];
-        if ($request->has('news_items')) {
-            foreach ($request->news_items as $index => $text) {
-                if (!empty($text)) {
-                    $newsData[] = [
-                        'text' => $text,
-                        'show_on_ticker' => in_array($index, $request->input('news_tickers', [])),
-                    ];
-                }
-            }
+    // Offered Services
+    $data['offered_services'] = $request->input('offered_services', []);
+
+    // Slot Booking
+    $data['slot_data'] = $request->input('slot_data', []);
+
+    // News Items
+    $newsItemsInput = $request->input('news_items', []);
+    $newsTickersInput = $request->input('news_tickers', []);
+    $news = [];
+    foreach ($newsItemsInput as $index => $text) {
+        if ($text) {
+            $news[] = [
+                'text' => $text,
+                'show_on_ticker' => in_array($index, $newsTickersInput)
+            ];
         }
-        $temple->news = $newsData;
-
-        if ($request->has('slot_data')) {
-            $filteredSlots = array_filter($request->slot_data, fn($status) => $status !== 'available');
-            $temple->slot_data = $filteredSlots;
-        } else {
-            $temple->slot_data = null;
-        }
-
-        if ($request->hasFile('image')) {
-            if ($temple->image && file_exists(public_path($temple->image))) {
-                unlink(public_path($temple->image));
-            }
-            $imageName = time().'.'.$request->image->extension();
-            $request->image->move(public_path('images/temples'), $imageName);
-            $temple->image = 'images/temples/' . $imageName;
-        }
-
-        $temple->save();
-
-        return redirect()->route('admin.temples.index')->with('success', 'Temple updated successfully.');
     }
+    $data['news'] = $news;
+
+    // Handle Image Upload
+    if ($request->hasFile('image')) {
+        if ($temple->image && file_exists(public_path($temple->image))) {
+            unlink(public_path($temple->image));
+        }
+        $imageName = time().'.'.$request->image->extension();
+        $request->image->move(public_path('images/temples'), $imageName);
+        $data['image'] = 'images/temples/' . $imageName;
+    }
+
+    $temple->update($data);
+
+    return redirect()->route('admin.temples.index')->with('success', 'Temple updated successfully.');
+}
 
     public function destroy(Temple $temple)
     {

@@ -1,4 +1,4 @@
-@extends('layouts.temple-manager') {{-- Or your dedicated temple manager layout --}}
+@extends('layouts.temple-manager')
 
 @section('content')
     <div class="container-fluid">

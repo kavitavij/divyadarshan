@@ -38,28 +38,30 @@ class DarshanSlotController extends Controller
      * Store multiple new darshan slots from the form.
      */
     public function store(Request $request, Temple $temple)
-    {
-        $request->validate([
-            'slot_date' => 'required|date',
-            'slots' => 'required|array', // Expecting an array of selected slots
-        ]);
+{
+    $request->validate([
+        'slot_date' => 'required|date',
+        'slots' => 'required|array',
+    ]);
 
-        foreach ($request->slots as $index => $slotData) {
-            // Only create a slot if the checkbox for it was selected
-            if (isset($slotData['create']) && $slotData['create'] == '1') {
-                DarshanSlot::create([
-                    'temple_id' => $temple->id,
-                    'slot_date' => $request->slot_date,
-                    'start_time' => $slotData['start_time'],
-                    'end_time' => $slotData['end_time'],
-                    'total_capacity' => $slotData['total_capacity'],
-                ]);
-            }
+    foreach ($request->slots as $slotData) {
+        if (!empty($slotData['create'])) {
+            DarshanSlot::create([
+                'temple_id'      => $temple->id,
+                'slot_date'      => $request->slot_date,
+                'start_time'     => $slotData['start_time'],
+                'end_time'       => $slotData['end_time'],
+                'total_capacity' => $slotData['total_capacity'] ?? 1000,
+                'booked_capacity'=> 0,
+            ]);
         }
-
-        return redirect()->route('admin.temples.slots.index', ['temple' => $temple, 'date' => $request->slot_date])
-                         ->with('success', 'Selected slots created successfully!');
     }
+
+    return redirect()
+        ->route('admin.temples.slots.index', ['temple' => $temple, 'date' => $request->slot_date])
+        ->with('success', 'Selected slots created successfully!');
+}
+
 
     /**
      * Show the form for editing the specified resource.

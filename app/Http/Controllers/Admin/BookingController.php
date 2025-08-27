@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\SevaBooking;
+use App\Models\AccommodationBooking; // Import the AccommodationBooking model
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class BookingController extends Controller
 {
     /**
-     * Display a combined list of all Darshan and Seva bookings.
+     * Display a combined list of all Darshan, Seva, and Accommodation bookings.
      */
     public function index()
     {
@@ -27,10 +28,16 @@ class BookingController extends Controller
             return $booking;
         });
 
-        // 3. Merge the two collections and sort them by the creation date
-        $allBookings = $darshanBookings->merge($sevaBookings)->sortByDesc('created_at');
+        // 3. Fetch all Accommodation bookings with their related user, room, and hotel
+        $accommodationBookings = AccommodationBooking::with('user', 'room.hotel')->latest()->get()->map(function ($booking) {
+            $booking->type = 'Accommodation';
+            return $booking;
+        });
 
-        // 4. Manually paginate the combined collection
+        // 4. Merge the three collections and sort them by the creation date
+        $allBookings = $darshanBookings->merge($sevaBookings)->merge($accommodationBookings)->sortByDesc('created_at');
+
+        // 5. Manually paginate the combined collection
         $perPage = 15;
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $currentPageItems = $allBookings->slice(($currentPage - 1) * $perPage, $perPage)->all();
