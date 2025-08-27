@@ -6,7 +6,6 @@
     <title>Temple Manager | DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Manual CSS Styling -->
     <style>
         * {
             box-sizing: border-box;
@@ -18,9 +17,10 @@
             background-color: #f4f6f9;
         }
 
+        /* Navbar */
         .navbar {
             background-color: #ffffff;
-            padding: 10px 20px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -33,14 +33,14 @@
         }
 
         .navbar .brand {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
         }
 
-        .navbar .search input {
-            padding: 6px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .navbar .menu-toggle {
+            display: none;
+            font-size: 22px;
+            cursor: pointer;
         }
 
         .navbar .logout button {
@@ -52,6 +52,7 @@
             cursor: pointer;
         }
 
+        /* Sidebar */
         .sidebar {
             width: 220px;
             background-color: #2c3e50;
@@ -61,6 +62,7 @@
             top: 50px;
             left: 0;
             padding-top: 20px;
+            transition: transform 0.3s ease-in-out;
         }
 
         .sidebar a {
@@ -75,10 +77,12 @@
             background-color: #34495e;
         }
 
+        /* Content */
         .content {
             margin-left: 220px;
             margin-top: 70px;
             padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
         }
 
         .dashboard-widgets {
@@ -95,18 +99,20 @@
             flex: 1;
             min-width: 200px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
         .widget h3 {
             margin: 0;
-            font-size: 28px;
+            font-size: 26px;
         }
 
         .widget p {
             margin: 5px 0 0;
-            font-size: 16px;
+            font-size: 15px;
         }
 
+        /* Footer */
         .footer {
             text-align: center;
             padding: 15px;
@@ -114,15 +120,37 @@
             border-top: 1px solid #ddd;
             margin-left: 220px;
             margin-top: 40px;
+            transition: margin-left 0.3s ease-in-out;
         }
 
-        a.brand-link {
-            color: #ecf0f1;
-            font-weight: bold;
-            text-align: center;
-            display: block;
-            padding: 10px 0;
-            text-decoration: none;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar .menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                top: 50px;
+                width: 200px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+                margin-top: 70px;
+            }
+
+            .footer {
+                margin-left: 0;
+            }
+
+            .dashboard-widgets {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -132,7 +160,7 @@
     <!-- Navbar -->
     <div class="navbar">
         <div class="brand">Temple Manager Panel</div>
-
+        <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
         <div class="logout">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -142,7 +170,7 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <a href="{{ route('temple-manager.dashboard') }}"
             class="{{ request()->routeIs('temple-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
         <a href="{{ route('temple-manager.temple.edit') }}"
@@ -151,7 +179,6 @@
             class="{{ request()->routeIs('temple-manager.slots.index*') ? 'active' : '' }}">Manage Darshan Slots</a>
         <a href="{{ route('temple-manager.sevas.index') }}"
             class="{{ request()->routeIs('temple-manager.sevas.index') ? 'active' : '' }}">Manage Sevas</a>
-
     </div>
 
     <!-- Content -->
@@ -181,6 +208,12 @@
         &copy; {{ date('Y') }} <a href="/">DivyaDarshan</a>. All rights reserved.
     </div>
 
+    <!-- JS for Sidebar -->
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+    </script>
 </body>
 
 </html>

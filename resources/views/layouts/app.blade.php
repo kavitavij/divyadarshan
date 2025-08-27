@@ -128,7 +128,6 @@
                 @endguest
 
                 <!-- Cart Icon -->
-                <!-- Cart Icon -->
                 <a href="{{ route('cart.view') }}" class="relative">
                     <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">

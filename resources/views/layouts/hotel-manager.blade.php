@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Hotel Manager | DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Manual CSS Styling -->
     <style>
         * {
             box-sizing: border-box;
@@ -17,6 +17,7 @@
             background-color: #f4f6f9;
         }
 
+        /* Navbar */
         .navbar {
             background-color: #ffffff;
             padding: 10px 20px;
@@ -36,21 +37,23 @@
             font-weight: bold;
         }
 
-        .navbar .search input {
-            padding: 6px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
         .navbar .logout button {
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 8px 16px;
+            border-radius: 20px;
             cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s;
         }
 
+        .navbar .logout button:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: scale(1.05);
+        }
+
+        /* Sidebar */
         .sidebar {
             width: 220px;
             background-color: #2c3e50;
@@ -60,6 +63,7 @@
             top: 50px;
             left: 0;
             padding-top: 20px;
+            transition: all 0.3s ease-in-out;
         }
 
         .sidebar a {
@@ -67,6 +71,7 @@
             padding: 12px 20px;
             color: #ecf0f1;
             text-decoration: none;
+            transition: 0.3s;
         }
 
         .sidebar a:hover,
@@ -74,38 +79,15 @@
             background-color: #34495e;
         }
 
+        /* Content */
         .content {
             margin-left: 220px;
             margin-top: 70px;
             padding: 20px;
+            transition: all 0.3s;
         }
 
-        .dashboard-widgets {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .widget {
-            background-color: #3498db;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            flex: 1;
-            min-width: 200px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .widget h3 {
-            margin: 0;
-            font-size: 28px;
-        }
-
-        .widget p {
-            margin: 5px 0 0;
-            font-size: 16px;
-        }
-
+        /* Footer */
         .footer {
             text-align: center;
             padding: 15px;
@@ -113,24 +95,51 @@
             border-top: 1px solid #ddd;
             margin-left: 220px;
             margin-top: 40px;
+            transition: all 0.3s;
         }
 
-        a.brand-link {
-            color: #ecf0f1;
-            font-weight: bold;
-            text-align: center;
-            display: block;
-            padding: 10px 0;
-            text-decoration: none;
+        /* Hamburger menu for mobile */
+        .menu-toggle {
+            display: none;
+            font-size: 22px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                left: -220px;
+                top: 0;
+                height: 100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .content {
+                margin-left: 0;
+                margin-top: 70px;
+            }
+
+            .footer {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Navbar -->
     <div class="navbar">
         <div class="brand">Hotel Manager Panel</div>
-        
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
         <div class="logout">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -140,32 +149,19 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="sidebar">
-        <a href="{{ route('hotel-manager.dashboard') }}" class="{{ request()->routeIs('hotel-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
-        <a href="{{ route('hotel-manager.hotel.edit') }}" class="{{ request()->routeIs('hotel-manager.hotel.edit') ? 'active' : '' }}">My Hotel Details</a>
-        <a href="{{ route('hotel-manager.rooms.index') }}" class="{{ request()->routeIs('hotel-manager.rooms.*') ? 'active' : '' }}">Manage Rooms</a>
-        <a href="{{ route('hotel-manager.guest-list.index') }}" class="{{ request()->routeIs('hotel-manager.bookings.index') ? 'active' : '' }}">View Bookings</a>
+    <div class="sidebar" id="sidebar">
+        <a href="{{ route('hotel-manager.dashboard') }}"
+            class="{{ request()->routeIs('hotel-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
+        <a href="{{ route('hotel-manager.hotel.edit') }}"
+            class="{{ request()->routeIs('hotel-manager.hotel.edit') ? 'active' : '' }}">My Hotel Details</a>
+        <a href="{{ route('hotel-manager.rooms.index') }}"
+            class="{{ request()->routeIs('hotel-manager.rooms.*') ? 'active' : '' }}">Manage Rooms</a>
+        <a href="{{ route('hotel-manager.guest-list.index') }}"
+            class="{{ request()->routeIs('hotel-manager.guest-list.index') ? 'active' : '' }}">View Bookings</a>
     </div>
 
     <!-- Content -->
     <div class="content">
-        <h1>Dashboard</h1>
-
-        <div class="dashboard-widgets">
-            <div class="widget" style="background-color: #1abc9c;">
-                <h3>120</h3>
-                <p>Active Bookings</p>
-            </div>
-            <div class="widget" style="background-color: #e67e22;">
-                <h3>45</h3>
-                <p>Available Rooms</p>
-            </div>
-            <div class="widget" style="background-color: #9b59b6;">
-                <h3>₹1,20,000</h3>
-                <p>Monthly Revenue</p>
-            </div>
-        </div>
-
         @yield('content')
     </div>
 
@@ -174,5 +170,12 @@
         &copy; {{ date('Y') }} <a href="/">DivyaDarshan</a>. All rights reserved.
     </div>
 
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+    </script>
+
 </body>
+
 </html>

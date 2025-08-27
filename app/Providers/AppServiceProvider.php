@@ -5,25 +5,18 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Temple;
-use App\Models\LatestUpdate; 
+use App\Models\LatestUpdate;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
+
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        // Use a try-catch block to prevent errors if the database is not ready
-        try {
             View::composer('*', function ($view) {
                 // For the main navigation dropdown
                 $allTemples = Temple::orderBy('name')->get();
@@ -43,10 +36,5 @@ class AppServiceProvider extends ServiceProvider
                      ->with('latestNews', $latestNews)
                      ->with('latestUpdates', $latestUpdates);
             });
-        } catch (\Exception $e) {
-            // If the database isn't ready, we'll just log the error and continue
-            // This prevents errors during commands like `php artisan migrate`
-            \Log::error("Could not share view data: " . $e->getMessage());
         }
     }
-}
