@@ -34,10 +34,11 @@
                                         href="{{ route('admin.temples.slots.index', $temple) }}">Manage Time Slots</a>
                                     <a class="btn btn-secondary btn-sm"
                                         href="{{ route('admin.temples.sevas.index', $temple) }}">Manage Sevas</a>
-                                    <a class="btn btn-info btn-sm"
+                                    {{-- <a class="btn btn-info btn-sm"
                                         href="{{ route('admin.temples.darshan_bookings', $temple) }}">Darshan Bookings</a>
                                     <a class="btn btn-success btn-sm"
-                                        href="{{ route('admin.temples.seva_bookings', $temple) }}">Seva Bookings</a>
+                                        href="{{ route('admin.temples.seva_bookings', $temple) }}">Seva Bookings</a> --}}
+
                                 </td>
                             </tr>
                         @endforeach

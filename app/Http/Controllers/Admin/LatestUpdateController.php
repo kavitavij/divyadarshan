@@ -43,4 +43,5 @@ class LatestUpdateController extends Controller
         $latestUpdate->delete();
         return redirect()->route('admin.latest_updates.index')->with('success', 'Update deleted successfully.');
     }
+
 }

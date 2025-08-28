@@ -8,10 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Seva extends Model
 {
     use HasFactory;
-    protected $fillable = ['temple_id', 'name', 'description', 'price', 'type'];
+
+    protected $fillable = [
+        'temple_id',
+        'name',
+        'description',
+        'price',
+        'image',
+        'is_active'
+    ];
 
     /**
-     * Get the temple that this seva belongs to.
+     * Define the relationship to the Temple model.
+     * This completes the chain needed for the controller query.
      */
     public function temple()
     {

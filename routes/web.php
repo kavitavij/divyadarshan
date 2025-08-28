@@ -58,7 +58,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/ebooks', [EbookController::class, 'index'])->name('ebooks.index');
 Route::get('/temples', [TempleController::class, 'index'])->name('temples.index');
-Route::get('/temples/{temple}', [TempleController::class, 'show'])->name('temples.show'); // REMOVED DUPLICATE OF THIS LINE
+Route::get('/temples/{temple}', [TempleController::class, 'show'])->name('temples.show');
 Route::post('/temples/details', [TempleController::class, 'details'])->name('temples.details');
 Route::get('/guidelines', [GuidelineController::class, 'index'])->name('guidelines');
 Route::get('/complaint', [ComplaintController::class, 'index'])->name('complaint.form');
@@ -89,7 +89,7 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('/add/seva', [CartController::class, 'addSeva'])->name('addSeva');
     Route::post('/add/ebook', [CartController::class, 'addEbook'])->name('addEbook');
     Route::post('/add/stay', [CartController::class, 'addStay'])->name('addStay');
-    Route::post('/add-darshan', [CartController::class, 'addDarshan'])->name('addDarshan'); // REMOVED DUPLICATE OF THIS LINE
+    Route::post('/add-darshan', [CartController::class, 'addDarshan'])->name('addDarshan');
     Route::patch('/update/{index}', [CartController::class, 'updateQuantity'])->name('updateQuantity');
     Route::delete('/remove/{index}', [CartController::class, 'removeFromCart'])->name('remove');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
@@ -111,7 +111,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.bookings');
+    // CORRECTED: Removed the duplicate route definition
+    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.my-bookings');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
 
     // Ebook Purchase & Download
@@ -172,12 +173,13 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::get('/guest-list', [GuestListController::class, 'index'])->name('guest-list.index');
 });
 
-// ## TEMPLE MANAGER ROUTES ##
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {
     Route::get('/dashboard', [TempleManagerDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/temple/edit', [TempleManagerController::class, 'edit'])->name('temple.edit');
+    Route::get('/temple', [TempleManagerController::class, 'edit'])->name('temple.edit');
     Route::put('/temple', [TempleManagerController::class, 'update'])->name('temple.update');
+     Route::get('/bookings', [TempleManagerDarshanBookingController::class, 'index'])->name('bookings');
+      Route::get('/temples', [TempleManagerController::class, 'edit'])->name('temples');
     Route::resource('slots', TempleManagerDarshanSlotController::class);
     Route::resource('sevas', TempleManagerSevaController::class);
-    Route::get('/darshan-bookings', [TempleManagerDarshanBookingController::class, 'index'])->name('darshan-bookings.index');
+    Route::resource('darshan-bookings', TempleManagerDarshanBookingController::class)->only(['index', 'show']);
 });

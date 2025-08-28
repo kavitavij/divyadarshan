@@ -33,13 +33,102 @@
                         <a href="{{ route('temple-manager.sevas.index') }}" class="btn btn-outline-secondary">
                             🙏 Manage Sevas
                         </a>
-                        {{-- THE FIX: This now links to the correct darshan bookings page --}}
                         <a href="{{ route('temple-manager.darshan-bookings.index') }}" class="btn btn-outline-success">
                             📖 View Darshan Bookings
                         </a>
                     </div>
                 </div>
             </div>
+
+            {{-- Recent Bookings Section --}}
+            <div class="row mt-4">
+                {{-- Recent Darshan Bookings --}}
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Darshan Bookings</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                @forelse ($darshanBookings as $booking)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $booking->user->name ?? 'N/A' }}</strong>
+                                            ({{ $booking->number_of_people }} people)
+                                            <small
+                                                class="d-block text-muted">{{ $booking->created_at->format('d M Y, h:i A') }}</small>
+                                        </div>
+                                        <span class="badge bg-info rounded-pill">ID: {{ $booking->id }}</span>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item text-center">No recent Darshan bookings found.</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Recent Seva Bookings --}}
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Seva Bookings</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                @forelse ($sevaBookings as $booking)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $booking->user->name ?? 'N/A' }}</strong> -
+                                            {{ $booking->seva->name ?? 'N/A' }}
+                                            <small
+                                                class="d-block text-muted">{{ $booking->created_at->format('d M Y, h:i A') }}</small>
+                                        </div>
+                                        <span class="badge bg-warning rounded-pill">ID: {{ $booking->id }}</span>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item text-center">No recent Seva bookings found.</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         @endif
+    </div>
+    <h2>Recent Bookings</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Devotee</th>
+                    <th>Darshan Date</th>
+                    <th>Slot</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($bookings as $index => $booking)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $booking->user->name }}</td>
+                        <td>{{ $booking->date }}</td>
+                        <td>{{ $booking->slot?->time ?? 'N/A' }}</td>
+                        <td>
+                            <span class="badge bg-{{ $booking->status == 'confirmed' ? 'success' : 'warning' }}">
+                                {{ ucfirst($booking->status) }}
+                            </span>
+                        </td>
+                    </tr>
+                @endforeach
+                @if ($bookings->isEmpty())
+                    <tr>
+                        <td colspan="5">No recent bookings found.</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+    </div>
     </div>
 @endsection

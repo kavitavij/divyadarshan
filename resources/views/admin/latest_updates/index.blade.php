@@ -23,17 +23,19 @@
                 </thead>
                 <tbody>
                     @foreach ($updates as $update)
-                    <tr>
-                        <td>{{ $update->message }}</td>
-                        <td>
-                            <form action="{{ route('admin.latest_updates.destroy', $update->id) }}" method="POST">
-                                <a class="btn btn-sm btn-info" href="{{ route('admin.latest_updates.edit', $update->id) }}">Edit</a>
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>{{ $update->message }}</td>
+                            <td>
+                                <form action="{{ route('admin.latest_updates.destroy', $update->id) }}" method="POST">
+                                    <a class="btn btn-sm btn-info"
+                                        href="{{ route('admin.latest_updates.edit', $update->id) }}">Edit</a>
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>

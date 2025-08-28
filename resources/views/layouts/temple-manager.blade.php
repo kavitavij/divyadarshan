@@ -1,68 +1,42 @@
+{{-- resources/views/temple_manager/dashboard.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Temple Manager | DivyaDarshan</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Temple Manager Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {{-- Bootstrap for table & responsive utilities --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
             margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f6f9;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
         }
 
         /* Navbar */
         .navbar {
-            background-color: #ffffff;
-            padding: 10px 15px;
+            height: 60px;
+            background: #2c3e50;
+            color: #fff;
+            padding: 0 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #ddd;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        .navbar .brand {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .navbar .menu-toggle {
-            display: none;
-            font-size: 22px;
-            cursor: pointer;
-        }
-
-        .navbar .logout button {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
+            justify-content: space-between;
         }
 
         /* Sidebar */
         .sidebar {
             width: 220px;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            height: 100vh;
+            background: #34495e;
             position: fixed;
-            top: 50px;
+            top: 60px;
             left: 0;
+            bottom: 0;
             padding-top: 20px;
-            transition: transform 0.3s ease-in-out;
         }
 
         .sidebar a {
@@ -73,83 +47,55 @@
         }
 
         .sidebar a:hover,
-        .sidebar .active {
-            background-color: #34495e;
+        .sidebar a.active {
+            background: #1abc9c;
+            color: #fff;
         }
 
-        /* Content */
-        .content {
+        /* Main content */
+        .main {
             margin-left: 220px;
-            margin-top: 70px;
             padding: 20px;
-            transition: margin-left 0.3s ease-in-out;
         }
 
-        .dashboard-widgets {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+        /* Widgets */
+        .widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .widget {
-            background-color: #3498db;
-            color: white;
+            background: #fff;
             padding: 20px;
             border-radius: 8px;
-            flex: 1;
-            min-width: 200px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .widget h3 {
             margin: 0;
-            font-size: 26px;
+            font-size: 22px;
+            color: #2c3e50;
         }
 
         .widget p {
             margin: 5px 0 0;
-            font-size: 15px;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 15px;
-            background-color: #fff;
-            border-top: 1px solid #ddd;
-            margin-left: 220px;
-            margin-top: 40px;
-            transition: margin-left 0.3s ease-in-out;
+            color: #7f8c8d;
+            font-size: 14px;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .navbar .menu-toggle {
-                display: block;
-            }
-
             .sidebar {
-                transform: translateX(-100%);
-                top: 50px;
-                width: 200px;
+                width: 100%;
+                height: auto;
+                position: relative;
             }
 
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .content {
+            .main {
                 margin-left: 0;
-                margin-top: 70px;
-            }
-
-            .footer {
-                margin-left: 0;
-            }
-
-            .dashboard-widgets {
-                flex-direction: column;
             }
         }
     </style>
@@ -157,63 +103,83 @@
 
 <body>
 
-    <!-- Navbar -->
+    {{-- Navbar --}}
     <div class="navbar">
-        <div class="brand">Temple Manager Panel</div>
-        <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-        <div class="logout">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button onclick="event.preventDefault(); this.closest('form').submit();">Log Out</button>
-            </form>
+        <div class="logo">Temple Manager</div>
+        <div>
+            <a href="{{ route('logout') }}" class="btn btn-sm btn-danger">Logout</a>
         </div>
     </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <a href="{{ route('temple-manager.dashboard') }}"
-            class="{{ request()->routeIs('temple-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
-        <a href="{{ route('temple-manager.temple.edit') }}"
-            class="{{ request()->routeIs('temple-manager.temple.edit') ? 'active' : '' }}">My temple Details</a>
-        <a href="{{ route('temple-manager.slots.index') }}"
-            class="{{ request()->routeIs('temple-manager.slots.index*') ? 'active' : '' }}">Manage Darshan Slots</a>
-        <a href="{{ route('temple-manager.sevas.index') }}"
-            class="{{ request()->routeIs('temple-manager.sevas.index') ? 'active' : '' }}">Manage Sevas</a>
+    {{-- Sidebar --}}
+    <div class="sidebar">
+        <a href="{{ route('temple-manager.dashboard') }}" class="active">Dashboard</a>
+        <a href="{{ route('temple-manager.bookings') }}">Bookings</a>
+        <a href="{{ route('temple-manager.temples') }}">Manage Temple</a>
+        <a href="#">Reports</a>
     </div>
 
-    <!-- Content -->
-    <div class="content">
-        <h1>Dashboard</h1>
+    {{-- Main --}}
+    <div class="main">
+        <h1 class="mb-4">Welcome, Temple Manager</h1>
 
-        <div class="dashboard-widgets">
-            <div class="widget" style="background-color: #1abc9c;">
+        {{-- Widgets --}}
+        <div class="widgets">
+            <div class="widget">
+                <h3>150</h3>
+                <p>Total Bookings</p>
+            </div>
+            <div class="widget">
                 <h3>120</h3>
-                <p>Active Bookings</p>
+                <p>Confirmed</p>
             </div>
-            <div class="widget" style="background-color: #e67e22;">
-                <h3>45</h3>
-                <p>Available Rooms</p>
+            <div class="widget">
+                <h3>20</h3>
+                <p>Pending</p>
             </div>
-            <div class="widget" style="background-color: #9b59b6;">
-                <h3>₹1,20,000</h3>
-                <p>Monthly Revenue</p>
+            <div class="widget">
+                <h3>10</h3>
+                <p>Cancelled</p>
             </div>
         </div>
 
-        @yield('content')
+        {{-- Table --}}
+        <h2>Recent Bookings</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Devotee</th>
+                        <th>Darshan Date</th>
+                        <th>Slot</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($bookings as $index => $booking)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $booking->user->name }}</td>
+                            <td>{{ $booking->date }}</td>
+                            <td>{{ $booking->slot?->time ?? 'N/A' }}</td>
+                            <td>
+                                <span class="badge bg-{{ $booking->status == 'confirmed' ? 'success' : 'warning' }}">
+                                    {{ ucfirst($booking->status) }}
+                                </span>
+                            </td>
+                        </tr>
+                    @endforeach
+                    @if ($bookings->isEmpty())
+                        <tr>
+                            <td colspan="5">No recent bookings found.</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        &copy; {{ date('Y') }} <a href="/">DivyaDarshan</a>. All rights reserved.
-    </div>
-
-    <!-- JS for Sidebar -->
-    <script>
-        function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("active");
-        }
-    </script>
 </body>
 
 </html>

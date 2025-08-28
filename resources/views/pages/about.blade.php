@@ -22,112 +22,68 @@
         .animate-fadeInUp {
             animation: fadeInUp 0.6s ease-in-out both;
         }
+
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 
 <body id="top" class="bg-gray-50 text-gray-800 font-sans">
-    <!--Navbar -->
-    <header class="bg-white shadow">
 
+    {{-- <header x-data="{ isMobileMenuOpen: false }" class="bg-white shadow sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 
-            <!-- Left: Logo -->
             <div class="flex-shrink-0">
                 <a href="/" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
             </div>
 
-            <!-- Middle: Menu -->
-            <nav class="flex gap-6 text-sm font-medium text-gray-700">
+            <nav class="hidden md:flex gap-6 text-sm font-medium text-gray-700">
                 <a href="/" class="hover:text-blue-600">Home</a>
                 <a href="/about" class="text-blue-600 font-semibold">About</a>
 
-                <!-- Temples Dropdown -->
                 <div class="relative group">
-                    <button aria-haspopup="true" aria-expanded="false"
-                        class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
-                        style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
-                        id="templesDropdownBtn">
+                    <button class="flex items-center gap-1">
                         <span>Temples</span>
-                        <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 9l-7 7-7-7"></path>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </button>
-
-                    <div class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
-                        role="menu" aria-labelledby="templesDropdownBtn">
+                    <div
+                        class="absolute hidden group-hover:block bg-white border rounded shadow-lg mt-1 min-w-max z-20">
                         @foreach ($allTemples as $temple)
                             <a href="{{ route('temples.show', $temple->id) }}"
-                                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" role="menuitem">
-                                {{ $temple->name }}
-                            </a>
+                                class="block px-4 py-2 hover:bg-gray-100">{{ $temple->name }}</a>
                         @endforeach
                     </div>
                 </div>
 
-                <!-- Online Services Dropdown -->
                 <div class="relative group">
-                    <button aria-haspopup="true" aria-expanded="false"
-                        class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
-                        style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
-                        id="servicesDropdownBtn">
+                    <button class="flex items-center gap-1">
                         <span>Online Services</span>
-                        <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 9l-7 7-7-7"></path>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </button>
-
-                    <div class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
-                        role="menu" aria-labelledby="servicesDropdownBtn">
-                        <a href="{{ route('booking.index') }}"
-                            class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" role="menuitem">Darshan
+                    <div
+                        class="absolute hidden group-hover:block bg-white border rounded shadow-lg mt-1 min-w-max z-20">
+                        <a href="{{ route('booking.index') }}" class="block px-4 py-2 hover:bg-gray-100">Darshan
                             Booking</a>
-                        <a href="{{ route('sevas.booking.index') }}"
-                            class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" role="menuitem">Sevas</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                            role="menuitem">Accommodation Booking</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                            role="menuitem">Cab Booking</a>
-                    </div>
-                </div>
-                <!-- Dropdown: General Info -->
-                <div class="relative group">
-                    <button aria-haspopup="true" aria-expanded="false"
-                        class="flex items-center gap-1 text-gray-700 hover:text-blue-600 px-3 py-2 rounded focus:outline-none"
-                        style="background:none; border:none; padding:0; margin:0; cursor:pointer;"
-                        id="servicesDropdownBtn">
-                        <span>General Information</span>
-                        <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-
-                    <div class="absolute hidden group-hover:block bg-white border rounded shadow mt-1 min-w-max z-20"
-                        role="menu" aria-labelledby="servicesDropdownBtn">
-                        <a href="{{ route('info.faq') }}" class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                            role="menuitem">FAQs</a>
-                        <a href="{{ route('info.sevas') }}" class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                            role="menuitem">Sevas</a>
-                        <a href="{{ route('info.dress-code') }}"
-                            class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" role="menuitem">Dress Code</a>
-                        <a href="{{ route('info.contact') }}"
-                            class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" role="menuitem">Contact Us</a>
+                        <a href="{{ route('sevas.booking.index') }}" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Accommodation Booking</a>
                     </div>
                 </div>
             </nav>
 
-            <!-- Right: Login Button -->
-            <div class="flex-shrink-0">
+            <div class="hidden md:block flex-shrink-0">
                 @guest
-                    {{-- This button shows only if the user is a GUEST --}}
                     <button @click="loginModal = true; modalView = 'login'"
                         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                         Login
                     </button>
                 @else
-                    {{-- This dropdown shows only if the user is LOGGED IN --}}
                     <div class="relative group">
                         <button class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                             <span>{{ Auth::user()->name }}</span>
@@ -136,31 +92,225 @@
                                 </path>
                             </svg>
                         </button>
-
                         <div
                             class="absolute hidden group-hover:block right-0 bg-white border rounded shadow-lg mt-1 min-w-max z-20">
-
                             @if (Auth::user()->role === 'admin')
                                 <a href="{{ route('admin.dashboard') }}"
                                     class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
                             @endif
                             <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
-                            <a href="{{ route('profile.ebooks') }}"
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My eBooks</a>
-                            <a href="{{ route('profile.bookings') }}"
+                            <a href="{{ route('profile.my-bookings') }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Bookings</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <a href="{{ route('logout') }}"
                                     onclick="event.preventDefault(); this.closest('form').submit();"
-                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                    Log Out
-                                </a>
+                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Log Out</a>
                             </form>
                         </div>
                     </div>
                 @endguest
+            </div>
+
+            <div class="md:hidden">
+                <button @click="isMobileMenuOpen = !isMobileMenuOpen"
+                    class="text-gray-700 hover:text-blue-600 focus:outline-none">
+                    <svg x-show="!isMobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                    <svg x-show="isMobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" style="display: none;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div x-show="isMobileMenuOpen" @click.away="isMobileMenuOpen = false" class="md:hidden bg-white border-t"
+            style="display: none;">
+            <a href="/" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">Home</a>
+            <a href="/about" class="block px-4 py-3 text-sm text-blue-600 font-semibold bg-blue-50">About</a>
+            <a href="{{ route('booking.index') }}"
+                class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">Darshan Booking</a>
+            <a href="{{ route('sevas.booking.index') }}"
+                class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">Sevas</a>
+            <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b">Accommodation
+                Booking</a>
+
+            @guest
+                <a @click="loginModal = true; modalView = 'login'; isMobileMenuOpen = false" href="#"
+                    class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">Login</a>
+            @else
+                <a href="{{ route('profile.my-bookings') }}"
+                    class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">My Bookings</a>
+                <a href="{{ route('profile.edit') }}"
+                    class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">Profile</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();"
+                        class="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">Log Out</a>
+                </form>
+            @endguest
+        </div>
+    </header> --}}
+    {{-- PASTE THIS CODE TO REPLACE YOUR ENTIRE <header>...</header> BLOCK --}}
+    <header x-data="{ isMobileMenuOpen: false }" class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+
+                <div class="flex-shrink-0">
+                    <a href="/" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
+                </div>
+
+                <nav class="hidden md:flex md:items-center md:space-x-6 text-sm font-medium text-gray-700">
+                    <a href="/" class="hover:text-blue-600">Home</a>
+                    <a href="/about" class="text-blue-600 font-semibold">About</a>
+
+                    <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
+                        <button @mouseover="open = true" class="flex items-center gap-1 focus:outline-none">
+                            <span>Temples</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition
+                            class="absolute -left-4 mt-2 w-48 bg-white border rounded-md shadow-lg z-20"
+                            style="display: none;">
+                            @foreach ($allTemples as $temple)
+                                <a href="{{ route('temples.show', $temple->id) }}"
+                                    class="block px-4 py-2 text-sm hover:bg-gray-100">{{ $temple->name }}</a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
+                        <button @mouseover="open = true" class="flex items-center gap-1 focus:outline-none">
+                            <span>Online Services</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition
+                            class="absolute -left-4 mt-2 w-48 bg-white border rounded-md shadow-lg z-20"
+                            style="display: none;">
+                            <a href="{{ route('booking.index') }}"
+                                class="block px-4 py-2 text-sm hover:bg-gray-100">Darshan Booking</a>
+                            <a href="{{ route('sevas.booking.index') }}"
+                                class="block px-4 py-2 text-sm hover:bg-gray-100">Sevas</a>
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Accommodation
+                                Booking</a>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="hidden md:block">
+                    @guest
+                        <button @click="$dispatch('open-login-modal')"
+                            class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+                            Login
+                        </button>
+                    @else
+                        <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
+                            <button @mouseover="open = true"
+                                class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none">
+                                <span>{{ Auth::user()->name }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" x-transition
+                                class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-20"
+                                style="display: none;">
+                                @if (Auth::user()->role === 'admin')
+                                    <a href="{{ route('admin.dashboard') }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
+                                @endif
+                                <a href="{{ route('profile.edit') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <a href="{{ route('profile.my-bookings') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Bookings</a>
+                                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Log
+                                        Out</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endguest
+                </div>
+
+                <div class="md:hidden">
+                    <button @click="isMobileMenuOpen = true"
+                        class="text-gray-700 hover:text-blue-600 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="isMobileMenuOpen" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform -translate-x-full"
+            x-transition:enter-end="opacity-100 transform translate-x-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform translate-x-0"
+            x-transition:leave-end="opacity-0 transform -translate-x-full" class="fixed inset-0 z-50 md:hidden"
+            style="display: none;">
+            <div @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black bg-opacity-50"></div>
+            <div class="relative w-64 h-full bg-white p-4">
+                <button @click="isMobileMenuOpen = false" class="absolute top-4 right-4 text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <nav class="mt-10 flex flex-col space-y-4">
+                    <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
+                    <a href="/about" class="text-blue-600 font-semibold">About</a>
+
+                    <h3 class="font-semibold text-gray-500 text-sm pt-2 border-t">Temples</h3>
+                    @foreach ($allTemples as $temple)
+                        <a href="{{ route('temples.show', $temple->id) }}"
+                            class="pl-4 text-gray-700 hover:text-blue-600">{{ $temple->name }}</a>
+                    @endforeach
+
+                    <h3 class="font-semibold text-gray-500 text-sm pt-2 border-t">Online Services</h3>
+                    <a href="{{ route('booking.index') }}" class="pl-4 text-gray-700 hover:text-blue-600">Darshan
+                        Booking</a>
+                    <a href="{{ route('sevas.booking.index') }}"
+                        class="pl-4 text-gray-700 hover:text-blue-600">Sevas</a>
+                    <a href="#" class="pl-4 text-gray-700 hover:text-blue-600">Accommodation Booking</a>
+
+                    <div class="pt-4 border-t">
+                        @guest
+                            <a href="#" @click="$dispatch('open-login-modal'); isMobileMenuOpen = false"
+                                class="block w-full text-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">Login</a>
+                        @else
+                            <a href="{{ route('profile.my-bookings') }}"
+                                class="block mb-2 text-gray-700 hover:text-blue-600">My Bookings</a>
+                            <a href="{{ route('profile.edit') }}"
+                                class="block mb-4 text-gray-700 hover:text-blue-600">Profile</a>
+                            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                                @csrf
+                                <button type="submit"
+                                    class="block w-full text-left text-red-600 hover:bg-gray-100 p-2 rounded-md">Log
+                                    Out</button>
+                            </form>
+                        @endguest
+                    </div>
+                </nav>
+            </div>
+        </div>
     </header>
     <main class="max-w-6xl mx-auto px-4 py-10 space-y-16">
         <section class="text-center animate-fadeInUp">
@@ -237,7 +387,6 @@
         ↑ Back to Top
     </a>
 
-    <!-- 🔻 Footer -->
     <footer class="bg-gray-200 border-t py-4 text-sm text-gray-700">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
             <div>&copy; {{ date('Y') }} DivyaDarshan. All rights reserved.</div>
@@ -262,8 +411,3 @@
 </body>
 
 </html>
-<style>
-    html {
-        scroll-behavior: smooth;
-    }
-</style>

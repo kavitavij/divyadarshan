@@ -2,14 +2,47 @@
 
 @section('content')
     <div class="container-fluid">
-        <h1>All Bookings</h1>
-        <p>A combined list of all Darshan, Seva, and Accommodation bookings across the platform, sorted by the most recent.
-        </p>
+        <h1 class="mb-3">All Bookings</h1>
+        <p class="text-muted">Combined list of all Darshan, Seva, and Accommodation bookings across the platform, sorted by
+            the most recent.</p>
 
-        <div class="card mt-4">
+        {{-- Filter Form --}}
+        <div class="card shadow-sm mt-3">
             <div class="card-body">
-                <table class="table table-bordered table-hover">
-                    <thead>
+                <form method="GET" action="{{ route('admin.bookings.index') }}" class="row g-3 align-items-end">
+                    {{-- Booking Type --}}
+                    <div class="col-md-3">
+                        <label for="type" class="form-label">Booking Type</label>
+                        <select name="type" id="type" class="form-select">
+                            <option value="">All</option>
+                            <option value="Darshan" {{ request('type') == 'Darshan' ? 'selected' : '' }}>Darshan</option>
+                            <option value="Seva" {{ request('type') == 'Seva' ? 'selected' : '' }}>Seva</option>
+                            <option value="Accommodation" {{ request('type') == 'Accommodation' ? 'selected' : '' }}>
+                                Accommodation</option>
+                        </select>
+                    </div>
+
+                    {{-- Date --}}
+                    <div class="col-md-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" name="date" id="date" value="{{ request('date') }}"
+                            class="form-control">
+                    </div>
+
+                    {{-- Submit --}}
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                        <a href="{{ route('admin.bookings.index') }}" class="btn btn-light border">Reset</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Bookings Table --}}
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
                             <th>Booking ID</th>
                             <th>Type</th>
@@ -23,25 +56,33 @@
                         @forelse ($bookings as $booking)
                             <tr>
                                 <td>{{ $booking->id }}</td>
-                                <td>{{ $booking->user->name ?? 'N/A' }}</td>
+                                <td>
+                                    <span class="badge bg-primary">
+                                        {{ $booking->type }}
+                                    </span>
+                                </td>
                                 <td>
                                     @if ($booking->type === 'Darshan')
-                                        Darshan at {{ $booking->temple->name ?? 'N/A' }}
+                                        {{ $booking->temple->name ?? 'N/A' }}
                                     @elseif($booking->type === 'Seva')
-                                        Seva: {{ $booking->seva->name ?? 'N/A' }} (Temple:
-                                        {{ $booking->seva->temple->name ?? 'N/A' }})
+                                        {{ $booking->seva->temple->name ?? 'N/A' }}
                                     @elseif($booking->type === 'Accommodation')
-                                        Room at {{ $booking->room->hotel->name ?? 'N/A' }}
+                                        {{ $booking->room->hotel->name ?? 'N/A' }}
                                     @endif
                                 </td>
-                                <td>₹{{ number_format($booking->amount, 2) }}</td>
-                                <td><span class="badge bg-success">{{ $booking->status }}</span></td>
+                                <td>{{ $booking->user->name ?? 'N/A' }}</td>
+                                <td>
+                                    <span
+                                        class="badge {{ $booking->status == 'Completed' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                        {{ $booking->status }}
+                                    </span>
+                                </td>
                                 <td>{{ $booking->created_at->format('d M Y, h:i A') }}</td>
                             </tr>
-
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">No bookings have been made yet on the website.</td>
+                                <td colspan="6" class="text-center text-muted">No bookings found for the selected
+                                    filters.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -49,7 +90,7 @@
 
                 {{-- Pagination links --}}
                 <div class="mt-3 d-flex justify-content-center">
-                    {{ $bookings->links('pagination::bootstrap-5') }}
+                    {{ $bookings->appends(request()->query())->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>
@@ -57,7 +98,6 @@
 
     {{-- Inline CSS for pagination --}}
     <style>
-        /* Make pagination smaller */
         .pagination {
             font-size: 0.85rem;
         }
@@ -69,7 +109,6 @@
 
         .pagination .page-item.active .page-link {
             background-color: #4a148c;
-            /* deep purple highlight */
             border-color: #4a148c;
             color: #fff;
         }

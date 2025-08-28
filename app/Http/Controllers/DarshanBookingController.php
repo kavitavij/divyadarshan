@@ -34,32 +34,32 @@ class DarshanBookingController extends Controller
 
 
     public function details(Request $request)
-{
-    $validated = $request->validate([
-        'temple_id' => 'required|exists:temples,id',
-        'darshan_slot_id' => 'required|string',
-        'selected_date' => 'required|date',
-        'slot_details' => 'required|string',
-        'number_of_people' => 'required|integer|min:1|max:10',
-    ]);
+    {
+        $validated = $request->validate([
+            'temple_id' => 'required|exists:temples,id',
+            'darshan_slot_id' => 'required|integer',
+            'selected_date' => 'required|date',
+            'slot_details' => 'required|string',
+            'number_of_people' => 'required|integer|min:1|max:10',
+        ]);
 
-    $temple = Temple::findOrFail($validated['temple_id']);
-    $chargePerPerson = $temple->darshan_charge ?? 0;
+        $temple = Temple::findOrFail($validated['temple_id']);
+        $chargePerPerson = $temple->darshan_charge ?? 0;
 
-    $validated['darshan_charge'] = $chargePerPerson;
-    $validated['total_charge'] = $chargePerPerson * $validated['number_of_people'];
+        $validated['darshan_charge'] = $chargePerPerson;
+        $validated['total_charge'] = $chargePerPerson * $validated['number_of_people'];
 
-    return view('booking.details', [
-        'bookingData' => $validated,
-        'temple' => $temple,
-    ]);
-}
+        return view('booking.details', [
+            'bookingData' => $validated,
+            'temple' => $temple,
+        ]);
+    }
 
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'temple_id' => 'required|exists:temples,id',
-            'darshan_slot_id' => 'required|string',
+            'darshan_slot_id' => 'required|integer',
             'selected_date' => 'required|date',
             'number_of_people' => 'required|integer|min:1',
             'devotees' => 'required|array',
@@ -71,7 +71,8 @@ class DarshanBookingController extends Controller
             'devotees.*.id_number' => 'required|string',
         ]);
 
-        $slotIdToSave = is_numeric($validatedData['darshan_slot_id']) ? $validatedData['darshan_slot_id'] : null;
+        // FIXED: Check for temporary negative IDs and save NULL instead.
+        $slotIdToSave = $validatedData['darshan_slot_id'] > 0 ? $validatedData['darshan_slot_id'] : null;
 
         $booking = Booking::create([
             'user_id' => Auth::id(),
@@ -85,7 +86,7 @@ class DarshanBookingController extends Controller
 
         return redirect()->route('payment.create', ['type' => 'darshan', 'id' => $booking->id]);
     }
-    // Helper function to get slots for a given day
+
     private function getAvailableSlots(Temple $temple, Carbon $date)
     {
         $slots = DarshanSlot::where('temple_id', $temple->id)
@@ -94,9 +95,9 @@ class DarshanBookingController extends Controller
 
         if ($slots->isEmpty()) {
             return collect([
-                ['id' => 'default_09:00-11:00', 'time' => '09:00 AM - 11:00 AM', 'capacity' => 1000],
-                ['id' => 'default_11:00-13:00', 'time' => '11:00 AM - 01:00 PM', 'capacity' => 1000],
-                ['id' => 'default_15:00-17:00', 'time' => '03:00 PM - 05:00 PM', 'capacity' => 1000],
+                ['id' => -1, 'time' => '09:00 AM - 11:00 AM', 'capacity' => 1000],
+                ['id' => -2, 'time' => '11:00 AM - 01:00 PM', 'capacity' => 1000],
+                ['id' => -3, 'time' => '03:00 PM - 05:00 PM', 'capacity' => 1000],
             ]);
         }
 
@@ -109,7 +110,6 @@ class DarshanBookingController extends Controller
         });
     }
 
-    // Helper function to generate calendar data
     private function generateCalendarData(Temple $temple)
     {
         $calendars = [];

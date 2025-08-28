@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DarshanSlot;
 
 class Booking extends Model
 {
@@ -37,4 +38,8 @@ class Booking extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function slot()
+{
+    return $this->belongsTo(DarshanSlot::class, 'darshan_slot_id');
+}
 }
