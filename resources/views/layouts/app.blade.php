@@ -22,7 +22,7 @@
     :class="{ 'overflow-hidden': loginModal || cartOpen || isMobileMenuOpen }"
     class="bg-gray-100 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-300">
 
-    {{-- ▼▼▼ NEW RESPONSIVE HEADER ▼▼▼ --}}
+    {{-- ▼▼▼ RESPONSIVE HEADER WITH CLICKABLE DROPDOWNS ▼▼▼ --}}
     <header x-data="{ isMobileMenuOpen: false }" class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -36,16 +36,17 @@
                     <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400">Home</a>
                     <a href="/about" class="hover:text-blue-600 dark:hover:text-blue-400">About</a>
 
-                    <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
-                        <button @mouseover="open = true" class="flex items-center gap-1 focus:outline-none">
+                    {{-- ✅ Temples Dropdown (Click-based) --}}
+                    <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                        <button @click="open = !open" class="flex items-center gap-1 focus:outline-none">
                             <span>Temples</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                         <div x-show="open" x-transition
-                            class="absolute -left-4 mt-2 w-48 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-20"
+                            class="absolute -left-4 mt-2 w-48 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-40"
                             style="display: none;">
                             @foreach ($allTemples as $temple)
                                 <a href="{{ route('temples.show', $temple->id) }}"
@@ -54,16 +55,17 @@
                         </div>
                     </div>
 
-                    <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
-                        <button @mouseover="open = true" class="flex items-center gap-1 focus:outline-none">
+                    {{-- ✅ Online Services Dropdown (Click-based) --}}
+                    <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                        <button @click="open = !open" class="flex items-center gap-1 focus:outline-none">
                             <span>Online Services</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                         <div x-show="open" x-transition
-                            class="absolute -left-4 mt-2 w-56 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-20"
+                            class="absolute -left-4 mt-2 w-56 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-40"
                             style="display: none;">
                             <a href="{{ route('booking.index') }}"
                                 class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">Darshan
@@ -73,6 +75,8 @@
                             <a href="{{ route('stays.index') }}"
                                 class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">Accommodation
                                 Booking</a>
+                            <a href="{{ route ('donations.index') }}"
+                                class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">Donations</a>
                         </div>
                     </div>
                     <a href="{{ route('ebooks.index') }}"
@@ -86,17 +90,18 @@
                             Login
                         </button>
                     @else
-                        <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
-                            <button @mouseover="open = true"
+                        {{-- ✅ User Profile Dropdown (Click-based) --}}
+                        <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                            <button @click="open = !open"
                                 class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none">
                                 <span>{{ Auth::user()->name }}</span>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             <div x-show="open" x-transition
-                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-20"
+                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-40"
                                 style="display: none;">
                                 @if (Auth::user()->role === 'admin')
                                     <a href="{{ route('admin.dashboard') }}"
@@ -108,10 +113,16 @@
                                 <a href="{{ route('profile.ebooks') }}"
                                     class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">My
                                     eBooks</a>
-                                <a href="{{ route('profile.my-bookings') }}"
+                                {{-- <a href="{{ route('profile.my-bookings') }}"
                                     class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">My
-                                    Bookings</a>
-                                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                                    Bookings</a> --}}
+                                {{-- <a href="{{ route ('profile.my-donations.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">My
+                                   Donations</a> --}}
+                                <a href="{{ route ('profile.my-orders.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">My
+                                   Orders</a>
+                                   <form method="POST" action="{{ route('logout') }}" class="w-full">
                                     @csrf
                                     <button type="submit"
                                         class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Log
@@ -135,6 +146,7 @@
                     </a>
                 </div>
 
+                {{-- Mobile menu button and cart --}}
                 <div class="md:hidden flex items-center">
                     <a href="{{ route('cart.view') }}"
                         class="relative text-gray-600 dark:text-gray-300 hover:text-blue-600 mr-4">
@@ -159,13 +171,17 @@
             </div>
         </div>
 
-        <div x-show="isMobileMenuOpen" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 transform -translate-x-full"
-            x-transition:enter-end="opacity-100 transform translate-x-0"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 transform translate-x-0"
-            x-transition:leave-end="opacity-0 transform -translate-x-full" class="fixed inset-0 z-50 md:hidden"
-            style="display: none;">
+        {{-- Mobile Menu --}}
+        <div x-show="isMobileMenuOpen"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-x-full"
+        x-transition:enter-end="opacity-100 transform translate-x-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-x-0"
+        x-transition:leave-end="opacity-0 transform -translate-x-full"
+        class="fixed inset-0 z-60 md:hidden"
+        style="display: none;">
+
             <div @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black bg-opacity-50"></div>
             <div class="relative w-64 h-full bg-white dark:bg-gray-800 p-4">
                 <button @click="isMobileMenuOpen = false"
@@ -214,8 +230,7 @@
             </div>
         </div>
     </header>
-
-    <div class="flex justify-center mt-4">
+<div class="relative flex justify-center mt-4 z-10">
         <div class="swiper mySwiper" style="max-width: 400px;">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
@@ -233,6 +248,7 @@
             </div>
         </div>
     </div>
+
 
     <main class="py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -297,8 +313,9 @@
         </div>
     </footer>
 
-    <div x-show="cartOpen" @click.away="cartOpen = false" class="fixed inset-0 z-50 overflow-hidden"
-        x-transition.opacity style="display: none;">
+    <div x-show="cartOpen" @click.away="cartOpen = false"
+     class="fixed inset-0 z-80 overflow-hidden"  <!-- ⬅ raised -->
+     x-transition.opacity style="display: none;">
         <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         <section class="absolute inset-y-0 right-0 pl-10 max-w-full flex">
             <div class="w-screen max-w-md" x-show="cartOpen"
@@ -373,8 +390,8 @@
     </div>
 
     <div x-show="loginModal" @click.away="loginModal = false"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" x-transition.opacity
-        style="display: none;">
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+      x-transition.opacity style="display: none;">
         <div class="bg-white dark:bg-gray-800 text-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md"
             @keydown.escape.window="loginModal = false">
 

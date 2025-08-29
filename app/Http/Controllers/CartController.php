@@ -11,23 +11,23 @@ use App\Models\Booking;
 use App\Models\SevaBooking;
 use App\Models\StayBooking;
 use App\Models\StayBookingGuest;
-use App\Models\Payment;
-use App\Models\User;
+use App\Models\Donation;
+use App\Models\Order; // Correctly import the Order model
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Razorpay\Api\Api;
 use Exception;
+use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
-    // Add Seva
     public function addSeva(Request $request)
     {
         $seva = Seva::findOrFail($request->seva_id);
         $cart = session()->get('cart', []);
-        $cart[] = [
+        $cart['seva_' . $seva->id] = [ // Use a unique key
             'id' => $seva->id,
             'type' => 'seva',
             'name' => $seva->name,
@@ -38,12 +38,11 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Seva added to cart!');
     }
 
-    // Add Ebook
     public function addEbook(Request $request)
     {
         $ebook = Ebook::findOrFail($request->ebook_id);
         $cart = session()->get('cart', []);
-        $cart[] = [
+        $cart['ebook_' . $ebook->id] = [ // Use a unique key
             'id' => $ebook->id,
             'type' => 'ebook',
             'name' => $ebook->title,
@@ -54,14 +53,12 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Ebook added to cart!');
     }
 
-    // View cart
     public function viewCart()
     {
         $cart = session()->get('cart', []);
         return view('cart.index', compact('cart'));
     }
 
-    // Remove item
     public function removeFromCart($index)
     {
         $cart = session()->get('cart', []);
@@ -90,7 +87,7 @@ class CartController extends Controller
         }
 
         $totalAmount = collect($cart)->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
+            return ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
         });
 
         return view('cart.checkout', compact('cart', 'totalAmount'));
@@ -116,14 +113,13 @@ class CartController extends Controller
         $totalCharge = $temple->darshan_charge * $validatedData['number_of_people'];
 
         $cart = session()->get('cart', []);
-
         $cartItemId = 'darshan_' . $validatedData['temple_id'] . '_' . time();
 
         $cart[$cartItemId] = [
-            'id'      => $cartItemId,
-            'type'    => 'darshan',
-            'name'    => 'Darshan Booking: ' . $temple->name,
-            'price'   => $totalCharge,
+            'id'       => $cartItemId,
+            'type'     => 'darshan',
+            'name'     => 'Darshan Booking: ' . $temple->name,
+            'price'    => $totalCharge,
             'quantity' => 1,
             'details'  => $validatedData
         ];
@@ -156,9 +152,8 @@ class CartController extends Controller
         $checkOut = Carbon::parse($validated['check_out_date'])->startOfDay();
         $nights = $checkIn->diffInDays($checkOut);
 
-
         if ($nights < 1) {
-            return back()->with('error', 'DEBUG: Night calculation resulted in a non-positive number. Nights calculated: ' . $nights)->withInput();
+            return back()->with('error', 'Check-out date must be at least one day after check-in.')->withInput();
         }
 
         $totalAmount = $nights * $room->price_per_night;
@@ -180,7 +175,7 @@ class CartController extends Controller
         return redirect()->route('cart.view')->with('success', 'Item added to cart successfully!');
     }
 
-    public function pay()
+    public function pay(Request $request)
     {
         $cart = session()->get('cart', []);
         if (empty($cart)) {
@@ -188,11 +183,10 @@ class CartController extends Controller
         }
 
         $totalAmount = collect($cart)->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
+            return ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
         });
 
         $amountInPaise = $totalAmount * 100;
-
         $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
         $order = $api->order->create([
@@ -209,6 +203,9 @@ class CartController extends Controller
         ]);
     }
 
+    /**
+     * UPDATED: This is the fully corrected paymentSuccess method.
+     */
     public function paymentSuccess(Request $request)
     {
         $request->validate([
@@ -218,16 +215,17 @@ class CartController extends Controller
         ]);
 
         if (!Auth::check()) {
-            Log::error('Payment success callback received, but user is not authenticated.');
+            Log::error('Payment success failed: User not authenticated.');
             return redirect()->route('login')->with('error', 'You must be logged in to complete a booking.');
         }
 
         $cart = session()->get('cart', []);
         if (empty($cart)) {
-            return redirect()->route('home')->with('info', 'Your session has expired, but your payment may have been processed.');
+            Log::warning('Payment success callback hit with an empty cart session.');
+            return redirect()->route('home')->with('info', 'Your session has expired.');
         }
 
-        $totalAmount = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        $totalAmount = collect($cart)->sum(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 1));
         $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
         try {
@@ -238,45 +236,58 @@ class CartController extends Controller
             ];
             $api->utility->verifyPaymentSignature($attributes);
 
+            Log::info('Razorpay signature verified for order: ' . $request->razorpay_order_id);
+
             DB::transaction(function () use ($cart, $request, $totalAmount) {
-                Log::info('Starting database transaction for order: ' . $request->razorpay_order_id);
                 $userId = Auth::id();
+
+                $order = Order::create([
+                    'user_id'       => $userId,
+                    'order_number'  => 'DD-' . strtoupper(Str::random(10)),
+                    'total_amount'  => $totalAmount,
+                    'status'        => 'Completed',
+                    'payment_id'    => $request->razorpay_payment_id,
+                    'order_details' => $cart,
+                ]);
+
+                Log::info("Successfully created Order record #{$order->id} for user #{$userId}.");
 
                 foreach ($cart as $item) {
                     if ($item['type'] === 'darshan') {
-                        // FIXED: Check for temporary negative IDs and save NULL instead.
-                        $slotIdToSave = $item['details']['darshan_slot_id'] > 0 ? $item['details']['darshan_slot_id'] : null;
-
                         Booking::create([
-                            'user_id'          => $userId,
-                            'temple_id'        => $item['details']['temple_id'],
-                            'darshan_slot_id'  => $slotIdToSave,
-                            'number_of_people' => $item['details']['number_of_people'],
-                            'status'           => 'confirmed',
-                            'devotee_details'  => json_encode($item['details']['devotees']),
+                            'user_id'           => $userId,
+                            'temple_id'         => $item['details']['temple_id'],
+                            'darshan_slot_id'   => $item['details']['darshan_slot_id'] > 0 ? $item['details']['darshan_slot_id'] : null,
+                            'number_of_people'  => $item['details']['number_of_people'],
+                            'status'            => 'confirmed',
+                            'devotee_details'   => json_encode($item['details']['devotees']),
                         ]);
-                        Log::info('Successfully created Darshan booking.');
                     } elseif ($item['type'] === 'seva') {
                         SevaBooking::create([
-                            'user_id'      => $userId,
-                            'seva_id'      => $item['id'],
-                            'amount'       => $item['price'] * $item['quantity'],
-                            'status'       => 'confirmed',
+                            'user_id'   => $userId,
+                            'seva_id'   => $item['id'],
+                            'amount'    => $item['price'] * $item['quantity'],
+                            'status'    => 'confirmed',
                         ]);
-                        Log::info('Successfully created Seva booking.');
+                    } elseif ($item['type'] === 'donation') {
+                        Donation::create([
+                            'user_id'   => $userId,
+                            'amount'    => $item['price'],
+                            'temple_id' => $item['details']['temple_id'] ?? null,
+                            'purpose'   => $item['details']['donation_purpose'] ?? null,
+                            'status'    => 'Completed',
+                        ]);
                     } elseif ($item['type'] === 'stay') {
                         $stayBooking = StayBooking::create([
-                            'user_id'          => $userId,
-                            'room_id'          => $item['details']['room_id'],
-                            'check_in_date'    => $item['details']['check_in_date'],
-                            'check_out_date'   => $item['details']['check_out_date'],
-                            'number_of_guests' => $item['details']['number_of_guests'],
-                            'phone_number'     => $item['details']['phone_number'],
-                            'total_amount'     => $item['price'],
-                            'status'           => 'confirmed',
+                            'user_id'           => $userId,
+                            'room_id'           => $item['details']['room_id'],
+                            'check_in_date'     => $item['details']['check_in_date'],
+                            'check_out_date'    => $item['details']['check_out_date'],
+                            'number_of_guests'  => $item['details']['number_of_guests'],
+                            'phone_number'      => $item['details']['phone_number'],
+                            'total_amount'      => $item['price'],
+                            'status'            => 'confirmed',
                         ]);
-                        Log::info('Successfully created Stay booking.');
-
                         foreach ($item['details']['guests'] as $guestData) {
                             StayBookingGuest::create([
                                 'stay_booking_id' => $stayBooking->id,
@@ -285,37 +296,50 @@ class CartController extends Controller
                                 'id_number'       => $guestData['id_number'],
                             ]);
                         }
-                        Log::info('Successfully created Stay booking guests.');
                     } elseif ($item['type'] === 'ebook') {
                         Auth::user()->ebooks()->attach($item['id']);
-                        Log::info('Successfully attached Ebook to user.');
                     }
                 }
-
-                Log::info('All bookings created. Creating payment record.');
-                Payment::create([
-                    'user_id'    => $userId,
-                    'type'       => 'booking',
-                    'reference_id' => null,
-                    'payment_id' => $request->razorpay_payment_id,
-                    'order_id'   => $request->razorpay_order_id,
-                    'signature'  => $request->razorpay_signature,
-                    'status'     => 'success',
-                    'payload'    => json_encode($request->all()),
-                    'amount'     => $totalAmount,
-                ]);
-                Log::info('Successfully created payment record.');
             });
 
-            Log::info('Database transaction completed successfully for order: ' . $request->razorpay_order_id);
             session()->forget('cart');
-            return redirect()->route('profile.my-bookings')->with('success', 'Payment successful! Your booking is confirmed.');
+
+            return redirect()->route('profile.my-orders.index')->with('success', 'Payment successful! Your order has been placed.');
 
         } catch (Exception $e) {
-            Log::error('Payment failed during processing for order ' . $request->razorpay_order_id . ': ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
-            return redirect()->route('cart.view')->with('error', 'Payment failed during processing. Please contact support.');
+            Log::error('Payment failed during DB transaction for order ' . $request->razorpay_order_id . ': ' . $e->getMessage());
+            return redirect()->route('cart.view')->with('error', 'A problem occurred while processing your payment. Please contact support.');
         }
+    }
+
+    public function addDonation(Request $request)
+    {
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:10',
+            'temple_id' => 'nullable|exists:temples,id',
+            'donation_purpose' => 'nullable|string|max:255',
+        ]);
+
+        $cart = session()->get('cart', []);
+        $cartItemId = 'donation_' . time();
+
+        $name = 'General Donation';
+        if ($validated['temple_id']) {
+            $temple = Temple::find($validated['temple_id']);
+            $name = 'Donation to ' . $temple->name;
+        }
+
+        $cart[$cartItemId] = [
+            'id'       => $cartItemId,
+            'type'     => 'donation',
+            'name'     => $name,
+            'price'    => $validated['amount'],
+            'quantity' => 1,
+            'details'  => $validated
+        ];
+
+        session()->put('cart', $cart);
+
+        return redirect()->route('cart.view')->with('success', 'Donation has been added to your cart!');
     }
 }

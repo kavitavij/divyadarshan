@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\Donation;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProfileController extends Controller
 {
@@ -75,4 +77,28 @@ class ProfileController extends Controller
 
         return view('profile.my-bookings', compact('bookings'));
     }
+    public function myDonations(): View
+    {
+        $donations = Donation::where('user_id', Auth::id())
+                             ->with('temple') // Eager load temple details to prevent extra queries
+                             ->latest()       // Order by the most recent donation
+                             ->paginate(10);   // Paginate the results
+
+        return view('profile.my-donations', compact('donations'));
+    }
+    public function downloadDonationReceipt(Donation $donation)
+    {
+        // Security check: ensure the authenticated user owns this donation
+        if (Auth::id() !== $donation->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Load the PDF view and pass the donation data to it
+        $pdf = PDF::loadView('donations.receipt-pdf', compact('donation'));
+
+        // Generate a unique filename and stream the PDF to the browser for download
+        $fileName = 'Donation-Receipt-' . str_pad($donation->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+        return $pdf->stream($fileName);
+    }
 }
+

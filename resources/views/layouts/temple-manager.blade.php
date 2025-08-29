@@ -1,4 +1,3 @@
-{{-- resources/views/temple_manager/dashboard.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +6,7 @@
     <title>Temple Manager Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    {{-- Bootstrap for table & responsive utilities --}}
+    {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
@@ -26,6 +25,15 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1100; /* above sidebar */
+        }
+
+        .navbar .menu-toggle {
+            display: none;
+            font-size: 22px;
+            cursor: pointer;
         }
 
         /* Sidebar */
@@ -37,6 +45,8 @@
             left: 0;
             bottom: 0;
             padding-top: 20px;
+            transition: transform 0.3s ease;
+            z-index: 1200; /* keep above content */
         }
 
         .sidebar a {
@@ -74,24 +84,35 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
-        .widget h3 {
-            margin: 0;
-            font-size: 22px;
-            color: #2c3e50;
+        /* Overlay for mobile sidebar */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
         }
 
-        .widget p {
-            margin: 5px 0 0;
-            color: #7f8c8d;
-            font-size: 14px;
+        .overlay.active {
+            display: block;
         }
 
-        /* Responsive */
+        /* Mobile View */
         @media (max-width: 768px) {
+            .navbar .menu-toggle {
+                display: block; /* show hamburger */
+            }
+
             .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
+                width: 200px;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
             }
 
             .main {
@@ -105,81 +126,46 @@
 
     {{-- Navbar --}}
     <div class="navbar">
+        <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
         <div class="logo">Temple Manager</div>
         <div>
-            <a href="{{ route('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-danger">Logout</button>
+            </form>
         </div>
     </div>
 
     {{-- Sidebar --}}
-    <div class="sidebar">
-        <a href="{{ route('temple-manager.dashboard') }}" class="active">Dashboard</a>
-        <a href="{{ route('temple-manager.bookings') }}">Bookings</a>
-        <a href="{{ route('temple-manager.temples') }}">Manage Temple</a>
+    <div class="sidebar" id="sidebar">
+        <a href="{{ route('temple-manager.dashboard') }}"
+            class="{{ request()->routeIs('temple-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
+        <a href="{{ route('temple-manager.bookings') }}"
+            class="{{ request()->routeIs('temple-manager.bookings*') ? 'active' : '' }}">Bookings</a>
+        <a href="{{ route('temple-manager.temples') }}"
+            class="{{ request()->routeIs('temple-manager.temples*') ? 'active' : '' }}">Manage Temple</a>
         <a href="#">Reports</a>
     </div>
 
-    {{-- Main --}}
+    {{-- Overlay --}}
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    {{-- Main Content --}}
     <div class="main">
-        <h1 class="mb-4">Welcome, Temple Manager</h1>
-
-        {{-- Widgets --}}
-        <div class="widgets">
-            <div class="widget">
-                <h3>150</h3>
-                <p>Total Bookings</p>
-            </div>
-            <div class="widget">
-                <h3>120</h3>
-                <p>Confirmed</p>
-            </div>
-            <div class="widget">
-                <h3>20</h3>
-                <p>Pending</p>
-            </div>
-            <div class="widget">
-                <h3>10</h3>
-                <p>Cancelled</p>
-            </div>
-        </div>
-
-        {{-- Table --}}
-        <h2>Recent Bookings</h2>
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Devotee</th>
-                        <th>Darshan Date</th>
-                        <th>Slot</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($bookings as $index => $booking)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $booking->user->name }}</td>
-                            <td>{{ $booking->date }}</td>
-                            <td>{{ $booking->slot?->time ?? 'N/A' }}</td>
-                            <td>
-                                <span class="badge bg-{{ $booking->status == 'confirmed' ? 'success' : 'warning' }}">
-                                    {{ ucfirst($booking->status) }}
-                                </span>
-                            </td>
-                        </tr>
-                    @endforeach
-                    @if ($bookings->isEmpty())
-                        <tr>
-                            <td colspan="5">No recent bookings found.</td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
+        @yield('content')
     </div>
 
-</body>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
 
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+    </script>
+
+</body>
 </html>

@@ -37,11 +37,17 @@
                                             |
                                             Nights: {{ $item['nights'] }}
                                         </div>
+                                    {{-- ADDED: This block displays the donation purpose --}}
+                                    @elseif ($item['type'] === 'donation' && !empty($item['details']['donation_purpose']))
+                                        <div class="text-xs text-gray-500">
+                                            Purpose: {{ Illuminate\Support\Str::ucfirst(str_replace('_', ' ', $item['details']['donation_purpose'])) }}
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 border-b">{{ ucfirst($item['type']) }}</td>
                                 <td class="px-6 py-4 border-b">₹{{ number_format($item['price'], 2) }}</td>
                                 <td class="px-6 py-4 border-b">
+                                    {{-- MODIFIED: Hide quantity updater for donations --}}
                                     @if ($item['type'] === 'seva' || $item['type'] === 'ebook')
                                         <form action="{{ route('cart.updateQuantity', $index) }}" method="POST">
                                             @csrf
@@ -101,6 +107,11 @@
                                 |
                                 Nights: {{ $item['nights'] }}
                             </div>
+                        {{-- ADDED: This block displays the donation purpose --}}
+                        @elseif ($item['type'] === 'donation' && !empty($item['details']['donation_purpose']))
+                             <div class="text-xs text-gray-500 mb-1">
+                                Purpose: {{ Illuminate\Support\Str::ucfirst(str_replace('_', ' ', $item['details']['donation_purpose'])) }}
+                            </div>
                         @endif
 
                         <div class="mt-2 text-sm">Price: <span
@@ -108,6 +119,7 @@
 
                         <div class="mt-1 text-sm">
                             Quantity:
+                            {{-- MODIFIED: Hide quantity updater for donations --}}
                             @if ($item['type'] === 'seva' || $item['type'] === 'ebook')
                                 <form action="{{ route('cart.updateQuantity', $index) }}" method="POST"
                                     class="flex items-center gap-2 mt-1">

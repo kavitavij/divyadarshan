@@ -61,7 +61,16 @@
                     </div>
                 </div>
             </div>
-
+            {{-- Donations --}}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Donations</h5>
+                        <p class="text-muted">View all Donations.</p>
+                        <a href="{{ route('admin.donations.index') }}" class="btn btn-secondary">Donations</a>
+                    </div>
+                </div>
+            </div>
             <!-- Hotels -->
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">

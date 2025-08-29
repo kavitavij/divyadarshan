@@ -20,7 +20,7 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\CartController;
-
+use App\Http\Controllers\OrderController;
 // Admin Controllers
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\TempleController as AdminTempleController;
@@ -33,7 +33,7 @@ use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\HotelController as AdminHotelController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
-
+use App\Http\Controllers\Admin\DonationController as AdminDonationController;
 // Hotel Manager Controllers
 use App\Http\Controllers\HotelManager\DashboardController as HotelManagerDashboardController;
 use App\Http\Controllers\HotelManager\HotelController as HotelManagerHotelController;
@@ -69,6 +69,7 @@ Route::get('/donations', [DonationController::class, 'index'])->name('donations.
 Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
 Route::get('/cart/pay', [CartController::class, 'pay'])->name('cart.pay');
 Route::post('/cart/payment-success', [CartController::class, 'paymentSuccess'])->name('cart.payment.success');
+Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
 
 // General Info Routes
 Route::get('/info/faq', [GeneralInfoController::class, 'faq'])->name('info.faq');
@@ -94,6 +95,7 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::delete('/remove/{index}', [CartController::class, 'removeFromCart'])->name('remove');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
     Route::post('/pay', [CartController::class, 'pay'])->name('pay');
+   Route::post('/add-donation', [CartController::class, 'addDonation'])->name('addDonation');
 });
 
 // ## AUTHENTICATED USER ROUTES ##
@@ -111,10 +113,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // CORRECTED: Removed the duplicate route definition
+    // CORRECTED
     Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.my-bookings');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
-
+    Route::get('/profile/my-donations', [ProfileController::class, 'myDonations'])->name('profile.my-donations.index');
     // Ebook Purchase & Download
     Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
     Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
@@ -140,7 +142,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/room/{room}', [StayController::class, 'details'])->name('details');
         Route::post('/room/{room}/store', [StayController::class, 'store'])->name('store');
     });
+
+    //MY-ORDERS
+    Route::prefix('profile/my-orders')->name('profile.my-orders.')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::get('/{order}', [OrderController::class, 'show'])->name('show');
+        Route::get('/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('download-invoice');
+    });
+        Route::get('/donations/{donation}/receipt', [ProfileController::class, 'downloadDonationReceipt'])->name('donations.receipt.download');
 });
+
 
 
 // ## ADMIN, MANAGER, AND BREEZE AUTH ROUTES ##
@@ -162,6 +173,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('hotels.rooms', AdminRoomController::class)->shallow();
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
+    Route::resource('donations', AdminDonationController::class)->only(['index', 'show']);
 });
 
 // ## HOTEL MANAGER ROUTES ##

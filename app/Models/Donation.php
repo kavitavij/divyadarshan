@@ -19,6 +19,7 @@ class Donation extends Model
         'temple_id',
         'amount',
         'status',
+        'purpose', // <-- ADD THIS LINE
     ];
 
     /**

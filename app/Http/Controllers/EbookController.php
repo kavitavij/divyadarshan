@@ -72,19 +72,21 @@ class EbookController extends Controller
      * Handle the download of a purchased ebook.
      */
     public function download(Ebook $ebook)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        if (!$user->ebooks()->where('ebook_id', $ebook->id)->exists()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $filePath = storage_path('app/' . $ebook->file_path);
-
-        if (!file_exists($filePath)) {
-            abort(404, 'File not found.');
-        }
-
-        return response()->download($filePath);
+    if (!$user->ebooks()->where('ebook_id', $ebook->id)->exists()) {
+        abort(403, 'Unauthorized action.');
     }
+
+    // Ensure correct path (storage/app/public/ebooks)
+    $filePath = storage_path('app/public/' . $ebook->file_path);
+
+    if (!file_exists($filePath)) {
+        abort(404, 'File not found: ' . $filePath);
+    }
+
+    return response()->download($filePath);
+}
+
 }

@@ -23,7 +23,7 @@ class DashboardController extends Controller
 
         // Fetch recent Darshan bookings (for sidebar/cards)
         $darshanBookings = Booking::where('temple_id', $temple->id)
-    ->with(['user', 'slot']) // <-- added 'slot'
+    ->with(['user', 'slot'])
     ->latest()
     ->take(5)
     ->get();
