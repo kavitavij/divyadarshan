@@ -16,8 +16,6 @@
         }
     </script>
 </head>
-
-
 <body x-data="appState()" x-init="initCart()"
     :class="{ 'overflow-hidden': loginModal || cartOpen || isMobileMenuOpen }"
     class="bg-gray-100 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-300">
