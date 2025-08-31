@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container mx-auto py-5">
         <h1 class="text-3xl font-bold mb-4 text-center text-blue-700">{{ $temple->name }}</h1>
 
         <div class="mb-6 flex justify-center">

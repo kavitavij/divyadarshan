@@ -55,12 +55,11 @@
                     [
                         'icon' => '🌐',
                         'title' => 'Languages',
-                        'desc' => 'Available in Hindi, Tamil, Telugu & more.',
+                        'desc' => 'Books available in multiple languages.',
                         'url' => route('ebooks.index'),
                     ],
                 ];
             @endphp
-
             @foreach ($modules as $module)
                 <div class="service-card bg-white p-6 rounded shadow text-center transition">
                     <button type="button" class="text-4xl mb-2 hover:text-blue-700 focus:outline-none"
@@ -83,7 +82,6 @@
             <input type="text" name="search" placeholder="Search temples..." value="{{ request('search') }}"
                 class="border p-2 rounded w-full md:w-1/3 shadow">
         </form>
-
         <!-- 📜 Temple Cards -->
         @if ($temples->total() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
@@ -126,7 +124,6 @@
             </div> -->
     <div class="mb-12 px-4">
         <h2 class="text-xl font-semibold mb-4 text-center text-blue-800">Latest Updates</h2>
-
         <div class="vertical-panel">
             <div class="vertical-scroll">
                 {{-- Check if there are any updates to show --}}
