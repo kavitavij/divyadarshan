@@ -279,8 +279,6 @@
         </a>
     </div>
 </section>
-
-
 @endsection
 <style>
     .vertical-panel {
