@@ -57,7 +57,10 @@
                             <tr>
                                 <td>{{ $booking->id }}</td>
                                 <td>
-                                    <span class="badge bg-primary">
+                                    <span class="badge
+                                        @if($booking->type === 'Darshan') bg-primary
+                                        @elseif($booking->type === 'Seva') bg-info
+                                        @else bg-secondary @endif">
                                         {{ $booking->type }}
                                     </span>
                                 </td>
@@ -72,17 +75,20 @@
                                 </td>
                                 <td>{{ $booking->user->name ?? 'N/A' }}</td>
                                 <td>
-                                    <span
-                                        class="badge {{ $booking->status == 'Completed' ? 'bg-success' : 'bg-warning text-dark' }}">
-                                        {{ $booking->status }}
+                                    <span class="badge {{ $booking->status === 'Completed' || $booking->status === 'confirmed' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                        {{ Str::ucfirst($booking->status) }}
                                     </span>
                                 </td>
-                                <td>{{ $booking->created_at->format('d M Y, h:i A') }}</td>
+                                <td>{{ $booking->created_at->format('d M Y') }}</td>
+                                <td>
+                                    <a href="{{ route('admin.bookings.show', ['type' => $booking->type, 'id' => $booking->id]) }}" class="btn btn-sm btn-primary">
+                                        View Details
+                                    </a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted">No bookings found for the selected
-                                    filters.</td>
+                                <td colspan="7" class="text-center text-muted">No bookings found for the selected filters.</td>
                             </tr>
                         @endforelse
                     </tbody>

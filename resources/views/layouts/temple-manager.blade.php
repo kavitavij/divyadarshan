@@ -8,6 +8,8 @@
 
     {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
     <style>
         body {
@@ -15,8 +17,6 @@
             font-family: Arial, sans-serif;
             background: #f4f6f9;
         }
-
-        /* Navbar */
         .navbar {
             height: 60px;
             background: #2c3e50;
@@ -27,16 +27,13 @@
             justify-content: space-between;
             position: sticky;
             top: 0;
-            z-index: 1100; /* above sidebar */
+            z-index: 1100;
         }
-
         .navbar .menu-toggle {
             display: none;
             font-size: 22px;
             cursor: pointer;
         }
-
-        /* Sidebar */
         .sidebar {
             width: 220px;
             background: #34495e;
@@ -46,36 +43,29 @@
             bottom: 0;
             padding-top: 20px;
             transition: transform 0.3s ease;
-            z-index: 1200; /* keep above content */
+            z-index: 1200;
         }
-
         .sidebar a {
             display: block;
             padding: 12px 20px;
             color: #ecf0f1;
             text-decoration: none;
         }
-
         .sidebar a:hover,
         .sidebar a.active {
             background: #1abc9c;
             color: #fff;
         }
-
-        /* Main content */
         .main {
             margin-left: 220px;
             padding: 20px;
         }
-
-        /* Widgets */
         .widgets {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
-
         .widget {
             background: #fff;
             padding: 20px;
@@ -83,8 +73,6 @@
             text-align: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-
-        /* Overlay for mobile sidebar */
         .overlay {
             display: none;
             position: fixed;
@@ -95,26 +83,20 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 1100;
         }
-
         .overlay.active {
             display: block;
         }
-
-        /* Mobile View */
         @media (max-width: 768px) {
             .navbar .menu-toggle {
-                display: block; /* show hamburger */
+                display: block;
             }
-
             .sidebar {
                 width: 200px;
                 transform: translateX(-100%);
             }
-
             .sidebar.active {
                 transform: translateX(0);
             }
-
             .main {
                 margin-left: 0;
             }
@@ -140,9 +122,9 @@
     <div class="sidebar" id="sidebar">
         <a href="{{ route('temple-manager.dashboard') }}"
             class="{{ request()->routeIs('temple-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
-        <a href="{{ route('temple-manager.bookings') }}"
+        <a href="{{ route('temple-manager.bookings.index') }}"
             class="{{ request()->routeIs('temple-manager.bookings*') ? 'active' : '' }}">Bookings</a>
-        <a href="{{ route('temple-manager.temples') }}"
+        <a href="{{ route('temple-manager.temple.edit') }}"
             class="{{ request()->routeIs('temple-manager.temples*') ? 'active' : '' }}">Manage Temple</a>
         <a href="#">Reports</a>
     </div>
@@ -155,6 +137,7 @@
         @yield('content')
     </div>
 
+    {{-- Main Sidebar Toggle Script --}}
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -166,6 +149,12 @@
             document.getElementById('overlay').classList.remove('active');
         }
     </script>
+
+    {{-- Bootstrap JS for Modals and other components --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {{-- THE FIX: This line will render any scripts pushed from child views --}}
+    @stack('scripts')
 
 </body>
 </html>

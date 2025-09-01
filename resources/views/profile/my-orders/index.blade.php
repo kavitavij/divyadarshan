@@ -15,17 +15,22 @@
         <!-- Quick Navigation Tabs -->
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('profile.my-bookings') }}"
+                <a href="{{ route('profile.my-bookings.index') }}"
                    class="px-4 py-2 text-sm font-medium rounded-lg shadow-sm
                           bg-blue-600 text-white hover:bg-blue-700 transition">
                     View Darshan Bookings
                 </a>
-
+                <a href="#"
+                   class="px-4 py-2 text-sm font-medium rounded-lg shadow-sm
+                          bg-red-600 text-white hover:bg-blue-700 transition">
+                    View Accomodation Bookings
+                </a>
                 <a href="{{ route('profile.my-donations.index') }}"
                    class="px-4 py-2 text-sm font-medium rounded-lg shadow-sm
                           bg-green-600 text-white hover:bg-green-700 transition">
                     View Donations
                 </a>
+
             </div>
         </div>
 

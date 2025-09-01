@@ -8,19 +8,18 @@
     @if (session('success'))
         <div class="alert alert-success shadow-sm">{{ session('success') }}</div>
     @endif
+    @if (session('error'))
+        <div class="alert alert-danger shadow-sm">{{ session('error') }}</div>
+    @endif
 
-    @if (isset($error))
-        <div class="alert alert-danger shadow-sm">{{ $error }}</div>
-    @else
+    @if ($temple)
         {{-- Welcome --}}
         <p class="welcome-text">Welcome, <strong>{{ Auth::user()->name }}</strong>! Manage your temple with ease.</p>
 
         {{-- Temple Details Card --}}
         <div class="card shadow-lg temple-card mt-4">
             <div class="card-header">
-                <h3 class="card-title mb-0">
-                    Your Temple: <strong>{{ $temple->name }}</strong>
-                </h3>
+                <h3 class="card-title mb-0">Your Temple: <strong>{{ $temple->name }}</strong></h3>
             </div>
             <div class="card-body">
                 <p class="temple-description">{{ $temple->description }}</p>
@@ -28,9 +27,15 @@
                 <h5 class="mb-3">⚡ Quick Actions</h5>
                 <div class="btn-group gap-2 flex-wrap">
                     <a href="{{ route('temple-manager.temple.edit') }}" class="btn btn-outline-primary">✏️ Edit Temple</a>
-                    <a href="{{ route('temple-manager.slots.index') }}" class="btn btn-outline-info">🗓️ Manage Slots</a>
+
+                    {{-- Manage T&C Button --}}
+                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#termsModal">
+                        📄 Manage T&C
+                    </button>
+
+                    <a href="{{ route('temple-manager.slots.index') }}" class="btn btn-outline-dark">🗓️ Manage Slots</a>
                     <a href="{{ route('temple-manager.sevas.index') }}" class="btn btn-outline-secondary">🙏 Manage Sevas</a>
-                    <a href="{{ route('temple-manager.darshan-bookings.index') }}" class="btn btn-outline-success">📖 View Bookings</a>
+                    <a href="{{ route('temple-manager.bookings.index') }}" class="btn btn-outline-success">📖 View Bookings</a>
                 </div>
             </div>
         </div>
@@ -146,6 +151,78 @@
                 </tbody>
             </table>
         </div>
+    @else
+        <div class="alert alert-warning">You are not assigned a temple. Please contact an administrator.</div>
     @endif
 </div>
+
+{{-- T&C Modal --}}
+@if ($temple)
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{{ route('temple-manager.temple.update') }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                {{-- ADD THIS HIDDEN INPUT --}}
+                <input type="hidden" name="update_source" value="terms_modal">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Manage T&C for {{ $temple->name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">Add, edit, or remove terms. Each line will appear as a numbered list item to the user.</p>
+
+                    <div id="terms-container">
+                        @if($temple->terms_and_conditions)
+                            @foreach($temple->terms_and_conditions as $term)
+                                <div class="input-group mb-2">
+                                    <input type="text" name="terms_and_conditions[]" class="form-control" value="{{ $term }}">
+                                    <button class="btn btn-outline-danger remove-term-btn" type="button">Remove</button>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+
+                    <button type="button" class="btn btn-outline-success btn-sm mt-2 add-term-btn">
+                        <i class="fas fa-plus"></i> Add Term
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('click', function (e) {
+    const addBtn = e.target.closest('.add-term-btn');
+    const removeBtn = e.target.closest('.remove-term-btn');
+
+    if (addBtn) {
+        const container = document.getElementById('terms-container');
+        if(container) {
+            const newTermDiv = document.createElement('div');
+            newTermDiv.className = 'input-group mb-2';
+            newTermDiv.innerHTML = `
+                <input type="text" name="terms_and_conditions[]" class="form-control" placeholder="Enter a new term">
+                <button class="btn btn-outline-danger remove-term-btn" type="button">Remove</button>
+            `;
+            container.appendChild(newTermDiv);
+        }
+    }
+
+    if (removeBtn) {
+        removeBtn.closest('.input-group').remove();
+    }
+});
+</script>
+@endpush

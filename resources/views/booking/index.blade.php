@@ -24,8 +24,7 @@
         }
 
         .animated-btn span:after {
-            content: '\00bb';
-            /* » arrow */
+            content: '\00bb'; /* » arrow */
             position: absolute;
             opacity: 0;
             top: 0;
@@ -45,62 +44,64 @@
 @endpush
 
 @section('content')
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>{{ isset($selectedTemple) && $selectedTemple ? 'Book Your Darshan for ' . $selectedTemple->name : 'Book Your Darshan' }}
-                        </h2>
+<div class="container mx-auto px-4 py-5">
+    <div class="flex justify-center">
+        <div class="w-full lg:w-10/12">
+            <div class="bg-white shadow rounded-lg">
+                <div class="border-b px-6 py-4">
+                    <h2 class="text-xl font-bold">
+                        {{ isset($selectedTemple) && $selectedTemple ? 'Book Your Darshan for ' . $selectedTemple->name : 'Book Your Darshan' }}
+                    </h2>
+                </div>
+                <div class="card-body">
+
+                    {{-- 1. Temple Selector --}}
+                    <div class="form-group">
+                        <label for="temple_id">1. Select Temple</label>
+                        <select name="temple_id" id="temple_id" class="form-control" required>
+                            <option value="">-- Please choose a temple --</option>
+                            @foreach ($temples as $temple)
+                                <option value="{{ $temple->id }}"
+                                    {{ isset($selectedTemple) && $selectedTemple && $selectedTemple->id == $temple->id ? 'selected' : '' }}>
+                                    {{ $temple->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="card-body">
 
-                        {{-- 1. Temple Selector --}}
-                        <div class="form-group">
-                            <label for="temple_id">1. Select Temple</label>
-                            <select name="temple_id" id="temple_id" class="form-control" required>
-                                <option value="">-- Please choose a temple --</option>
-                                @foreach ($temples as $temple)
-                                    <option value="{{ $temple->id }}"
-                                        {{ isset($selectedTemple) && $selectedTemple && $selectedTemple->id == $temple->id ? 'selected' : '' }}>
-                                        {{ $temple->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    @if (isset($selectedTemple) && $selectedTemple)
+                        <form id="bookingForm" action="{{ route('booking.details') }}" method="GET">
+                            @csrf
+                            <input type="hidden" name="temple_id" value="{{ $selectedTemple->id }}">
+                            <input type="hidden" name="selected_date"
+                                value="{{ $selectedDate ? $selectedDate->toDateString() : '' }}">
+                            <input type="hidden" name="slot_details" id="slot_details">
 
-                        @if (isset($selectedTemple) && $selectedTemple)
-                            <form id="bookingForm" action="{{ route('booking.details') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="temple_id" value="{{ $selectedTemple->id }}">
-                                <input type="hidden" name="selected_date"
-                                    value="{{ $selectedDate ? $selectedDate->toDateString() : '' }}">
-                                <input type="hidden" name="slot_details" id="slot_details">
-
-                                {{-- 2. Multi-Month Calendar --}}
-                                <div class="form-group mt-4">
-                                    <label>2. Select an Available Date</label>
-                                    <div class="flex justify-center gap-4 my-4 text-sm">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-4 h-4 rounded bg-green-700"></div> Available
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-4 h-4 rounded bg-sky-800"></div> Not Available
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-4 h-4 rounded bg-red-700"></div> Full
-                                        </div>
+                            {{-- 2. Multi-Month Calendar --}}
+                            <div class="form-group mt-6">
+                                <label class="block text-lg font-semibold mb-3 text-center">2. Select an Available Date</label>
+                                <div class="flex justify-center gap-6 my-4 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 h-4 rounded bg-green-700"></div> Available
                                     </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 h-4 rounded bg-sky-800"></div> Not Available
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 h-4 rounded bg-red-700"></div> Full
+                                    </div>
+                                </div>
 
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                                {{-- Center calendar grid --}}
+                                <div class="flex justify-center">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
                                         @foreach ($calendars as $calendar)
-                                            <div class="border rounded-lg p-3 bg-white shadow">
-                                                <div class="text-center font-bold mb-2">{{ $calendar['month_name'] }}</div>
-                                                <div class="grid grid-cols-7 gap-1 text-center">
+                                            <div class="border rounded-lg p-4 bg-white shadow w-64">
+                                                <div class="text-center font-bold mb-3">{{ $calendar['month_name'] }}</div>
+                                                <div class="grid grid-cols-7 gap-1 text-center text-sm">
                                                     {{-- Day names --}}
                                                     @foreach (['S', 'M', 'T', 'W', 'T', 'F', 'S'] as $dayName)
-                                                        <div class="font-bold text-xs text-gray-500">{{ $dayName }}
-                                                        </div>
+                                                        <div class="font-bold text-xs text-gray-500">{{ $dayName }}</div>
                                                     @endforeach
 
                                                     {{-- Calendar days --}}
@@ -110,23 +111,21 @@
                                                         @else
                                                             @php
                                                                 $statusClass = match ($day['status']) {
-                                                                    'available'
-                                                                        => 'bg-green-700 text-white cursor-pointer hover:bg-green-800',
-                                                                    'full'
-                                                                        => 'bg-red-700 text-white cursor-not-allowed',
-                                                                    'not_available'
-                                                                        => 'bg-sky-800 text-white cursor-not-allowed',
+                                                                    'available' => 'bg-green-700 text-white cursor-pointer hover:bg-green-800',
+                                                                    'full' => 'bg-red-700 text-white cursor-not-allowed',
+                                                                    'not_available' => 'bg-sky-800 text-white cursor-not-allowed',
                                                                     default => '',
                                                                 };
                                                             @endphp
                                                             @if ($day['status'] === 'available')
                                                                 <a href="?temple_id={{ $selectedTemple->id }}&selected_date={{ $day['date'] }}"
-                                                                    class="py-1 rounded text-sm block {{ $selectedDate && $selectedDate->toDateString() == $day['date'] ? 'bg-blue-600 text-white' : $statusClass }}">
+                                                                    class="py-1 rounded block {{ $selectedDate && $selectedDate->toDateString() == $day['date'] ? 'bg-blue-600 text-white' : $statusClass }}">
                                                                     {{ $day['day'] }}
                                                                 </a>
                                                             @else
-                                                                <div class="py-1 rounded text-sm {{ $statusClass }}">
-                                                                    {{ $day['day'] }}</div>
+                                                                <div class="py-1 rounded {{ $statusClass }}">
+                                                                    {{ $day['day'] }}
+                                                                </div>
                                                             @endif
                                                         @endif
                                                     @endforeach
@@ -135,57 +134,59 @@
                                         @endforeach
                                     </div>
                                 </div>
+                            </div>
 
-                                {{-- 3. Slots --}}
-                                @if (isset($selectedDate) && $selectedDate)
-                                    <div class="form-group mt-4">
-                                        <h4>Available Slots for: {{ $selectedDate->format('F d, Y') }}</h4>
-                                        @if ($slots->isNotEmpty())
-                                            @foreach ($slots as $slot)
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="darshan_slot_id"
-                                                        id="slot_{{ $slot['id'] }}" value="{{ $slot['id'] }}"
-                                                        data-details="{{ $slot['time'] }}" required>
-                                                    <label class="form-check-label" for="slot_{{ $slot['id'] }}">
-                                                        {{ $slot['time'] }}
-                                                        <span class="badge bg-success">{{ $slot['capacity'] }}
-                                                            available</span>
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <p class="text-danger">No time slots are available for this day.</p>
-                                        @endif
-                                    </div>
+                            {{-- 3. Slots --}}
+                            @if (isset($selectedDate) && $selectedDate)
+                                <div class="form-group mt-6">
+                                    <h4 class="text-lg font-semibold mb-2">Available Slots for: {{ $selectedDate->format('F d, Y') }}</h4>
+                                    @if ($slots->isNotEmpty())
+                                        @foreach ($slots as $slot)
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="darshan_slot_id"
+                                                    id="slot_{{ $slot['id'] }}" value="{{ $slot['id'] }}"
+                                                    data-details="{{ $slot['time'] }}" required>
+                                                <label class="form-check-label" for="slot_{{ $slot['id'] }}">
+                                                    {{ $slot['time'] }}
+                                                    <span class="badge bg-success">{{ $slot['capacity'] }} available</span>
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <p class="text-danger">No time slots are available for this day.</p>
+                                    @endif
+                                </div>
 
-                                    <div class="form-group mt-4">
-                                        <label for="number_of_people">Number of People</label>
-                                        <input type="number" name="number_of_people" id="number_of_people"
-                                            class="form-control" min="1" max="8" required>
-                                    </div>
-                                    {{-- Darshan Charge --}}
-                                    <div class="form-group mt-3">
-                                        <p class="font-bold text-lg text-green-700">
-                                            Darshan Charge: ₹{{ number_format($temple->darshan_charge ?? 0, 2) }} per
-                                            person
-                                        </p>
-                                        <p id="totalCharge" class="text-blue-600 font-semibold"></p>
-                                    </div>
-                                    <br>
+                                <div class="form-group mt-4">
+                                    <label for="number_of_people">Number of People</label>
+                                    <input type="number" name="number_of_people" id="number_of_people"
+                                        class="form-control" min="1" max="8" required>
+                                </div>
+
+                                {{-- Darshan Charge --}}
+                                <div class="form-group mt-3">
+                                    <p class="font-bold text-lg text-green-700">
+                                        Darshan Charge: ₹{{ number_format($selectedTemple->darshan_charge ?? 0, 2) }} per person
+                                    </p>
+                                    <p id="totalCharge" class="text-blue-600 font-semibold"></p>
+                                </div>
+                                <br>
+                                <div class="flex justify-center">
                                     <button type="submit" class="animated-btn"><span>Next</span></button>
-                                @endif
-                            </form>
-                        @endif
-                    </div>
+                                </div>
+                            @endif
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection
 
 @push('scripts')
     <script>
-        document.getElementById('temple_id').addEventListener('change', function() {
+        document.getElementById('temple_id').addEventListener('change', function () {
             if (this.value) {
                 window.location.href = '/darshan-booking?temple_id=' + this.value;
             } else {
@@ -193,36 +194,32 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const slotRadios = document.querySelectorAll('input[name="darshan_slot_id"]');
-            if (slotRadios.length > 0) {
-                const slotDetailsInput = document.getElementById('slot_details');
-                if (slotDetailsInput && slotRadios[0]) {
+            const slotDetailsInput = document.getElementById('slot_details');
+            if (slotRadios.length > 0 && slotDetailsInput) {
+                if (!document.querySelector('input[name="darshan_slot_id"]:checked')) {
+                    slotRadios[0].checked = true;
                     slotDetailsInput.value = slotRadios[0].dataset.details;
                 }
                 slotRadios.forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        if (slotDetailsInput) {
-                            slotDetailsInput.value = this.dataset.details;
-                        }
+                    radio.addEventListener('change', function () {
+                        slotDetailsInput.value = this.dataset.details;
                     });
                 });
             }
         });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const chargePerPerson = {{ $temple->darshan_charge ?? 0 }};
+
+        document.addEventListener('DOMContentLoaded', function () {
             const numberInput = document.getElementById('number_of_people');
             const totalChargeEl = document.getElementById('totalCharge');
+            const chargePerPerson = {{ $selectedTemple->darshan_charge ?? 0 }};
 
             if (numberInput) {
-                numberInput.addEventListener('input', function() {
+                numberInput.addEventListener('input', function () {
                     const people = parseInt(this.value) || 0;
                     const total = people * chargePerPerson;
-                    totalChargeEl.textContent = people > 0 ?
-                        `Total Charge: ₹${total.toFixed(2)}` :
-                        '';
+                    totalChargeEl.textContent = people > 0 ? `Total Charge: ₹${total.toFixed(2)}` : '';
                 });
             }
         });

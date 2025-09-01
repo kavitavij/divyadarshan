@@ -8,6 +8,8 @@
             </div>
         </div>
     @endif
+
+    <!-- ✅ Our Services -->
     <div class="mb-12">
         <h2 class="text-2xl font-bold text-center text-blue-700 mb-6">Our Services</h2>
         <p class="text-center text-gray-600 mb-8">All essential services for your spiritual journey</p>
@@ -39,7 +41,6 @@
                         'desc' => 'Participate in poojas online or in-person.',
                         'url' => route('sevas.booking.index'),
                     ],
-                    // ['icon' => '🚕', 'title' => 'Cab Booking', 'desc' => 'One-way, round trip, or temple packages.', 'url' => url('/online-services')],
                     [
                         'icon' => '💰',
                         'title' => 'Donations',
@@ -61,7 +62,7 @@
                 ];
             @endphp
             @foreach ($modules as $module)
-                <div class="service-card bg-white p-6 rounded shadow text-center transition">
+                <div class="why-card">
                     <button type="button" class="text-4xl mb-2 hover:text-blue-700 focus:outline-none"
                         onclick="window.location.href='{{ $module['url'] }}'" aria-label="{{ $module['title'] }} button">
                         {{ $module['icon'] }}
@@ -73,6 +74,36 @@
             @endforeach
         </div>
     </div>
+
+<!-- ✅ Why Book With Us -->
+<div class="mb-12 px-4">
+    <h2 class="text-2xl font-bold text-center text-blue-800 mb-3">Why Book With Us</h2>
+    <p class="text-center text-gray-600 mb-8">Here to guide you through your challenges</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="why-card">
+            <div class="text-4xl mb-3 text-red-600">🕉️</div>
+            <h3 class="font-semibold text-lg text-blue-900">2L+ Devotees Served</h3>
+            <p class="text-gray-800 text-sm mt-2">Rituals by certified priests with authentic Vedic practice.</p>
+        </div>
+        <div class="why-card">
+            <div class="text-4xl mb-3 text-red-600">🏯</div>
+            <h3 class="font-semibold text-lg text-blue-900">Trusted Temples</h3>
+            <p class="text-gray-800 text-sm mt-2">Book services at renowned and trusted temples across the region.</p>
+        </div>
+        <div class="why-card">
+            <div class="text-4xl mb-3 text-red-600">🍲</div>
+            <h3 class="font-semibold text-lg text-blue-900">Prasad Delivery</h3>
+            <p class="text-gray-800 text-sm mt-2">Receive blessed prasad delivered to your doorstep after every booking.</p>
+        </div>
+        <div class="why-card">
+            <div class="text-4xl mb-3 text-red-600">📖</div>
+            <h3 class="font-semibold text-lg text-blue-900">Easy Booking</h3>
+            <p class="text-gray-800 text-sm mt-2">Simple and hassle-free booking process for all your spiritual needs.</p>
+        </div>
+    </div>
+</div>
+
     <!-- 🛕 Temple Section -->
     <div class="mb-12">
         <h2 class="text-2xl font-bold text-blue-800 mb-6 text-center">Temples</h2>
@@ -122,6 +153,92 @@
                     </div>
                 </div>
             </div> -->
+            <!-- ✅ How It Works (Flowchart Section) -->
+<section class="mb-12 px-4">
+    <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">How It Works</h2>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+
+        <!-- Flowchart Left -->
+        <div class="relative flex flex-col items-start space-y-10">
+            <!-- Step 1 -->
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-400 text-black font-bold shadow-lg">
+                    1
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-800">Select Temple</h3>
+                    <p class="text-gray-600 text-sm">Choose your desired temple from our list.</p>
+                </div>
+            </div>
+
+            <!-- Connector -->
+            <div class="border-l-2 border-dashed border-yellow-400 h-10 ml-6"></div>
+
+            <!-- Step 2 -->
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-400 text-black font-bold shadow-lg">
+                    2
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-800">Select Offering/Service</h3>
+                    <p class="text-gray-600 text-sm">Pick puja, seva, or special ritual.</p>
+                </div>
+            </div>
+
+            <div class="border-l-2 border-dashed border-yellow-400 h-10 ml-6"></div>
+
+            <!-- Step 3 -->
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-400 text-black font-bold shadow-lg">
+                    3
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-800">Fill Your Details</h3>
+                    <p class="text-gray-600 text-sm">Provide your name, gotra, and other details.</p>
+                </div>
+            </div>
+
+            <div class="border-l-2 border-dashed border-yellow-400 h-10 ml-6"></div>
+
+            <!-- Step 4 -->
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-400 text-black font-bold shadow-lg">
+                    4
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-800">Blessings & Payment</h3>
+                    <p class="text-gray-600 text-sm">Complete payment & receive blessings.</p>
+                </div>
+            </div>
+
+            <div class="border-l-2 border-dashed border-yellow-400 h-10 ml-6"></div>
+
+            <!-- Step 5 -->
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-400 text-black font-bold shadow-lg">
+                    5
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-800">Receive receipts</h3>
+                    <p class="text-gray-600 text-sm">Get reciept on WhatsApp & mail.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video/Right Side -->
+        <div class="flex justify-center">
+            <div class="w-full md:w-4/5 aspect-video bg-gray-200 rounded-lg shadow-lg overflow-hidden">
+                <!-- Replace with actual video embed -->
+                <video controls class="w-full h-full">
+                    <source src="sample-video.mp4" type="video/mp4">
+                    Your browser does not support video playback.
+                </video>
+            </div>
+        </div>
+
+    </div>
+</section>
+
     <div class="mb-12 px-4">
         <h2 class="text-xl font-semibold mb-4 text-center text-blue-800">Latest Updates</h2>
         <div class="vertical-panel">
@@ -138,6 +255,32 @@
             </div>
         </div>
     </div>
+<!-- Spiritual Guidance Section -->
+<section style="position: relative; background: url('https://img1.hotstarext.com/image/upload/f_auto/sources/r1/cms/prod/9460/1379460-i-2b70cca05890') center/cover no-repeat; padding: 80px 15px; text-align: center; font-family: 'Poppins', sans-serif;">
+
+    <!-- Dark overlay for readability -->
+    <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.65);"></div>
+
+    <!-- Content box -->
+    <div style="position: relative; z-index:2; max-width:650px; margin:0 auto; background: rgba(255,255,255,0.06); padding:40px 25px; border-radius:14px; backdrop-filter: blur(6px); box-shadow:0 6px 20px rgba(0,0,0,0.4);">
+
+        <h2 style="font-size:26px; color:#facc15; font-weight:700; margin-bottom:16px; text-transform:uppercase; letter-spacing:0.5px;">
+            Confused About Which Puja to Choose?
+        </h2>
+
+        <p style="font-size:16px; color:#fff; margin-bottom:30px; line-height:1.6;">
+            Whether it’s health, prosperity, or spiritual upliftment, our priests and experts are here<br>
+            to guide you in selecting the perfect ritual for your divine journey.
+        </p>
+
+        <a href="{{ route("info.contact") }}"
+           style="background: linear-gradient(135deg, #facc15, #f59e0b); color:#000; padding:12px 28px; font-size:16px; font-weight:600; border-radius:30px; text-decoration:none; box-shadow:0 4px 15px rgba(250,204,21,0.35); transition: all 0.3s ease-in-out;">
+            Get Divine Guidance
+        </a>
+    </div>
+</section>
+
+
 @endsection
 <style>
     .vertical-panel {
@@ -185,4 +328,43 @@
             transform: translateY(-100%);
         }
     }
+    .why-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    gap: 16px;
+    border-radius: 23.666px;
+    background: #c5bba2;
+    padding: 32px;
+    min-width: 250px;
+    flex: 1;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+}
+
+.why-card:hover {
+    background: #b3a98d;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+.service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    border-radius: 20px;
+    background: #ffffff;
+    padding: 28px;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    background: #f9f9f9;
+}
+
 </style>

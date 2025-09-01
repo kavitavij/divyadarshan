@@ -40,6 +40,10 @@
                         <textarea class="form-control" style="height:100px" name="description" id="description">{{ old('description', $temple->description) }}</textarea>
                     </div>
                     <div class="mb-3">
+                        <label for="terms_and_conditions" class="form-label">Darshan Booking Terms & Conditions</label>
+                        <textarea class="form-control" id="terms_and_conditions" name="terms_and_conditions" rows="10" placeholder="Enter booking rules, dress code, etc. You can use HTML for formatting (e.g., <strong>, <ul>, <li>).">{{ old('terms_and_conditions', $temple->terms_and_conditions) }}</textarea>
+                    </div>
+                    <div class="mb-3">
                         <label for="darshan_charge" class="form-label">Darshan Charge (₹)</label>
                         <input type="number" name="darshan_charge" class="form-control" id="darshan_charge"
                             value="{{ old('darshan_charge', $temple->darshan_charge ?? 0) }}" min="0" step="1">

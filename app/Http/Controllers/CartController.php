@@ -12,7 +12,8 @@ use App\Models\SevaBooking;
 use App\Models\StayBooking;
 use App\Models\StayBookingGuest;
 use App\Models\Donation;
-use App\Models\Order; // Correctly import the Order model
+use App\Models\Devotee;
+use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -92,23 +93,45 @@ class CartController extends Controller
 
         return view('cart.checkout', compact('cart', 'totalAmount'));
     }
-
     public function addDarshan(Request $request)
     {
+        // THE FIX: Validation rules now match your form's input fields exactly.
         $validatedData = $request->validate([
             'temple_id' => 'required|exists:temples,id',
             'darshan_slot_id' => 'required|integer',
             'selected_date' => 'required|date',
             'number_of_people' => 'required|integer|min:1',
             'devotees' => 'required|array',
-            'devotees.*.first_name' => 'required|string|max:255',
-            'devotees.*.last_name' => 'required|string|max:255',
+            'devotees.*.full_name' => 'required|string|max:255', // Corrected from first_name/last_name
             'devotees.*.age' => 'required|integer|min:1',
+            'devotees.*.gender' => 'required|string',
+            'devotees.*.email' => 'required|email',
             'devotees.*.phone_number' => 'required|string|max:15',
+            'devotees.*.pincode' => 'required|string|max:6',
+            'devotees.*.city' => 'required|string',
+            'devotees.*.state' => 'required|string',
+            'devotees.*.address' => 'required|string',
             'devotees.*.id_type' => 'required|string',
             'devotees.*.id_number' => 'required|string',
+            'devotees.*.id_photo' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
+        // **FIX #2: Handle the file uploads before saving to the session**
+        $processedDevotees = [];
+        foreach ($validatedData['devotees'] as $devotee) {
+            if (isset($devotee['id_photo'])) {
+                // Store the file and get its path
+                $path = $devotee['id_photo']->store('id_proofs', 'public');
+                // Replace the file object with the path string
+                $devotee['id_photo_path'] = $path;
+                unset($devotee['id_photo']);
+            }
+            $processedDevotees[] = $devotee;
+        }
+        // Update the main data array with the processed devotee info
+        $validatedData['devotees'] = $processedDevotees;
+
+        // Now, add the processed data to the cart
         $temple = Temple::findOrFail($validatedData['temple_id']);
         $totalCharge = $temple->darshan_charge * $validatedData['number_of_people'];
 
@@ -121,10 +144,11 @@ class CartController extends Controller
             'name'     => 'Darshan Booking: ' . $temple->name,
             'price'    => $totalCharge,
             'quantity' => 1,
-            'details'  => $validatedData
+            'details'  => $validatedData // This data is now safe to store in the session
         ];
 
         session()->put('cart', $cart);
+
         return redirect()->route('cart.view')->with('success', 'Darshan booking added to your cart!');
     }
 
@@ -208,37 +232,25 @@ class CartController extends Controller
      */
     public function paymentSuccess(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'razorpay_payment_id' => 'required|string',
             'razorpay_order_id'   => 'required|string',
             'razorpay_signature'  => 'required|string',
         ]);
 
-        if (!Auth::check()) {
-            Log::error('Payment success failed: User not authenticated.');
-            return redirect()->route('login')->with('error', 'You must be logged in to complete a booking.');
-        }
-
         $cart = session()->get('cart', []);
-        if (empty($cart)) {
-            Log::warning('Payment success callback hit with an empty cart session.');
-            return redirect()->route('home')->with('info', 'Your session has expired.');
+        if (empty($cart) || !Auth::check()) {
+            return redirect()->route('home')->with('error', 'Your session has expired or you are not logged in.');
         }
 
         $totalAmount = collect($cart)->sum(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 1));
         $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
         try {
-            $attributes = [
-                'razorpay_order_id'   => $request->razorpay_order_id,
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_signature'  => $request->razorpay_signature
-            ];
-            $api->utility->verifyPaymentSignature($attributes);
+            $api->utility->verifyPaymentSignature($validated);
+            Log::info('Razorpay signature verified for order: ' . $validated['razorpay_order_id']);
 
-            Log::info('Razorpay signature verified for order: ' . $request->razorpay_order_id);
-
-            DB::transaction(function () use ($cart, $request, $totalAmount) {
+            DB::transaction(function () use ($cart, $validated, $totalAmount) {
                 $userId = Auth::id();
 
                 $order = Order::create([
@@ -246,23 +258,43 @@ class CartController extends Controller
                     'order_number'  => 'DD-' . strtoupper(Str::random(10)),
                     'total_amount'  => $totalAmount,
                     'status'        => 'Completed',
-                    'payment_id'    => $request->razorpay_payment_id,
+                    'payment_id'    => $validated['razorpay_payment_id'],
                     'order_details' => $cart,
                 ]);
 
-                Log::info("Successfully created Order record #{$order->id} for user #{$userId}.");
-
                 foreach ($cart as $item) {
                     if ($item['type'] === 'darshan') {
-                        Booking::create([
+                        // Step 1: Create the main Booking record without the old JSON blob.
+                        $booking = Booking::create([
                             'user_id'           => $userId,
+                            'order_id'          => $order->id, // Link to the main order
                             'temple_id'         => $item['details']['temple_id'],
                             'darshan_slot_id'   => $item['details']['darshan_slot_id'] > 0 ? $item['details']['darshan_slot_id'] : null,
+                            'booking_date'      => $item['details']['selected_date'],
                             'number_of_people'  => $item['details']['number_of_people'],
-                            'status'            => 'confirmed',
-                            'devotee_details'   => json_encode($item['details']['devotees']),
+                            'status'            => 'Confirmed',
+                            'devotee_details'   => [], // Save an empty array to the old column
                         ]);
-                    } elseif ($item['type'] === 'seva') {
+
+                        // Step 2: Loop through the devotees from the cart and save each one to the 'devotees' table.
+                        foreach ($item['details']['devotees'] as $devoteeData) {
+                            Devotee::create([
+                                'booking_id'      => $booking->id, // Link to the booking created above
+                                'full_name'       => $devoteeData['full_name'],
+                                'age'             => $devoteeData['age'],
+                                'gender'          => $devoteeData['gender'],
+                                'email'           => $devoteeData['email'],
+                                'phone_number'    => $devoteeData['phone_number'],
+                                'pincode'         => $devoteeData['pincode'],
+                                'address'         => $devoteeData['address'],
+                                'city'            => $devoteeData['city'],
+                                'state'           => $devoteeData['state'],
+                                'id_type'         => $devoteeData['id_type'],
+                                'id_number'       => $devoteeData['id_number'],
+                                'id_photo_path'   => $devoteeData['id_photo_path'],
+                            ]);
+                        }
+                    }  elseif ($item['type'] === 'seva') {
                         SevaBooking::create([
                             'user_id'   => $userId,
                             'seva_id'   => $item['id'],

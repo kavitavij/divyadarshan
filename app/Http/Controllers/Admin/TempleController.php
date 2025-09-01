@@ -61,11 +61,30 @@ class TempleController extends Controller
 
     public function update(Request $request, Temple $temple)
     {
-        $request->validate([
+        // Check if the update is coming from the T&C modal.
+        if ($request->input('update_source') === 'terms_modal') {
+            $validatedData = $request->validate([
+                'terms_and_conditions'   => 'nullable|array',
+                'terms_and_conditions.*' => 'nullable|string|max:1000',
+            ]);
+
+            // If the user removes all terms, default to an empty array.
+            $terms = $validatedData['terms_and_conditions'] ?? [];
+
+            // Update only the terms and conditions.
+            $temple->terms_and_conditions = array_filter($terms);
+            $temple->save();
+
+            return redirect()->route('admin.temples.index')->with('success', 'Terms & Conditions updated successfully.');
+        }
+
+        // --- Otherwise, handle the FULL edit form from the main Edit page ---
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048',
             'darshan_charge' => 'nullable|numeric|min:0',
+            'description' => 'nullable|string',
             'about' => 'nullable|string',
             'online_services' => 'nullable|string',
             'social_services' => 'nullable|string',
@@ -75,13 +94,7 @@ class TempleController extends Controller
             'news_tickers' => 'nullable|array',
         ]);
 
-        $data = $request->only([
-            'name','location','darshan_charge','description','about','online_services','social_services'
-        ]);
-
-        $data['offered_services'] = $request->input('offered_services', []);
-        $data['slot_data'] = $request->input('slot_data', []);
-
+        // Rebuild the news array structure
         $newsItemsInput = $request->input('news_items', []);
         $newsTickersInput = $request->input('news_tickers', []);
         $news = [];
@@ -93,18 +106,19 @@ class TempleController extends Controller
                 ];
             }
         }
-        $data['news'] = $news;
+        $validatedData['news'] = $news;
 
+        // Handle image upload
         if ($request->hasFile('image')) {
             if ($temple->image && file_exists(public_path($temple->image))) {
                 unlink(public_path($temple->image));
             }
             $imageName = time().'.'.$request->image->extension();
             $request->image->move(public_path('images/temples'), $imageName);
-            $data['image'] = 'images/temples/' . $imageName;
+            $validatedData['image'] = 'images/temples/' . $imageName;
         }
 
-        $temple->update($data);
+        $temple->update($validatedData);
 
         return redirect()->route('admin.temples.index')->with('success', 'Temple updated successfully.');
     }

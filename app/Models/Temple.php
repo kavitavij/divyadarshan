@@ -10,17 +10,24 @@ class Temple extends Model
     use HasFactory;
 
     protected $fillable = [
-    'name', 'location', 'description', 'image', 'about',
-    'online_services', 'news', 'social_services', 'slot_data', 'darshan_charge',
+    'name',
+    'location',
+    'description',
+    'image',
+    'about',
+    'online_services',
+    'news',
+    'social_services',
+    'slot_data',
+    'darshan_charge',
     'offered_services',
+    'terms_and_conditions',
 ];
-
-
-
     protected $casts = [
     'offered_services' => 'array',
     'slot_data' => 'array',
     'news' => 'array',
+    'terms_and_conditions' => 'array',
 ];
 
     public function sevas()

@@ -13,22 +13,27 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $temple = Temple::where('manager_id', Auth::id())->first();
+        $temple = Auth::user()->temple;
 
         if (!$temple) {
-            return view('temple-manager.dashboard', [
-                'error' => 'You are not currently assigned to manage a temple. Please contact the administrator.'
+            // Pass null for the temple if the manager is not assigned to one.
+            // The view should handle this case gracefully.
+            return view('temple-manager.dashboard')->with([
+                'temple' => null,
+                'darshanBookings' => collect(),
+                'sevaBookings' => collect(),
+                'bookings' => collect(),
             ]);
         }
 
-        // Fetch recent Darshan bookings (for sidebar/cards)
+        // Fetch recent Darshan bookings for the dashboard cards
         $darshanBookings = Booking::where('temple_id', $temple->id)
-    ->with(['user', 'slot'])
-    ->latest()
-    ->take(5)
-    ->get();
+            ->with(['user', 'slot'])
+            ->latest()
+            ->take(5)
+            ->get();
 
-        // Fetch recent Seva bookings (for sidebar/cards)
+        // Fetch recent Seva bookings for the dashboard cards
         $sevaBookings = SevaBooking::whereHas('seva', function ($query) use ($temple) {
             $query->where('temple_id', $temple->id);
         })
@@ -37,24 +42,15 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Fetch recent darshan bookings for the table (more detailed view)
-        $bookings = Booking::where('temple_id', $temple->id)
-            ->with(['user', 'slot'])
-            ->latest()
-            ->take(10)
-            ->get();
+        // Fetch all-time bookings for the count widget
+        $allTimeBookings = Booking::where('temple_id', $temple->id)->get();
 
-        // Optional: Combine Darshan and Seva for future use
-        $recentBookings = $darshanBookings->toBase()
-            ->merge($sevaBookings)
-            ->sortByDesc('created_at');
-
-        return view('temple-manager.dashboard', compact(
-            'temple',
-            'darshanBookings',
-            'sevaBookings',
-            'bookings',
-            'recentBookings'
-        ));
+        return view('temple-manager.dashboard', [
+            'temple'          => $temple,
+            'darshanBookings' => $darshanBookings,
+            'sevaBookings'    => $sevaBookings,
+            'bookings'        => $allTimeBookings, // Used for the "All-Time" widget count
+        ]);
     }
 }
+

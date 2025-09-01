@@ -28,40 +28,44 @@
 </head>
 <body id="top" class="bg-gray-50 text-gray-800 font-sans" x-data="{ loginModal: false, modalView: 'login' }">
     <!-- 🔹 Navbar -->
-    <header class="bg-white shadow sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <!-- Left: Logo -->
-            <a href="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition">
-                DivyaDarshan
-            </a>
-            <!-- Middle: Menu -->
-            <nav class="flex gap-6 text-sm font-medium text-gray-700 items-center">
-                <a href="/" class="hover:text-blue-600">Home</a>
-                <a href="/about" class="text-blue-600 font-semibold">About</a>
-                <!-- Temples Dropdown -->
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open"
-                        class="flex items-center gap-1 hover:text-blue-600 focus:outline-none">
-                        Temples
-                        <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-                            <path d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div x-show="open" @click.outside="open = false" x-transition
-                        class="absolute bg-white border rounded shadow mt-2 min-w-max z-20">
-                        @foreach ($allTemples as $temple)
-                            <a href="{{ route('temples.show', $temple->id) }}"
-                                class="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
-                                {{ $temple->name }}
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            <!-- Services Dropdown -->
+   <header class="bg-[#0d0d0d] text-[#ccc] sticky top-0 z-50 font-poppins">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <!-- Left: Logo -->
+        <a href="/" class="text-2xl font-bold text-yellow-400 hover:text-yellow-500 transition">
+            DivyaDarshan
+        </a>
+
+        <!-- Middle: Menu -->
+        <nav class="flex gap-6 text-sm font-medium text-[#ccc] items-center">
+            <a href="/" class="hover:text-yellow-400 transition">Home</a>
+            <a href="/about" class="hover:text-yellow-400 transition">About</a>
+
+            <!-- Temples Dropdown -->
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open"
-                    class="flex items-center gap-1 hover:text-blue-600 focus:outline-none">
+                    class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
+                    Temples
+                    <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="open" @click.outside="open = false" x-transition
+                    class="absolute bg-[#1a1a1a] border border-[#333] rounded shadow mt-2 min-w-max z-20"
+                    style="display: none;">
+                    @foreach ($allTemples as $temple)
+                        <a href="{{ route('temples.show', $temple->id) }}"
+                            class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">
+                            {{ $temple->name }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Online Services Dropdown -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open"
+                    class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
                     Online Services
                     <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
@@ -69,19 +73,25 @@
                     </svg>
                 </button>
                 <div x-show="open" @click.outside="open = false" x-transition
-                    class="absolute bg-white border rounded shadow mt-2 min-w-max z-20">
-                    <a href="{{ route('booking.index') }}" class="block px-4 py-2 hover:bg-gray-100">Darshan Booking</a>
-                    <a href="{{ route('sevas.booking.index') }}" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-                    <a href="{{ route('stays.index') }}" class="block px-4 py-2 hover:bg-gray-100">Accommodation</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Cab Booking</a>
-                    <a href="{{ route('donations.index') }}" class="block px-4 py-2 hover:bg-gray-100">Donations</a>
-                    <a href="{{ route('ebooks.index') }}" class="block px-4 py-2 hover:bg-gray-100">E-Books</a>
-                </div>  
+                    class="absolute bg-[#1a1a1a] border border-[#333] rounded shadow mt-2 min-w-max z-20"
+                    style="display: none;">
+                    <a href="{{ route('booking.index') }}"
+                        class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Darshan Booking</a>
+                    <a href="{{ route('sevas.booking.index') }}"
+                        class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
+                    <a href="{{ route('stays.index') }}"
+                        class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Accommodation</a>
+                    <a href="{{ route('donations.index') }}"
+                        class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Donations</a>
+                    <a href="{{ route('ebooks.index') }}"
+                        class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">E-Books</a>
+                </div>
             </div>
-                <!-- General Info Dropdown -->
+
+            <!-- General Info Dropdown -->
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open"
-                    class="flex items-center gap-1 hover:text-blue-600 focus:outline-none">
+                    class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
                     General Info
                     <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
@@ -89,58 +99,60 @@
                     </svg>
                 </button>
                 <div x-show="open" @click.outside="open = false" x-transition
-                    class="absolute bg-white border rounded shadow mt-2 min-w-max z-20">
-                    <a href="{{ route('info.faq') }}" class="block px-4 py-2 hover:bg-gray-100">FAQs</a>
-                    <a href="{{ route('info.sevas') }}" class="block px-4 py-2 hover:bg-gray-100">Sevas</a>
-                    <a href="{{ route('info.dress-code') }}" class="block px-4 py-2 hover:bg-gray-100">Dress Code</a>
-                    <a href="{{ route('info.contact') }}" class="block px-4 py-2 hover:bg-gray-100">Contact Us</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Privacy Policy</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Cancellation Policy</a>
+                    class="absolute bg-[#1a1a1a] border border-[#333] rounded shadow mt-2 min-w-max z-20"
+                    style="display: none;">
+                    <a href="{{ route('info.faq') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">FAQs</a>
+                    <a href="{{ route('info.sevas') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
+                    <a href="{{ route('info.dress-code') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Dress Code</a>
+                    <a href="{{ route('info.privacy') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Privacy Policy</a>
+                    <a href="{{ route('info.cancellation') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Cancellation Policy</a>
+                    <a href="{{ route('info.contact') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
                 </div>
             </div>
-            </nav>
-            <!-- Right: Auth -->
-            <div>
-                @guest
-                    <button @click="loginModal = true; modalView = 'login'"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                        Login
+        </nav>
+
+        <!-- Right: Auth -->
+        <div>
+            @guest
+                <button @click="loginModal = true; modalView = 'login'"
+                    class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] rounded hover:bg-yellow-400 transition">
+                    Login
+                </button>
+            @else
+                <div class="relative group">
+                    <button
+                        class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] rounded hover:bg-yellow-400 transition">
+                        <span>{{ Auth::user()->name }}</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
                     </button>
-                @else
-                    <div class="relative group">
-                        <button
-                            class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                            <span>{{ Auth::user()->name }}</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div
-                            class="absolute hidden group-hover:block right-0 bg-white border rounded shadow-lg mt-2 min-w-max z-20">
-                            @if (Auth::user()->role === 'admin')
-                                <a href="{{ route('admin.dashboard') }}"
-                                    class="block px-4 py-2 hover:bg-gray-100">Admin Dashboard</a>
-                            @endif
-                            <a href="{{ route('profile.edit') }}"
-                                class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-                            <a href="{{ route('profile.ebooks') }}"
-                                class="block px-4 py-2 hover:bg-gray-100">My eBooks</a>
-                                <a href="{{ route ('profile.my-orders.index') }}"
-                                    class="block px-4 py-2 hover:bg-gray-100">My
-                                   Orders</a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <a href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); this.closest('form').submit();"
-                                    class="block px-4 py-2 hover:bg-gray-100">Log Out</a>
-                            </form>
-                        </div>
+                    <div
+                        class="absolute hidden group-hover:block right-0 bg-[#1a1a1a] border border-[#333] rounded shadow-lg mt-2 min-w-max z-20">
+                        @if (Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}"
+                                class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Admin Dashboard</a>
+                        @endif
+                        <a href="{{ route('profile.edit') }}"
+                            class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Profile</a>
+                        <a href="{{ route('profile.ebooks') }}"
+                            class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">My eBooks</a>
+                        <a href="{{ route ('profile.my-orders.index') }}"
+                            class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">My Orders</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <a href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); this.closest('form').submit();"
+                                class="block px-4 py-2 hover:bg-red-600 hover:text-[#0d0d0d]">Log Out</a>
+                        </form>
                     </div>
-                @endguest
-            </div>
+                </div>
+            @endguest
         </div>
-    </header>
+    </div>
+</header>
+
     <!-- 🔹 Content -->
     <main class="max-w-6xl mx-auto px-4 py-12 space-y-16">
         <!-- Quote -->
@@ -218,27 +230,59 @@
         ↑
     </a>
     <!-- 🔹 Footer -->
-    <footer class="bg-gray-200 border-t py-4 text-sm text-gray-700">
-        <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
-            <div>&copy; {{ date('Y') }} DivyaDarshan. All rights reserved.</div>
-            <div>
-                Contact: +91-1234567890 |
-                <a href="mailto:support@divyadarshan.com"
-                    class="text-blue-600 hover:underline">support@divyadarshan.com</a>
-            </div>
-            <div>
-                <a href="{{ route('terms') }}" class="text-blue-600 hover:underline">Terms & Condition</a> |
-                <a href="{{ route('guidelines') }}" class="text-blue-600 hover:underline">Guidelines</a> |
-                <a href="{{ route('complaint.form') }}" class="text-blue-600 hover:underline">Complaint</a>|
-                <a href="/reviews" class="text-blue-600 hover:underline">Reviews</a>
-            </div>
-            <div class="flex gap-2">
-                <a href="#" class="hover:text-blue-600">Facebook</a>
-                <a href="#" class="hover:text-blue-600">Twitter</a>
-                <a href="#" class="hover:text-blue-600">Instagram</a>
+<footer style="background:#0d0d0d; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
+
+    <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">
+
+        <!-- About -->
+        <div>
+            <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">About DivyaDarshan</h3>
+            <p style="font-size:15px; line-height:1.6; color:#bbb;">
+                Connecting devotees to divinity through online puja, darshan, seva, and temple services — anywhere, anytime.
+                <a href="/about" style="color:#93e018; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">About Us</a></li>
+
+            </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+            <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Quick Links</h3>
+            <ul style="list-style:none; padding:0; margin:0;">
+                <li><a href="/services" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Services</a></li>
+                <li><a href="/reviews" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Reviews</a></li>
+                <li><a href="{{ route('guidelines') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px;">Guidelines</a></li>
+                <li><a href="{{ route('complaint.form') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px;">Complaint</a></li>
+            </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+            <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Contact Us</h3>
+            <p style="font-size:15px; color:#bbb; line-height:1.7;">
+                📍 SOPL, Mohali, India <a href="{{ route('info.contact') }}" style="color:#93e018; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Contact</a>
+                📞 +91 9876543210 <br>
+                ✉️ <a href="mailto:support@divyadarshan.com" style="color:#facc15; text-decoration:none;">support@divyadarshan.com</a>
+            </p>
+        </div>
+
+        <!-- Social Media -->
+        <div>
+            <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Follow Us</h3>
+            <div style="display:flex; gap:15px; font-size:22px;">
+                <a href="#" style="color:#facc15; transition:0.3s;">🌐</a>
+                <a href="#" style="color:#facc15; transition:0.3s;">📘</a>
+                <a href="#" style="color:#facc15; transition:0.3s;">🐦</a>
+                <a href="#" style="color:#facc15; transition:0.3s;">📸</a>
             </div>
         </div>
-    </footer>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div style="text-align:center; margin-top:50px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.15); font-size:14px; color:#aaa;">
+        © {{ date('Y') }} DivyaDarshan. All rights reserved. |
+        <a href="{{ route('terms') }}" style="color:#facc15; text-decoration:none;">Terms & Conditions</a>
+    </div>
+</footer>
 <div x-show="loginModal" x-cloak
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="opacity-0"

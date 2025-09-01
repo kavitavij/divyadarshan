@@ -35,25 +35,25 @@ class DarshanBookingController extends Controller
 
     public function details(Request $request)
     {
-        $validated = $request->validate([
-            'temple_id' => 'required|exists:temples,id',
-            'darshan_slot_id' => 'required|integer',
-            'selected_date' => 'required|date',
-            'slot_details' => 'required|string',
-            'number_of_people' => 'required|integer|min:1|max:10',
-        ]);
-
-        $temple = Temple::findOrFail($validated['temple_id']);
-        $chargePerPerson = $temple->darshan_charge ?? 0;
-
-        $validated['darshan_charge'] = $chargePerPerson;
-        $validated['total_charge'] = $chargePerPerson * $validated['number_of_people'];
-
-        return view('booking.details', [
-            'bookingData' => $validated,
-            'temple' => $temple,
-        ]);
+        $bookingData = [
+        'temple_id' => $request->query('temple_id'),
+        'darshan_slot_id' => $request->query('darshan_slot_id'),
+        'selected_date' => $request->query('selected_date'),
+        'slot_details' => $request->query('slot_details'),
+        'number_of_people' => $request->query('number_of_people'),
+    ];
+if (empty($bookingData['temple_id']) || empty($bookingData['selected_date'])) {
+        return redirect()->route('booking.index')->with('error', 'Please select a temple and a date to continue.');
     }
+
+    $temple = Temple::findOrFail($bookingData['temple_id']);
+
+    return view('booking.details', [
+        'bookingData' => $bookingData,
+        'temple' => $temple,
+    ]);
+}
+
 
     public function store(Request $request)
     {

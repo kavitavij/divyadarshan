@@ -72,4 +72,20 @@ class BookingController extends Controller
 
         return view('admin.bookings.index', compact('bookings', 'filterType', 'filterDate'));
     }
+    public function show($type, $id)
+    {
+        // Use a match expression to handle different booking types
+        $booking = match (ucfirst($type)) {
+            'Darshan' => Booking::with('devotees', 'temple', 'user')->findOrFail($id),
+            'Seva' => SevaBooking::with('user', 'seva.temple')->findOrFail($id),
+            'Accommodation' => StayBooking::with('user', 'room.hotel', 'guests')->findOrFail($id),
+            default => abort(404, 'Booking type not found.'),
+        };
+
+        // Pass the booking and its type to a single view
+        return view('admin.bookings.show', [
+            'booking' => $booking,
+            'type' => ucfirst($type) // Pass the type to the view
+        ]);
+    }
 }

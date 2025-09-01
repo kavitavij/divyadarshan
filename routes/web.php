@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 
 // Public Controllers
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\StayController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\TempleController;
@@ -43,9 +44,10 @@ use App\Http\Controllers\HotelManager\GuestListController;
 // Temple Manager Controllers
 use App\Http\Controllers\TempleManager\DashboardController as TempleManagerDashboardController;
 use App\Http\Controllers\TempleManager\TempleController as TempleManagerController;
-use App\Http\Controllers\TempleManager\DarshanBookingController as TempleManagerDarshanBookingController;
+use App\Http\Controllers\TempleManager\BookingController;
 use App\Http\Controllers\TempleManager\SevaController as TempleManagerSevaController;
 use App\Http\Controllers\TempleManager\DarshanSlotController as TempleManagerDarshanSlotController;
+use App\Http\Controllers\TempleManager\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +72,9 @@ Route::post('/donations', [DonationController::class, 'store'])->name('donations
 Route::get('/cart/pay', [CartController::class, 'pay'])->name('cart.pay');
 Route::post('/cart/payment-success', [CartController::class, 'paymentSuccess'])->name('cart.payment.success');
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
+Route::get('/about', [AboutController::class, 'about'])->name('about');
+Route::get('/privacy-policy', [AboutController::class, 'privacy'])->name('info.privacy');
+Route::get('/cancellation-policy', [AboutController::class, 'cancellation'])->name('info.cancellation');
 
 // General Info Routes
 Route::get('/info/faq', [GeneralInfoController::class, 'faq'])->name('info.faq');
@@ -114,7 +119,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     // CORRECTED
-    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.my-bookings');
+    // In routes/web.php, inside your 'auth' middleware group
+
+// This is the corrected route for your main bookings list
+Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.my-bookings.index');
+
+// Add this new route to handle the receipt download for a specific booking
+Route::get('/profile/bookings/{booking}/receipt', [ProfileController::class, 'downloadBookingReceipt'])->name('profile.my-bookings.receipt.download');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
     Route::get('/profile/my-donations', [ProfileController::class, 'myDonations'])->name('profile.my-donations.index');
     // Ebook Purchase & Download
@@ -124,7 +135,7 @@ Route::middleware('auth')->group(function () {
     // Darshan Booking Flow
     Route::prefix('darshan-booking')->name('booking.')->group(function () {
         Route::get('/', [DarshanBookingController::class, 'index'])->name('index');
-        Route::match(['get', 'post'], '/details', [DarshanBookingController::class, 'details'])->name('details');
+        Route::get('/details', [DarshanBookingController::class, 'details'])->name('details');
         Route::post('/store', [DarshanBookingController::class, 'store'])->name('store');
     });
 
@@ -173,7 +184,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('hotels.rooms', AdminRoomController::class)->shallow();
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'destroy']);
+    Route::get('/donations/export', [AdminDonationController::class, 'export'])->name('donations.export');
     Route::resource('donations', AdminDonationController::class)->only(['index', 'show']);
+    Route::get('/bookings/view/{type}/{id}', [AdminBookingController::class, 'show'])->name('bookings.show');
+
 });
 
 // ## HOTEL MANAGER ROUTES ##
@@ -186,12 +200,18 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
 });
 
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {
-    Route::get('/dashboard', [TempleManagerDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/temple', [TempleManagerController::class, 'edit'])->name('temple.edit');
-    Route::put('/temple', [TempleManagerController::class, 'update'])->name('temple.update');
-     Route::get('/bookings', [TempleManagerDarshanBookingController::class, 'index'])->name('bookings');
-      Route::get('/temples', [TempleManagerController::class, 'edit'])->name('temples');
-    Route::resource('slots', TempleManagerDarshanSlotController::class);
-    Route::resource('sevas', TempleManagerSevaController::class);
-    Route::resource('darshan-bookings', TempleManagerDarshanBookingController::class)->only(['index', 'show']);
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Temple Management
+    Route::get('/temple/edit', [TempleManagerController::class, 'edit'])->name('temple.edit');
+    Route::put('/temple/update', [TempleManagerController::class, 'update'])->name('temple.update');
+
+    // Slot and Seva Management
+    Route::resource('slots', SlotController::class)->except(['show']);
+    Route::resource('sevas', SevaController::class)->except(['show']);
+
+    // Booking Management Routes (Using the renamed BookingController)
+    Route::get('bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('bookings/{type}/{id}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::patch('bookings/{type}/{id}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 });

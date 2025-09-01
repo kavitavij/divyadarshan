@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Donation;
+use App\Models\Booking;
 use Barryvdh\DomPDF\Facade\Pdf;
-
 class ProfileController extends Controller
 {
     /**
@@ -75,7 +75,7 @@ class ProfileController extends Controller
         // and order them with the newest first.
         $bookings = $user->bookings()->with('temple')->latest()->paginate(10);
 
-        return view('profile.my-bookings', compact('bookings'));
+       return view('profile.my-bookings.index', compact('bookings'));
     }
     public function myDonations(): View
     {
@@ -98,6 +98,20 @@ class ProfileController extends Controller
 
         // Generate a unique filename and stream the PDF to the browser for download
         $fileName = 'Donation-Receipt-' . str_pad($donation->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+        return $pdf->stream($fileName);
+    }
+    public function downloadBookingReceipt(Booking $booking)
+    {
+        // Security check: ensure the authenticated user owns this booking
+        if (Auth::id() !== $booking->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Load the PDF view from the correct path: 'bookings.receipt-pdf'
+        $pdf = PDF::loadView('booking.receipt-pdf', compact('booking'));
+
+        // Generate a unique filename and stream the PDF to the browser for download
+        $fileName = 'Darshan-Booking-Receipt-' . str_pad($booking->id, 6, '0', STR_PAD_LEFT) . '.pdf';
         return $pdf->stream($fileName);
     }
 }

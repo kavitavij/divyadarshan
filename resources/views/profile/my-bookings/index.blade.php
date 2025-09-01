@@ -56,7 +56,8 @@
 
                             <!-- Action -->
                             <div class="mt-4 flex justify-end">
-                                <a href="#"
+                                {{-- CORRECTED: The route name is now correct and the $booking object is passed --}}
+                                <a href="{{ route('profile.my-bookings.receipt.download', $booking) }}"
                                     class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
                                     📄 View Receipt
                                 </a>

@@ -11,20 +11,70 @@
         <form action="{{ route('admin.donations.index') }}" method="GET"
               class="w-full md:w-auto flex items-center gap-2">
 
-            <!-- Search Input -->
-            <div class="relative">
-                <input type="text"
-                       name="search"
-                       placeholder="Search donations..."
-                       value="{{ request('search') }}"
-                       class="w-full md:w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+ <!-- Search & Filter Form -->
+<form action="{{ route('admin.donations.index') }}" method="GET"
+      class="w-full md:w-auto flex flex-col md:flex-row items-start md:items-center gap-4">
 
-            <button type="submit"
-                    class="bg-blue-600 text-black px-5 py-2 rounded-lg hover:bg-blue-700 transition font-medium shadow-sm">
-                Search
-            </button>
-        </form>
+    <!-- Search Input -->
+    <div class="relative">
+        <input type="text"
+               name="search"
+               placeholder="Search donations..."
+               value="{{ request('search') }}"
+               class="w-full md:w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
     </div>
+
+    <!-- Date Range -->
+    <div class="flex items-center gap-2">
+        <input type="date" name="from_date" value="{{ request('from_date') }}"
+               class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        <span class="text-gray-500">to</span>
+        <input type="date" name="to_date" value="{{ request('to_date') }}"
+               class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <!-- Temple Dropdown -->
+    <select name="temple_id"
+            class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        <option value="">All Temples</option>
+        @foreach($temples as $temple)
+            <option value="{{ $temple->id }}" {{ request('temple_id') == $temple->id ? 'selected' : '' }}>
+                {{ $temple->name }}
+            </option>
+        @endforeach
+    </select>
+
+    <!-- Amount Range -->
+    <div class="flex items-center gap-2">
+        <input type="number" step="0.01" name="min_amount" value="{{ request('min_amount') }}"
+               placeholder="Min Amount"
+               class="w-28 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        <span class="text-gray-500">-</span>
+        <input type="number" step="0.01" name="max_amount" value="{{ request('max_amount') }}"
+               placeholder="Max Amount"
+               class="w-28 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex gap-2">
+        <button type="submit"
+                class="bg-blue-600 text-black px-5 py-2 rounded-lg hover:bg-blue-700 transition font-medium shadow-sm">
+            Apply Filters
+        </button>
+
+        <a href="{{ route('admin.donations.index') }}"
+           class="bg-gray-500 text-black px-5 py-2 rounded-lg hover:bg-gray-600 transition font-medium shadow-sm">
+            Reset
+        </a>
+
+        <!-- Export Button -->
+        <button type="submit" formaction="{{ route('admin.donations.export') }}"
+                class="bg-green-600 text-black px-5 py-2 rounded-lg hover:bg-green-700 transition font-medium shadow-sm flex items-center gap-2">
+            <i class="fas fa-file-excel"></i> Export
+        </button>
+    </div>
+</form>
+
 
     <!-- Table Container -->
     <div class="bg-transparent">
@@ -87,10 +137,9 @@
         <!-- Pagination -->
         @if ($donations->hasPages())
             <div class="mt-6">
-                {{ $donations->links('pagination::tailwind') }}
+                {{ $donations->links() }}
             </div>
         @endif
     </div>
 </div>
 @endsection
-

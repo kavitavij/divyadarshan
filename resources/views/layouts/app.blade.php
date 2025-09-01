@@ -6,12 +6,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<style>
+.half-screen-slider {
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  overflow: hidden;
+  border-radius: 30px;
+}
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+.swiper-slide {
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+.slide-content {
+  margin-left: 60px;
+  color: white;
+}
+.slide-content h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.slide-content p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+.slide-content button {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  background-color: #facc15;
+  color: #0d0d0d;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.slide-content button:hover {
+  background-color: #eab308;
+}
+
+/* Curved Side */
+.slider-curved-side {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 150px;
+  height: 100%;
+  background: linear-gradient(to left, rgba(13,13,13,0.9), transparent);
+  border-top-left-radius: 80% 50%;
+  border-bottom-left-radius: 80% 50%;
+  pointer-events: none;
+}
+</style>
+</style>
 </head>
 <body x-data="appState()" x-init="initCart()"
     :class="{ 'overflow-hidden': loginModal || cartOpen || isMobileMenuOpen }"
     class="bg-gray-100 font-sans text-gray-800">
-    {{-- Navbar --}}
-    <header x-data="{ isMobileMenuOpen: false }" class="bg-white shadow-md sticky top-0 z-50">
+    {{-- <header x-data="{ isMobileMenuOpen: false }" class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex-shrink-0">
@@ -21,7 +80,7 @@
                     <a href="/" class="hover:text-blue-600">Home</a>
                     <a href="/about" class="hover:text-blue-600">About</a>
                     {{-- Temples Dropdown --}}
-                    <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                    {{-- <div x-data="{ open: false }" @click.away="open = false" class="relative">
                         <button @click="open = !open" class="flex items-center gap-1 focus:outline-none">
                             <span>Temples</span>
                             <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -31,9 +90,9 @@
                                 <a href="{{ route('temples.show', $temple->id) }}" class="block px-4 py-2 text-sm hover:bg-gray-100">{{ $temple->name }}</a>
                             @endforeach
                         </div>
-                    </div>
+                    </div> --}}
                     {{-- Online Services Dropdown --}}
-                    <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                    {{-- <div x-data="{ open: false }" @click.away="open = false" class="relative">
                         <button @click="open = !open" class="flex items-center gap-1 focus:outline-none">
                             <span>Online Services</span>
                             <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -44,17 +103,17 @@
                             <a href="{{ route('stays.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Accommodation Booking</a>
                             <a href="{{ route('donations.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Donations</a>
                         </div>
-                    </div>
-                    <a href="{{ route('ebooks.index') }}" class="hover:text-blue-600">Ebooks</a>
+                    </div> --}}
+                    {{-- <a href="{{ route('ebooks.index') }}" class="hover:text-blue-600">Ebooks</a>
                 </nav>
                 <div class="hidden md:flex items-center space-x-4">
                     @guest
                         <button @click="loginModal = true" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
                             Login
                         </button>
-                    @else
+                    @else --}}
                         {{-- User Profile Dropdown (Click-based) --}}
-                        <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                        {{-- <div x-data="{ open: false }" @click.away="open = false" class="relative">
                             <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none">
                                 <span>{{ Auth::user()->name }}</span>
                                 <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -79,9 +138,9 @@
                             <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ count(session('cart')) }}</span>
                         @endif
                     </a>
-                </div>
+                </div> --}}
                 {{-- Mobile menu button and cart --}}
-                <div class="md:hidden flex items-center">
+                {{-- <div class="md:hidden flex items-center">
                     <a href="{{ route('cart.view') }}" class="relative text-gray-600 hover:text-blue-600 mr-4">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         @if (session('cart') && count(session('cart')) > 0)
@@ -93,9 +152,9 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </div> --}}
         {{-- Mobile Menu --}}
-        <div x-show="isMobileMenuOpen" x-transition class="fixed inset-0 z-50 md:hidden" style="display: none;">
+        {{-- <div x-show="isMobileMenuOpen" x-transition class="fixed inset-0 z-50 md:hidden" style="display: none;">
             <div @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black bg-opacity-50"></div>
             <div class="relative w-64 h-full bg-white p-4">
                 <button @click="isMobileMenuOpen = false" class="absolute top-4 right-4 text-gray-600">
@@ -128,16 +187,144 @@
                 </nav>
             </div>
         </div>
-    </header>
-<div class="relative flex justify-center mt-4 z-10">
-        <div class="swiper mySwiper" style="max-width: 400px;">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide"><img src="{{ asset('images/temple1.jpg') }}" style="height: 150px; width: 100%; object-fit: cover;" class="rounded" alt="Temple 1"></div>
-                <div class="swiper-slide"><img src="{{ asset('images/temple2.jpg') }}" style="height: 150px; width: 100%; object-fit: cover;" class="rounded" alt="Temple 2"></div>
-                <div class="swiper-slide"><img src="{{ asset('images/temple3.jpg') }}" style="height: 150px; width: 100%; object-fit: cover;" class="rounded" alt="Temple 3"></div>
+    </header> --}}
+<header class="bg-[#0d0d0d] text-[#ccc] sticky top-0 z-50 font-poppins">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-4">
+        <!-- Logo on Left -->
+        <div class="flex-shrink-0">
+            <a href="/" class="text-yellow-400 font-bold text-2xl">DivyaDarshan</a>
+        </div>
+
+        <!-- Centered Navigation -->
+        <nav class="hidden md:flex flex-1 justify-center items-center gap-6">
+            <a href="/" class="hover:text-yellow-400 transition">Home</a>
+            <a href="/about" class="hover:text-yellow-400 transition">About</a>
+
+            <!-- Temples Dropdown -->
+            <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition">
+                    Temples
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="open" x-transition class="absolute mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                    @foreach ($allTemples as $temple)
+                        <a href="{{ route('temples.show', $temple->id) }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">{{ $temple->name }}</a>
+                    @endforeach
+                </div>
             </div>
+
+            <!-- Online Services Dropdown -->
+            <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition">
+                    Online Services
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="open" x-transition class="absolute mt-2 w-56 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                    <a href="{{ route('booking.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Darshan Booking</a>
+                    <a href="{{ route('sevas.booking.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
+                    <a href="{{ route('stays.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Accommodation Booking</a>
+                    <a href="{{ route('donations.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Donations</a>
+                </div>
+            </div>
+
+            <a href="{{ route('ebooks.index') }}" class="hover:text-yellow-400 transition">Ebooks</a>
+        </nav>
+
+        <!-- Right Side (Login + Cart) -->
+        <div class="hidden md:flex items-center gap-4">
+            @guest
+                <button @click="loginModal = true" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
+                    Login
+                </button>
+            @else
+                <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                    <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
+                        <span>{{ Auth::user()->name }}</span>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                        @if (Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Admin Dashboard</a>
+                        @endif
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Profile</a>
+                        <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My ebooks</a>
+                        <a href="{{ route('profile.my-orders.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Orders</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-[#0d0d0d]">Log Out</button>
+                        </form>
+                    </div>
+                </div>
+            @endguest
+
+            <!-- Cart Icon -->
+            <a href="{{ route('cart.view') }}" class="relative text-[#ccc] hover:text-yellow-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                @if (session('cart') && count(session('cart')) > 0)
+                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ count(session('cart')) }}</span>
+                @endif
+            </a>
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden flex items-center gap-4">
+            <a href="{{ route('cart.view') }}" class="relative text-[#ccc] hover:text-yellow-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                @if (session('cart') && count(session('cart')) > 0)
+                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ count(session('cart')) }}</span>
+                @endif
+            </a>
+            <button @click="isMobileMenuOpen = true" class="text-[#ccc] hover:text-yellow-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
         </div>
     </div>
+</header>
+
+<!-- Slider Section -->
+<div class="half-screen-slider">
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1lg1oxA8smD7QIE6GIe5FpnnPPgZdL4_WTg&s');">
+        <div class="slide-content">
+          <h1>“सर्वे भवन्तु सुखिनः, सर्वे सन्तु निरामयाः।”</h1>
+          <p>May all be happy, may all be free from illness.</p>
+          {{-- <button>Participate Now</button> --}}
+        </div>
+      </div>
+      <div class="swiper-slide" style="background-image: url('https://www.shutterstock.com/image-photo/ganesh-illustration-colorful-hindu-lord-600nw-2344967115.jpg');">
+        <div class="slide-content">
+          <h1>Experience the Power of Sacred Rituals</h1>
+          <p>Let the light guide your path to peace and purpose</p>
+          <button>Book Your Puja</button>
+        </div>
+      </div>
+      <div class="swiper-slide" style="background-image: url('https://www.shopperspointindia.com/cdn/shop/files/611b3hJzzKL._SL1500.jpg?v=1725436797&width=1445');">
+        <div class="slide-content">
+          <h1>Join Thousands in a Soulful Journey</h1>
+          <p>Your devotion, our guidance</p>
+          <button>Get Spiritual Help</button>
+        </div>
+      </div>
+    </div>
+    <div class="swiper-pagination"></div>
+
+  </div>
+  <!-- Curved Side -->
+  <div class="slider-curved-side"></div>
+</div>
     <main class="py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             @if (session('status'))
@@ -177,7 +364,7 @@
         </div>
         @yield('content')
     </main>
-    <footer class="bg-gray-200 border-t py-4 text-sm text-gray-700">
+    {{-- <footer class="bg-gray-200 border-t py-4 text-sm text-gray-700">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
             <div>&copy; {{ date('Y') }} DivyaDarshan. All rights reserved.</div>
             <div>
@@ -197,7 +384,64 @@
                 <a href="#" class="hover:text-blue-600">Instagram</a>
             </div>
         </div>
-    </footer>
+    </footer> --}}
+    <!-- Footer Section -->
+<!-- Footer Section -->
+<footer style="background:#0d0d0d; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
+
+    <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">
+
+        <!-- About -->
+        <div>
+            <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">About DivyaDarshan</h3>
+            <p style="font-size:15px; line-height:1.6; color:#bbb;">
+                Connecting devotees to divinity through online puja, darshan, seva, and temple services — anywhere, anytime.
+                <a href="/about" style="color:#93e018; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">About Us</a></li>
+
+            </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+            <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Quick Links</h3>
+            <ul style="list-style:none; padding:0; margin:0;">
+                <li><a href="/services" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Services</a></li>
+                <li><a href="/reviews" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Reviews</a></li>
+                <li><a href="{{ route('guidelines') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px;">Guidelines</a></li>
+                <li><a href="{{ route('complaint.form') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px;">Complaint</a></li>
+            </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+            <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Contact Us</h3>
+            <p style="font-size:15px; color:#bbb; line-height:1.7;">
+                📍 SOPL, Mohali, India <a href="{{ route('info.contact') }}" style="color:#93e018; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Contact</a>
+                📞 +91 9876543210 <br>
+                ✉️ <a href="mailto:support@divyadarshan.com" style="color:#facc15; text-decoration:none;">support@divyadarshan.com</a>
+            </p>
+        </div>
+
+        <!-- Social Media -->
+        <div>
+            <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Follow Us</h3>
+            <div style="display:flex; gap:15px; font-size:22px;">
+                <a href="#" style="color:#facc15; transition:0.3s;">🌐</a>
+                <a href="#" style="color:#facc15; transition:0.3s;">📘</a>
+                <a href="#" style="color:#facc15; transition:0.3s;">🐦</a>
+                <a href="#" style="color:#facc15; transition:0.3s;">📸</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div style="text-align:center; margin-top:50px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.15); font-size:14px; color:#aaa;">
+        © {{ date('Y') }} DivyaDarshan. All rights reserved. |
+        <a href="{{ route('terms') }}" style="color:#facc15; text-decoration:none;">Terms & Conditions</a>
+    </div>
+</footer>
+
+
 <div x-show="cartOpen" @click.away="cartOpen = false" class="fixed inset-0 z-50 overflow-hidden" style="display: none;">
         <div class="absolute inset-0 bg-gray-500 bg-opacity-75"></div>
         <section class="absolute inset-y-0 right-0 pl-10 max-w-full flex">
@@ -433,21 +677,23 @@
         }
     </script>
        {{-- Swiper JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            new Swiper('.mySwiper', {
-                loop: true,
-                spaceBetween: 30,
-                centeredSlides: true,
-                autoplay: {
-                    delay: 2500,
-                    disableOnInteraction: false,
-                },
-                pagination: { el: '.swiper-pagination', clickable: true, },
-                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev', },
-            });
-        });
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script>
+  const swiper = new Swiper(".mySwiper", {
+    loop: true,
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false,
+    },
+  });
+</script>
 </body>
 </html>
