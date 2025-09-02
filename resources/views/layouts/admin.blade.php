@@ -142,14 +142,15 @@
             <li><a class="nav-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}"
                     href="{{ route('admin.bookings.index') }}"><i class="fa-solid fa-calendar-check"></i>
                     <span>Bookings</span></a></li>
+            <li><a class="nav-link {{ request()->routeIs('admin.booking-cancel.*') ? 'active' : '' }}"
+                    href="{{ route('admin.booking-cancel.index') }}"><i class="fa-solid fa-rotate-left"></i>
+                    <span>Refund Return</span></a></li>
             <li><a class="nav-link {{ request()->routeIs('admin.donations.*') ? 'active' : '' }}"
                     href="{{ route('admin.donations.index') }}"><i class="fa-solid fa-hand-holding-heart"></i>
                     <span>Donations</span></a></li>
-            {{-- CORRECTED: The class, icon, and route for "Hotels" are now consistent --}}
             <li><a class="nav-link {{ request()->routeIs('admin.hotels.*') ? 'active' : '' }}"
                     href="{{ route('admin.hotels.index') }}"><i class="fa-solid fa-hotel"></i>
                     <span>Hotels</span></a></li>
-            {{-- CORRECTED: The link for "Contact Forms" now points to the correct route --}}
             <li><a class="nav-link {{ request()->routeIs('admin.contact-submissions.*') ? 'active' : '' }}"
                     href="{{ route('admin.contact-submissions.index') }}"><i class="fa-solid fa-envelope"></i>
                     <span>Contact Forms</span></a></li>

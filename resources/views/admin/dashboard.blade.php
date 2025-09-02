@@ -61,6 +61,16 @@
                     </div>
                 </div>
             </div>
+            <!-- Cancel/return -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Cancel Request</h5>
+                        <p class="text-muted">Cancel & Return process</p>
+                        <a href="{{ route('admin.booking-cancel.index') }}" class="btn btn-info">Refund Return</a>
+                    </div>
+                </div>
+            </div>
             {{-- Donations --}}
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">

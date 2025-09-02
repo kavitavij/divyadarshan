@@ -22,6 +22,8 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
+
 // Admin Controllers
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\TempleController as AdminTempleController;
@@ -35,6 +37,8 @@ use App\Http\Controllers\Admin\HotelController as AdminHotelController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
 use App\Http\Controllers\Admin\DonationController as AdminDonationController;
+use App\Http\Controllers\Admin\CancelledBookingController;
+use App\Http\Controllers\Admin\BookingCancelController;
 // Hotel Manager Controllers
 use App\Http\Controllers\HotelManager\DashboardController as HotelManagerDashboardController;
 use App\Http\Controllers\HotelManager\HotelController as HotelManagerHotelController;
@@ -75,6 +79,19 @@ Route::get('/donations', [DonationController::class, 'index'])->name('donations.
 Route::get('/about', [AboutController::class, 'about'])->name('about');
 Route::get('/privacy-policy', [AboutController::class, 'privacy'])->name('info.privacy');
 Route::get('/cancellation-policy', [AboutController::class, 'cancellation'])->name('info.cancellation');
+// ADD THIS ROUTE to show the refund request form
+Route::get('/profile/my-bookings/{booking}/refund', [ProfileController::class, 'requestRefund'])->name('profile.my-bookings.refund.request');
+
+// ADD THIS ROUTE to handle the form submission
+Route::post('/profile/my-bookings/{booking}/refund', [ProfileController::class, 'storeRefundRequest'])->name('profile.my-bookings.refund.store');
+
+
+// review page
+Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+Route::get('/about', [AboutController::class, 'about'])->name('about');
+// This is the new route to handle the like functionality
+Route::post('/reviews/{review}/like', [ReviewController::class, 'like'])->name('reviews.like');
 
 // General Info Routes
 Route::get('/info/faq', [GeneralInfoController::class, 'faq'])->name('info.faq');
@@ -125,9 +142,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.my-bookings.index');
 
 // Add this new route to handle the receipt download for a specific booking
-Route::get('/profile/bookings/{booking}/receipt', [ProfileController::class, 'downloadBookingReceipt'])->name('profile.my-bookings.receipt.download');
+    Route::get('/profile/bookings/{booking}/receipt', [ProfileController::class, 'downloadBookingReceipt'])->name('profile.my-bookings.receipt.download');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
     Route::get('/profile/my-donations', [ProfileController::class, 'myDonations'])->name('profile.my-donations.index');
+    Route::delete('/profile/my-bookings/{booking}/cancel', [ProfileController::class, 'cancelBooking'])->name('profile.my-bookings.cancel');
     // Ebook Purchase & Download
     Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
     Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
@@ -188,6 +206,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('donations', AdminDonationController::class)->only(['index', 'show']);
     Route::get('/bookings/view/{type}/{id}', [AdminBookingController::class, 'show'])->name('bookings.show');
 
+});
+    // ADMIN REFUND & CANCEL
+    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/booking-cancel', [BookingCancelController::class, 'index'])->name('booking-cancel.index');
+    Route::get('/booking-cancel/{id}', [BookingCancelController::class, 'show'])->name('booking-cancel.show');
+    Route::patch('/booking-cancel/{booking}/refund', [BookingCancelController::class, 'updateRefundStatus'])->name('booking-cancel.updateRefundStatus');
 });
 
 // ## HOTEL MANAGER ROUTES ##

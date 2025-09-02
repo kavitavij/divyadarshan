@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Donation;
 use App\Models\Booking;
+use App\Models\RefundRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 class ProfileController extends Controller
 {
@@ -67,16 +68,25 @@ class ProfileController extends Controller
 
             return view('profile.my-ebooks', compact('ebooks'));
         }
-        public function myBookings(): View
+        // In app/Http/Controllers/ProfileController.php
+
+// Make sure this is at the top of your file
+
+    public function myBookings()
     {
-        $user = Auth::user();
+        // This is the cleanest way to get the user's bookings.
+        // It fetches the bookings and their related temple data directly.
+        $bookings = Booking::query()
+            ->where('user_id', auth()->id())
+            ->with('temple')
+            ->latest('created_at') // Be explicit about ordering by creation date
+            ->paginate(9);
 
-        // Get all bookings for the current user, load the temple details,
-        // and order them with the newest first.
-        $bookings = $user->bookings()->with('temple')->latest()->paginate(10);
-
-       return view('profile.my-bookings.index', compact('bookings'));
+        return view('profile.my-bookings.index', [
+            'bookings' => $bookings
+        ]);
     }
+
     public function myDonations(): View
     {
         $donations = Donation::where('user_id', Auth::id())
@@ -114,5 +124,65 @@ class ProfileController extends Controller
         $fileName = 'Darshan-Booking-Receipt-' . str_pad($booking->id, 6, '0', STR_PAD_LEFT) . '.pdf';
         return $pdf->stream($fileName);
     }
+    public function cancelBooking(Booking $booking): RedirectResponse
+    {
+        // Security Check
+        if (Auth::id() !== $booking->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Update booking status
+        $booking->status = 'Cancelled';
+        $booking->save();
+
+        // **MODIFIED:** Redirect to the refund request form instead of the bookings list
+        return Redirect::route('profile.my-bookings.refund.request', ['booking' => $booking])
+                       ->with('status', 'Booking cancelled. Please fill out the form to request your refund.');
+    }
+
+    /**
+     * Show the refund request form.
+     * ADD THIS NEW FUNCTION
+     */
+    public function requestRefund(Booking $booking): View
+    {
+        // Security Check
+        if (Auth::id() !== $booking->user_id) {
+            abort(403);
+        }
+
+        return view('profile.my-bookings.request-refund', compact('booking'));
+    }
+
+    /**
+     * Store the refund request details.
+     * ADD THIS NEW FUNCTION
+     */
+    public function storeRefundRequest(Request $request, Booking $booking): RedirectResponse
+    {
+        // Security Check
+        if (Auth::id() !== $booking->user_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'account_holder_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:20',
+            'ifsc_code' => 'required|string|max:15',
+            'bank_name' => 'required|string|max:255',
+        ]);
+
+        RefundRequest::create([
+            'booking_id' => $booking->id,
+            'user_id' => Auth::id(),
+            'account_holder_name' => $request->account_holder_name,
+            'account_number' => $request->account_number,
+            'ifsc_code' => $request->ifsc_code,
+            'bank_name' => $request->bank_name,
+        ]);
+
+        return Redirect::route('profile.my-bookings.index')->with('status', 'Refund request submitted successfully. It will be processed within 5-7 business days.');
+    }
+
 }
 

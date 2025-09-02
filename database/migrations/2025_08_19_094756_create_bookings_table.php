@@ -13,13 +13,23 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            $table->string('type')->default('darshan'); // To distinguish between 'darshan', 'seva', 'stay' etc.
+
+            // Foreign Keys
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('temple_id')->constrained()->onDelete('cascade');
+            $table->foreignId('temple_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('hotel_id')->nullable()->constrained()->onDelete('cascade'); // <-- ADD THIS
             $table->foreignId('darshan_slot_id')->nullable()->constrained()->onDelete('set null');
+
+            // Booking Details
             $table->date('booking_date')->nullable();
             $table->integer('number_of_people');
-            $table->json('devotee_details');
-            $table->string('status')->default('Pending');
+            $table->json('devotee_details')->nullable();
+            $table->string('status')->default('confirmed'); // e.g., confirmed, cancelled
+
+            // Refund Details for cancellations
+            $table->string('refund_status')->default('not_applicable'); // e.g., not_applicable, not_refunded, refunded
+
             $table->timestamps();
         });
     }

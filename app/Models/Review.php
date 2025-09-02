@@ -9,6 +9,17 @@ class Review extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'email', 'rating', 'message'];
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'rating',
+        'message',
+        'review_type',
+        'likes',
+    ];
 }

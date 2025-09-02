@@ -53,40 +53,42 @@ if (empty($bookingData['temple_id']) || empty($bookingData['selected_date'])) {
         'temple' => $temple,
     ]);
 }
-
-
     public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'temple_id' => 'required|exists:temples,id',
-            'darshan_slot_id' => 'required|integer',
-            'selected_date' => 'required|date',
-            'number_of_people' => 'required|integer|min:1',
-            'devotees' => 'required|array',
-            'devotees.*.first_name' => 'required|string|max:255',
-            'devotees.*.last_name' => 'required|string|max:255',
-            'devotees.*.age' => 'required|integer|min:1',
-            'devotees.*.phone_number' => 'required|string|max:15',
-            'devotees.*.id_type' => 'required|string',
-            'devotees.*.id_number' => 'required|string',
-        ]);
+{
+    $validatedData = $request->validate([
+        'temple_id' => 'required|exists:temples,id',
+        'darshan_slot_id' => 'required|integer',
+        'selected_date' => 'required|date',
+        'time_slot' => 'nullable|string|max:255',
+        'number_of_people' => 'required|integer|min:1',
+        'devotees' => 'required|array',
+        'devotees.*.first_name' => 'required|string|max:255',
+        'devotees.*.last_name' => 'required|string|max:255',
+        'devotees.*.age' => 'required|integer|min:1',
+        'devotees.*.phone_number' => 'required|string|max:15',
+        'devotees.*.id_type' => 'required|string',
+        'devotees.*.id_number' => 'required|string',
+    ]);
 
-        // FIXED: Check for temporary negative IDs and save NULL instead.
-        $slotIdToSave = $validatedData['darshan_slot_id'] > 0 ? $validatedData['darshan_slot_id'] : null;
+    // DEBUGGING LINE: This will stop everything and show us the data
+    dd($validatedData);
 
-        $booking = Booking::create([
-            'user_id' => Auth::id(),
-            'temple_id' => $validatedData['temple_id'],
-            'darshan_slot_id' => $slotIdToSave,
-            'booking_date' => $validatedData['selected_date'],
-            'number_of_people' => $validatedData['number_of_people'],
-            'status' => 'Pending Payment',
-            'devotee_details' => $validatedData['devotees'],
-        ]);
+    // The code below this line will not run yet
+    $slotIdToSave = $validatedData['darshan_slot_id'] > 0 ? $validatedData['darshan_slot_id'] : null;
 
-        return redirect()->route('payment.create', ['type' => 'darshan', 'id' => $booking->id]);
-    }
+    $booking = Booking::create([
+        'user_id' => Auth::id(),
+        'temple_id' => $validatedData['temple_id'],
+        'darshan_slot_id' => $slotIdToSave,
+        'booking_date' => $validatedData['selected_date'],
+        'time_slot' => $validatedData['time_slot'] ?? null,
+        'number_of_people' => $validatedData['number_of_people'],
+        'status' => 'Pending Payment',
+        'devotee_details' => $validatedData['devotees'],
+    ]);
 
+    return redirect()->route('payment.create', ['type' => 'darshan', 'id' => $booking->id]);
+}
     private function getAvailableSlots(Temple $temple, Carbon $date)
     {
         $slots = DarshanSlot::where('temple_id', $temple->id)
