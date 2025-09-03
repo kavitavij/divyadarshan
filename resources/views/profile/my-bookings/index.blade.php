@@ -45,8 +45,16 @@
             <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4">
                 {{-- This is now the ONLY line that displays the Darshan Date --}}
                 <p><span class="font-semibold text-gray-500 dark:text-gray-400">🗓️ Darshan Date:</span> {{ \Carbon\Carbon::parse($booking->booking_date)->format('F j, Y') }}</p>
-                <p><span class="font-semibold text-gray-500 dark:text-gray-400">🕔 Time Slot:</span> {{ $booking->time_slot ?? 'Not Applicable' }}</p>
-                <p><span class="font-semibold text-gray-500 dark:text-gray-400">👥 Devotees:</span> {{ $booking->number_of_people }}</p>
+<p>
+    <span class="font-semibold text-gray-500 dark:text-gray-400">🕔 Time Slot:</span>
+    @if($booking->darshanSlot)
+        {{ \Carbon\Carbon::parse($booking->darshanSlot->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($booking->darshanSlot->end_time)->format('h:i A') }}
+    @elseif($booking->defaultDarshanSlot)
+        {{ \Carbon\Carbon::parse($booking->defaultDarshanSlot->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($booking->defaultDarshanSlot->end_time)->format('h:i A') }}
+    @else
+        {{ $booking->time_slot ?? 'N/A' }}
+    @endif
+</p>                <p><span class="font-semibold text-gray-500 dark:text-gray-400">👥 Devotees:</span> {{ $booking->number_of_people }}</p>
                 <p><span class="font-semibold text-gray-500 dark:text-gray-400">✅ Booked On:</span> {{ $booking->created_at->format('F j, Y, h:i A') }}</p>
             </div>
         </div>

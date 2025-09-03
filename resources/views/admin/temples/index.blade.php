@@ -32,8 +32,7 @@
                                     <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#termsModal_{{ $temple->id }}">
                                         Manage T&C
                                     </button>
-                                    <a class="btn btn-warning btn-sm" href="{{ route('admin.temples.slots.index', $temple) }}">Time Slots</a>
-                                    <a class="btn btn-secondary btn-sm" href="{{ route('admin.temples.sevas.index', $temple) }}">Manage Sevas</a>
+<a class="btn btn-warning btn-sm" href="{{ route('admin.slots.index', ['temple_id' => $temple->id]) }}">Time Slots</a>                                    <a class="btn btn-secondary btn-sm" href="{{ route('admin.temples.sevas.index', $temple) }}">Manage Sevas</a>
                                 </td>
                             </tr>
                         @endforeach

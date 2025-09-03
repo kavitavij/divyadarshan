@@ -18,8 +18,15 @@
 
                         @if ($type === 'darshan')
                             <li class="list-group-item"><strong>Darshan Date:</strong> {{ \Carbon\Carbon::parse($booking->booking_date)->format('d F, Y') }}</li>
-                            <li class="list-group-item"><strong>Time Slot:</strong> {{ $booking->slot->time ?? 'N/A' }}</li>
-                            <li class="list-group-item"><strong>Total Devotees:</strong> {{ $booking->number_of_people }}</li>
+<li class="list-group-item"><strong>Time Slot:</strong>
+    @if($booking->darshanSlot)
+        {{ \Carbon\Carbon::parse($booking->darshanSlot->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($booking->darshanSlot->end_time)->format('h:i A') }}
+    @elseif($booking->defaultDarshanSlot)
+        {{ \Carbon\Carbon::parse($booking->defaultDarshanSlot->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($booking->defaultDarshanSlot->end_time)->format('h:i A') }}
+    @else
+        {{ $booking->time_slot ?? 'N/A' }}
+    @endif
+</li>                            <li class="list-group-item"><strong>Total Devotees:</strong> {{ $booking->number_of_people }}</li>
                         @elseif ($type === 'seva')
                             <li class="list-group-item"><strong>Seva Name:</strong> {{ $booking->seva->name }}</li>
                             <li class="list-group-item"><strong>Seva Date:</strong> {{ \Carbon\Carbon::parse($booking->seva_date)->format('d F, Y') }}</li>

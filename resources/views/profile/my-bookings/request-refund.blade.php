@@ -14,7 +14,6 @@
 
             <form action="{{ route('profile.my-bookings.refund.store', $booking) }}" method="POST" class="space-y-6">
                 @csrf
-
                 <div>
                     <label for="account_holder_name" class="block text-sm font-medium text-gray-700">Account Holder Name</label>
                     <input type="text" id="account_holder_name" name="account_holder_name" value="{{ old('account_holder_name') }}" required

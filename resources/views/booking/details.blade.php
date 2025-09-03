@@ -151,10 +151,24 @@
                         <h5>{{ $temple->name ?? 'N/A' }}</h5>
                         <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ $temple->city ?? 'N/A' }}, {{ $temple->state ?? 'N/A' }}</p>
                         <ul class="list-unstyled summary-list">
-                            <li><span><i class="fas fa-calendar-alt text-muted me-2"></i>Darshan Date</span> <strong>{{ \Carbon\Carbon::parse($bookingData['selected_date'])->format('d M, Y') }}</strong></li>
-                            <li><span><i class="fas fa-clock text-muted me-2"></i>Time Slot</span> <strong>{{ $bookingData['slot_details'] }}</strong></li>
-                            <li><span><i class="fas fa-users text-muted me-2"></i>Devotees</span> <strong>{{ $bookingData['number_of_people'] }}</strong></li>
-                        </ul>
+    <li>
+        <span><i class="fas fa-calendar-alt text-muted me-2"></i>Darshan Date</span>
+        <strong>{{ \Carbon\Carbon::parse($bookingData['selected_date'])->format('d M, Y') }}</strong>
+    </li>
+
+    {{-- This is the corrected line for the Time Slot --}}
+    <li>
+        <span><i class="fas fa-clock text-muted me-2"></i>Time Slot</span>
+        <strong>
+            {{ \Carbon\Carbon::parse($darshanSlot->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($darshanSlot->end_time)->format('h:i A') }}
+        </strong>
+    </li>
+
+    <li>
+        <span><i class="fas fa-users text-muted me-2"></i>Devotees</span>
+        <strong>{{ $bookingData['number_of_people'] }}</strong>
+    </li>
+</ul>
                         <div id="devotee-summary-list" class="my-3"></div>
                         <hr>
                         <h6 class="mb-3">Price Details</h6>

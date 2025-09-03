@@ -129,7 +129,9 @@
             <li><a class="nav-link {{ request()->routeIs('admin.temples.*') ? 'active' : '' }}"
                     href="{{ route('admin.temples.index') }}"><i class="fa-solid fa-church"></i>
                     <span>Temples</span></a>
-            </li>
+            </li><li class="nav-item {{ request()->routeIs('admin.slots.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.slots.index') }}"><i class="fas fa-fw fa-clock"></i><span>Manage Slots</span></a>
+                </li>
             <li><a class="nav-link {{ request()->routeIs('admin.ebooks.*') ? 'active' : '' }}"
                     href="{{ route('admin.ebooks.index') }}"><i class="fa-solid fa-book"></i> <span>Ebooks</span></a>
             </li>
@@ -139,9 +141,16 @@
             <li><a class="nav-link {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}"
                     href="{{ route('admin.complaints.index') }}"><i class="fa-solid fa-exclamation-circle"></i>
                     <span>Complaints</span></a></li>
-            <li><a class="nav-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}"
-                    href="{{ route('admin.bookings.index') }}"><i class="fa-solid fa-calendar-check"></i>
-                    <span>Bookings</span></a></li>
+
+                    <a class="nav-link"  href="{{ route('admin.bookings.index') }}">
+                    Darshan & Seva Bookings</a>
+
+                    <a class="nav-link" href="{{ route('admin.bookings.accommodation') }}">
+
+                        Accommodation Bookings
+
+                    </a>
+                </li>
             <li><a class="nav-link {{ request()->routeIs('admin.booking-cancel.*') ? 'active' : '' }}"
                     href="{{ route('admin.booking-cancel.index') }}"><i class="fa-solid fa-rotate-left"></i>
                     <span>Refund Return</span></a></li>

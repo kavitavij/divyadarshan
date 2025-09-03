@@ -19,9 +19,8 @@ class RefundRequest extends Model
         'status',
     ];
 
-    public function booking()
-    {
-        return $this->belongsTo(Booking::class);
-    }
-
+public function bookingable()
+{
+    return $this->morphTo('bookingable', 'booking_type', 'booking_id');
+}
 }

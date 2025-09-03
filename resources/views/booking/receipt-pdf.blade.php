@@ -54,19 +54,14 @@
                 </tr>
             </thead>
             <tbody>
-                @php
-                    // Safely decode the JSON string into an array
-                    $devotees = json_decode($booking->devotee_details, true) ?? [];
-                @endphp
-                @if(is_array($devotees))
-                    @foreach($devotees as $devotee)
-                        <tr>
-                            <td>{{ $devotee['first_name'] ?? '' }} {{ $devotee['last_name'] ?? '' }}</td>
-                            <td>{{ $devotee['age'] ?? '' }}</td>
-                            <td>{{ Str::upper($devotee['id_type'] ?? '') }}: {{ $devotee['id_number'] ?? '' }}</td>
-                        </tr>
-                    @endforeach
-                @endif
+                {{-- THIS IS THE CORRECTED LOOP --}}
+                @foreach($booking->devotee_details as $devotee)
+                    <tr>
+                        <td>{{ $devotee['first_name'] ?? ($devotee['full_name'] ?? '') }} {{ $devotee['last_name'] ?? '' }}</td>
+                        <td>{{ $devotee['age'] ?? '' }}</td>
+                        <td>{{ Str::upper($devotee['id_type'] ?? '') }}: {{ $devotee['id_number'] ?? '' }}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
 
@@ -77,4 +72,3 @@
     </div>
 </body>
 </html>
-

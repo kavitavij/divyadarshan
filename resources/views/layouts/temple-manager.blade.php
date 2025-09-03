@@ -12,6 +12,14 @@
 
 
     <style>
+        .modal-backdrop {
+    z-index: 1500 !important;
+}
+
+.modal {
+    z-index: 1600 !important;
+}
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;

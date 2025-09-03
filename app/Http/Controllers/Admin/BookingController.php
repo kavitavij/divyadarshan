@@ -9,6 +9,8 @@ use App\Models\StayBooking;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Hotel;
 
 class BookingController extends Controller
 {
@@ -17,61 +19,61 @@ class BookingController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index(Request $request)
-    {
-        $filterType = $request->input('type');    // Darshan / Seva / Accommodation
-        $filterDate = $request->input('date');    // Specific Date
+   // In app/Http/Controllers/Admin/BookingController.php
 
-        // 1. Fetch all booking types with relationships
-        $darshanBookings = Booking::with('user', 'temple')->get()->map(function ($booking) {
-            $booking->type = 'Darshan';
-            return $booking;
-        });
+public function index(Request $request)
+{
+    $filterType = $request->input('type');
+    $filterDate = $request->input('date');
 
-        $sevaBookings = SevaBooking::with('user', 'seva.temple')->get()->map(function ($booking) {
-            $booking->type = 'Seva';
-            $booking->amount = $booking->amount;
-            return $booking;
-        });
-
-        $stayBookings = StayBooking::with('user', 'room.hotel')->get()->map(function ($booking) {
-            $booking->type = 'Accommodation';
-            $booking->amount = $booking->total_amount;
-            return $booking;
-        });
-
-        // 2. Merge all collections
-        $allBookings = $darshanBookings->concat($sevaBookings)->concat($stayBookings);
-
-        // 3. Apply filters
-        if ($filterType) {
-            $allBookings = $allBookings->where('type', $filterType);
-        }
-
-        if ($filterDate) {
-            $allBookings = $allBookings->filter(function ($booking) use ($filterDate) {
-                return $booking->created_at->format('Y-m-d') === $filterDate;
-            });
-        }
-
-        // 4. Sort by date
-        $sortedBookings = $allBookings->sortByDesc('created_at');
-
-        // 5. Manual Pagination
-        $perPage = 15;
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $currentPageItems = $sortedBookings->slice(($currentPage - 1) * $perPage, $perPage)->all();
-
-        $bookings = new LengthAwarePaginator(
-            $currentPageItems,
-            $sortedBookings->count(),
-            $perPage,
-            $currentPage,
-            ['path' => LengthAwarePaginator::resolveCurrentPath()]
+    // Darshan Bookings Query
+    $darshanQuery = DB::table('bookings')
+        ->join('users', 'bookings.user_id', '=', 'users.id')
+        ->join('temples', 'bookings.temple_id', '=', 'temples.id')
+        ->select(
+            'bookings.id',
+            'bookings.status',
+            'bookings.created_at',
+            DB::raw("'Darshan' as type"),
+            'temples.name as location_name',
+            'users.name as user_name'
         );
 
-        return view('admin.bookings.index', compact('bookings', 'filterType', 'filterDate'));
+    // Seva Bookings Query
+    $sevaQuery = DB::table('seva_bookings')
+        ->join('users', 'seva_bookings.user_id', '=', 'users.id')
+        ->join('sevas', 'seva_bookings.seva_id', '=', 'sevas.id')
+        ->join('temples', 'sevas.temple_id', '=', 'temples.id')
+        ->select(
+            'seva_bookings.id',
+            'seva_bookings.status',
+            'seva_bookings.created_at',
+            DB::raw("'Seva' as type"),
+            'temples.name as location_name',
+            'users.name as user_name'
+        );
+
+    // The StayBookings query has been removed.
+
+    if ($filterDate) {
+        $darshanQuery->whereDate('bookings.created_at', $filterDate);
+        $sevaQuery->whereDate('seva_bookings.created_at', $filterDate);
     }
+
+    // Simplified query combination
+    if ($filterType === 'Seva') {
+        $query = $sevaQuery;
+    } elseif ($filterType === 'Darshan') {
+        $query = $darshanQuery;
+    } else {
+        // Default to showing both Darshan and Seva
+        $query = $darshanQuery->unionAll($sevaQuery);
+    }
+
+    $bookings = $query->orderBy('created_at', 'desc')->paginate(15);
+
+    return view('admin.bookings.index', compact('bookings'));
+}
     public function show($type, $id)
     {
         // Use a match expression to handle different booking types
@@ -87,5 +89,41 @@ class BookingController extends Controller
             'booking' => $booking,
             'type' => ucfirst($type) // Pass the type to the view
         ]);
+    }
+    public function accommodationIndex(Request $request)
+    {
+        $filterHotel = $request->input('hotel_id');
+        $filterDate = $request->input('date');
+
+        // Start the query on the StayBooking model
+        $query = StayBooking::with('user', 'room.hotel')
+                            ->orderBy('check_in_date', 'desc');
+
+        // Apply hotel filter if provided
+        if ($filterHotel) {
+            $query->where('hotel_id', $filterHotel);
+        }
+
+        // Apply date filter if provided (checks if the date is between check-in and check-out)
+        if ($filterDate) {
+            $query->whereDate('check_in_date', '<=', $filterDate)
+                  ->whereDate('check_out_date', '>=', $filterDate);
+        }
+
+        // Fetch all hotels for the filter dropdown
+        $hotels = Hotel::orderBy('name')->get();
+
+        // Paginate the results
+        $bookings = $query->paginate(15);
+
+        return view('admin.bookings.accommodation-index', compact('bookings', 'hotels', 'filterHotel', 'filterDate'));
+    }
+    public function showAccommodation(StayBooking $booking)
+    {
+        // Eager load all necessary relationships for the view
+        $booking->load('user', 'room.hotel', 'guests');
+
+        // Return a new, dedicated view for accommodation bookings
+        return view('admin.bookings.show-accommodation', compact('booking'));
     }
 }

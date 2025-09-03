@@ -16,15 +16,17 @@ class Booking extends Model
      */
     protected $fillable = [
         'user_id',
+        'order_id',
         'temple_id',
-        'hotel_id', // <-- Added for hotel bookings
         'darshan_slot_id',
+        'default_darshan_slot_id',
         'booking_date',
+        'time_slot',
         'number_of_people',
-        'status',
-        'type', // <-- Added to differentiate booking types
-        'refund_status', // <-- Added for cancellation tracking
+        'amount',
         'devotee_details',
+        'status',
+        'refund_status',
     ];
 
     /**
@@ -80,9 +82,23 @@ class Booking extends Model
     {
         return $this->hasMany(Devotee::class);
     }
-    public function refundRequest()
+        public function refundRequest()
+    {
+        return $this->hasOne(\App\Models\RefundRequest::class);
+    }
+    public function darshanSlot()
+    {
+        return $this->belongsTo(DarshanSlot::class);
+    }
+    // In app/Models/Booking.php
+    public function refundRequests()
+    {
+        return $this->morphMany(RefundRequest::class, 'bookingable', 'booking_type', 'booking_id');
+    }
+    // In app/Models/Booking.php
+public function defaultDarshanSlot()
 {
-    return $this->hasOne(\App\Models\RefundRequest::class);
+    return $this->belongsTo(DefaultDarshanSlot::class);
 }
 }
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Donation;
 use App\Models\Booking;
+use App\Models\StayBooking;
 use App\Models\RefundRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 class ProfileController extends Controller
@@ -78,6 +79,7 @@ class ProfileController extends Controller
         // It fetches the bookings and their related temple data directly.
         $bookings = Booking::query()
             ->where('user_id', auth()->id())
+            ->with('temple', 'darshanSlot', 'defaultDarshanSlot')
             ->with('temple')
             ->latest('created_at') // Be explicit about ordering by creation date
             ->paginate(9);
@@ -135,9 +137,12 @@ class ProfileController extends Controller
         $booking->status = 'Cancelled';
         $booking->save();
 
-        // **MODIFIED:** Redirect to the refund request form instead of the bookings list
-        return Redirect::route('profile.my-bookings.refund.request', ['booking' => $booking])
-                       ->with('status', 'Booking cancelled. Please fill out the form to request your refund.');
+        //  Redirect to the refund request form instead of the bookings list
+        // return Redirect::route('profile.my-bookings.refund.request', ['booking' => $booking])
+        //                ->with('status', 'Booking cancelled. Please fill out the form to request your refund.');
+    // This new line will redirect back to the bookings list with a simple success message
+    return Redirect::route('profile.my-bookings.index')
+                ->with('success', 'Booking cancelled successfully.');
     }
 
     /**
@@ -158,31 +163,119 @@ class ProfileController extends Controller
      * Store the refund request details.
      * ADD THIS NEW FUNCTION
      */
-    public function storeRefundRequest(Request $request, Booking $booking): RedirectResponse
+    // In app/Http/Controllers/ProfileController.php
+
+public function storeStayRefundRequest(Request $request, StayBooking $booking): RedirectResponse
+{
+    if (auth()->id() !== $booking->user_id) {
+        abort(403);
+    }
+
+    $validatedData = $request->validate([
+        'account_holder_name' => 'required|string|max:255',
+        'account_number' => 'required|string|max:20',
+        'ifsc_code' => 'required|string|max:15',
+        'bank_name' => 'required|string|max:255',
+    ]);
+
+    // Use the relationship to create the refund request
+    $booking->refundRequests()->create([
+        'user_id' => auth()->id(),
+        'account_holder_name' => $validatedData['account_holder_name'],
+        'account_number' => $validatedData['account_number'],
+        'ifsc_code' => $validatedData['ifsc_code'],
+        'bank_name' => $validatedData['bank_name'],
+        'status' => 'Pending',
+    ]);
+
+    // ** THIS IS THE NEW LINE **
+    // Update the refund_status on the booking itself
+    $booking->update(['refund_status' => 'Pending']);
+
+    return redirect()->route('profile.my-stays.index')->with('success', 'Refund request submitted successfully!');
+}
+    public function myStays()
     {
-        // Security Check
-        if (Auth::id() !== $booking->user_id) {
+        $bookings = StayBooking::with('room.hotel', 'user') // Eager load relationships
+                                ->where('user_id', auth()->id())
+                                ->orderBy('check_in_date', 'desc')
+                                ->paginate(10); // Or your preferred number
+
+        return view('profile.my-stays.index', compact('bookings'));
+    }
+    public function cancelStayBooking(StayBooking $booking)
+    {
+        if (auth()->id() !== $booking->user_id) {
             abort(403);
         }
+        if (now()->startOfDay()->gt($booking->check_in_date)) {
+            return redirect()->back()->with('error', 'You can only cancel bookings with a future check-in date.');
+        }
 
-        $request->validate([
-            'account_holder_name' => 'required|string|max:255',
-            'account_number' => 'required|string|max:20',
-            'ifsc_code' => 'required|string|max:15',
-            'bank_name' => 'required|string|max:255',
-        ]);
+        $booking->status = 'Cancelled';
+        $booking->save();
 
-        RefundRequest::create([
-            'booking_id' => $booking->id,
-            'user_id' => Auth::id(),
-            'account_holder_name' => $request->account_holder_name,
-            'account_number' => $request->account_number,
-            'ifsc_code' => $request->ifsc_code,
-            'bank_name' => $request->bank_name,
-        ]);
-
-        return Redirect::route('profile.my-bookings.index')->with('status', 'Refund request submitted successfully. It will be processed within 5-7 business days.');
+        // ** THIS IS THE CHANGE **
+        // Redirect to the refund request form instead of the bookings list
+        return redirect()->route('profile.my-stays.refund.request', $booking)
+                         ->with('success', 'Booking cancelled. Please provide your bank details to request a refund.');
     }
+    public function requestStayRefund(StayBooking $booking): View
+    {
+        if (auth()->id() !== $booking->user_id) {
+            abort(403);
+        }
+        // We can reuse the same view as the darshan refund request if the fields are the same
+        return view('profile.my-stays.request-refund', compact('booking'));
+    }
+
+    /**
+     * Store the refund request details for a StayBooking.
+     * NEW METHOD
+     */
+//     public function storeStayRefundRequest(Request $request, StayBooking $booking): RedirectResponse
+// {
+//     if (auth()->id() !== $booking->user_id) {
+//         abort(403);
+//     }
+
+//     $validatedData = $request->validate([
+//         'account_holder_name' => 'required|string|max:255',
+//         'account_number' => 'required|string|max:20',
+//         'ifsc_code' => 'required|string|max:15',
+//         'bank_name' => 'required|string|max:255',
+//     ]);
+
+//     // Use the new relationship to create the refund request
+//     $booking->refundRequests()->create([
+//         'user_id' => auth()->id(),
+//         'account_holder_name' => $validatedData['account_holder_name'],
+//         'account_number' => $validatedData['account_number'],
+//         'ifsc_code' => $validatedData['ifsc_code'],
+//         'bank_name' => $validatedData['bank_name'],
+//         'status' => 'Pending',
+//     ]);
+
+//     return redirect()->route('profile.my-stays.index')->with('success', 'Refund request submitted successfully!');
+// }
+
+    /**
+     * Generates and downloads a PDF receipt for a stay booking.
+     * NEW METHOD
+     */
+   public function downloadStayReceipt(StayBooking $booking)
+{
+    // Authorize...
+    if (auth()->id() !== $booking->user_id) {
+        abort(403);
+    }
+
+    // THIS IS THE IMPORTANT PART: Make sure 'room.hotel' is loaded.
+    $booking->load('room.hotel', 'user');
+
+    $pdf = Pdf::loadView('receipts.stay', ['booking' => $booking]);
+    return $pdf->download('receipt-stay-' . $booking->id . '.pdf');
+}
 
 }
 

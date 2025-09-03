@@ -21,5 +21,8 @@ class DatabaseSeeder extends Seeder
             TempleSeeder::class,
             // You can add other seeders here if needed
         ]);
+         $this->call([
+            DefaultDarshanSlotSeeder::class,
+        ]);
     }
 }

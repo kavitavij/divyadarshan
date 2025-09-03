@@ -20,10 +20,10 @@
                           bg-blue-600 text-white hover:bg-blue-700 transition">
                     View Darshan Bookings
                 </a>
-                <a href="#"
-                   class="px-4 py-2 text-sm font-medium rounded-lg shadow-sm
-                          bg-red-600 text-white hover:bg-blue-700 transition">
-                    View Accomodation Bookings
+                <a href="{{ route('profile.my-stays.index') }}"
+                    class="px-4 py-2 text-sm font-medium rounded-lg shadow-sm
+                        bg-red-600 text-white hover:bg-red-700 transition">
+                    View Accommodation Bookings
                 </a>
                 <a href="{{ route('profile.my-donations.index') }}"
                    class="px-4 py-2 text-sm font-medium rounded-lg shadow-sm

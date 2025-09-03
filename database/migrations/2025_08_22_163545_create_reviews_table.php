@@ -1,31 +1,32 @@
-    <?php
+<?php
 
-    use Illuminate\Database\Migrations\Migration;
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    return new class extends Migration
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
-        /**
-         * Run the migrations.
-         */
-        public function up(): void
-        {
-            Schema::create('reviews', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->string('email');
-                $table->text('message');
-                $table->tinyInteger('rating')->default(5); // rating out of 5
-                $table->timestamps();
-            });
-        }
+        Schema::create('reviews', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email');
+            $table->text('message');
+            $table->tinyInteger('rating')->default(5);
+            $table->unsignedInteger('likes')->default(0);
+            $table->timestamps();
+        });
+    }
 
-        /**
-         * Reverse the migrations.
-         */
-        public function down(): void
-        {
-            Schema::dropIfExists('reviews');
-        }
-    };
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('reviews');
+    }
+};

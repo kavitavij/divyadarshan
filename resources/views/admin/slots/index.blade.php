@@ -1,117 +1,81 @@
 @extends('layouts.admin')
 
+@section('title', 'Manage All Darshan Slots')
+
 @section('content')
-    <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1>Manage Time Slots for {{ $temple->name }}</h1>
-        </div>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Manage All Darshan Slots</h1>
+        <a href="{{ route('admin.slots.create') }}" class="btn btn-primary shadow-sm"><i class="fas fa-plus fa-sm text-white-50"></i> Create New Slot</a>
+    </div>
 
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        <div class="row">
-            <!-- Date Selector -->
-            <div class="col-12 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <form action="{{ route('admin.temples.slots.index', $temple) }}" method="GET">
-                            <div class="row align-items-end">
-                                <div class="col-md-4">
-                                    <label for="date" class="form-label">Select a Date to Manage Slots</label>
-                                    <input type="date" name="date" id="date" class="form-control"
-                                        value="{{ $selectedDate }}">
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary">View Slots</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Add New Slots Form -->
-            <div class="col-md-5">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Add Default Slots for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('admin.temples.slots.store', $temple) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="slot_date" value="{{ $selectedDate }}">
-                            <p>Select the slots you want to create for the chosen date:</p>
-
-                            @foreach ($defaultSlots as $index => $slot)
-                                <div class="input-group mb-3">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" type="checkbox"
-                                            name="slots[{{ $index }}][create]" value="1" checked>
-                                    </div>
-                                    <input type="text" class="form-control"
-                                        value="{{ \Carbon\Carbon::parse($slot['start_time'])->format('h:i A') }} - {{ \Carbon\Carbon::parse($slot['end_time'])->format('h:i A') }}"
-                                        readonly>
-                                    <input type="number" class="form-control"
-                                        name="slots[{{ $index }}][total_capacity]" value="1000"
-                                        placeholder="Capacity">
-                                    {{-- Hidden fields to pass the times --}}
-                                    <input type="hidden" name="slots[{{ $index }}][start_time]"
-                                        value="{{ $slot['start_time'] }}">
-                                    <input type="hidden" name="slots[{{ $index }}][end_time]"
-                                        value="{{ $slot['end_time'] }}">
-                                </div>
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('admin.slots.index') }}">
+                <div class="form-row align-items-end">
+                    <div class="form-group col-md-4">
+                        <label for="temple_id">Filter by Temple</label>
+                        <select name="temple_id" id="temple_id" class="form-control">
+                            <option value="">All Temples</option>
+                            @foreach($temples as $temple)
+                                <option value="{{ $temple->id }}" {{ $filterTemple == $temple->id ? 'selected' : '' }}>{{ $temple->name }}</option>
                             @endforeach
-
-                            <button type="submit" class="btn btn-primary w-100">Add Selected Slots</button>
-                        </form>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="date">Filter by Date</label>
+                        <input type="date" name="date" id="date" class="form-control" value="{{ $filterDate }}">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <button type="submit" class="btn btn-success">Filter</button>
+                        <a href="{{ route('admin.slots.index') }}" class="btn btn-secondary">Reset</a>
                     </div>
                 </div>
-            </div>
-
-            <!-- Existing Slots for Selected Date -->
-            <div class="col-md-7">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Existing Slots for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Time Slot</th>
-                                    <th>Capacity (Available / Total)</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($slots as $slot)
-                                    <tr>
-                                        <td>{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }} -
-                                            {{ \Carbon\Carbon::parse($slot->end_time)->format('h:i A') }}</td>
-                                        <td>{{ $slot->total_capacity - $slot->booked_capacity }} /
-                                            {{ $slot->total_capacity }}</td>
-                                        <td>
-                                            <form action="{{ route('admin.slots.destroy', $slot->id) }}" method="POST">
-                                                <a href="{{ route('admin.slots.edit', $slot->id) }}"
-                                                    class="btn btn-sm btn-primary">Edit</a>
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Are you sure?')">Delete</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center">No slots created for this date yet.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Temple</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Capacity</th>
+                            <th>Booked</th>
+                            <th>Available</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($slots as $slot)
+                            <tr>
+                                <td>{{ $slot->temple->name }}</td>
+                                <td>{{ \Carbon\Carbon::parse($slot->slot_date)->format('d M, Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}</td>
+                                <td>{{ $slot->total_capacity }}</td>
+                                <td>{{ $slot->booked_capacity }}</td>
+                                <td><span class="badge badge-success">{{ $slot->total_capacity - $slot->booked_capacity }}</span></td>
+                                <td>
+                                    <a href="{{ route('admin.slots.edit', $slot) }}" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                                    <form action="{{ route('admin.slots.destroy', $slot) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="7" class="text-center">No slots found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            {{ $slots->appends(request()->query())->links() }}
+        </div>
+    </div>
+</div>
 @endsection

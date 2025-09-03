@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\ContactSubmissionController;
 use App\Http\Controllers\Admin\DonationController as AdminDonationController;
 use App\Http\Controllers\Admin\CancelledBookingController;
 use App\Http\Controllers\Admin\BookingCancelController;
+use App\Http\Controllers\Admin\SlotController as AdminSlotController;
 // Hotel Manager Controllers
 use App\Http\Controllers\HotelManager\DashboardController as HotelManagerDashboardController;
 use App\Http\Controllers\HotelManager\HotelController as HotelManagerHotelController;
@@ -52,6 +53,7 @@ use App\Http\Controllers\TempleManager\BookingController;
 use App\Http\Controllers\TempleManager\SevaController as TempleManagerSevaController;
 use App\Http\Controllers\TempleManager\DarshanSlotController as TempleManagerDarshanSlotController;
 use App\Http\Controllers\TempleManager\DashboardController;
+use App\Http\Controllers\TempleManager\SlotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,12 +81,18 @@ Route::get('/donations', [DonationController::class, 'index'])->name('donations.
 Route::get('/about', [AboutController::class, 'about'])->name('about');
 Route::get('/privacy-policy', [AboutController::class, 'privacy'])->name('info.privacy');
 Route::get('/cancellation-policy', [AboutController::class, 'cancellation'])->name('info.cancellation');
-// ADD THIS ROUTE to show the refund request form
+Route::get('/profile/my-stays/{booking}/refund', [ProfileController::class, 'requestStayRefund'])->name('profile.my-stays.refund.request');
+Route::post('/profile/my-stays/{booking}/refund', [ProfileController::class, 'storeStayRefundRequest'])->name('profile.my-stays.refund.store');
+
+Route::get('/api/temples/{temple}/slots-for-date/{date}', [DarshanBookingController::class, 'getSlotsForDate'])->name('api.temples.slots_for_date');
+
+//  refund request form
 Route::get('/profile/my-bookings/{booking}/refund', [ProfileController::class, 'requestRefund'])->name('profile.my-bookings.refund.request');
 
-// ADD THIS ROUTE to handle the form submission
+//the form submission
 Route::post('/profile/my-bookings/{booking}/refund', [ProfileController::class, 'storeRefundRequest'])->name('profile.my-bookings.refund.store');
-
+// FOR ACCOMMODATION BOOKINGS
+Route::get('/profile/my-stays', [ProfileController::class, 'myStays'])->name('profile.my-stays.index');
 
 // review page
 Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
@@ -140,7 +148,8 @@ Route::middleware('auth')->group(function () {
 
 // This is the corrected route for your main bookings list
 Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.my-bookings.index');
-
+Route::get('/profile/my-stays/{booking}/receipt', [ProfileController::class, 'downloadStayReceipt'])->name('profile.my-stays.receipt');
+Route::delete('/profile/my-stays/{booking}/cancel', [ProfileController::class, 'cancelStayBooking'])->name('profile.my-stays.cancel');
 // Add this new route to handle the receipt download for a specific booking
     Route::get('/profile/bookings/{booking}/receipt', [ProfileController::class, 'downloadBookingReceipt'])->name('profile.my-bookings.receipt.download');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
@@ -192,7 +201,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('temples', AdminTempleController::class);
     Route::get('/temples/{temple}/darshan-bookings', [AdminTempleController::class, 'showDarshanBookings'])->name('temples.darshan_bookings');
     Route::get('/temples/{temple}/seva-bookings', [AdminTempleController::class, 'showSevaBookings'])->name('temples.seva_bookings');
-    Route::resource('temples.slots', AdminDarshanSlotController::class)->shallow();
     Route::resource('temples.sevas', AdminSevaController::class)->shallow();
     Route::resource('ebooks', AdminEbookController::class);
     Route::resource('latest_updates', LatestUpdateController::class);
@@ -205,13 +213,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/donations/export', [AdminDonationController::class, 'export'])->name('donations.export');
     Route::resource('donations', AdminDonationController::class)->only(['index', 'show']);
     Route::get('/bookings/view/{type}/{id}', [AdminBookingController::class, 'show'])->name('bookings.show');
-
+    Route::resource('slots', AdminSlotController::class)->except(['show']);
+    Route::get('/accommodation-bookings', [AdminBookingController::class, 'accommodationIndex'])->name('bookings.accommodation');
+    Route::get('/accommodation-bookings/{booking}', [AdminBookingController::class, 'showAccommodation'])->name('bookings.accommodation.show');
 });
-    // ADMIN REFUND & CANCEL
+    // // Routes for Stay Refunds
     Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/booking-cancel', [BookingCancelController::class, 'index'])->name('booking-cancel.index');
-    Route::get('/booking-cancel/{id}', [BookingCancelController::class, 'show'])->name('booking-cancel.show');
-    Route::patch('/booking-cancel/{booking}/refund', [BookingCancelController::class, 'updateRefundStatus'])->name('booking-cancel.updateRefundStatus');
+    Route::get('/stay-refund-requests', [BookingCancelController::class, 'index'])->name('booking-cancel.index');
+    Route::get('/stay-refund-requests/{refundRequest}', [BookingCancelController::class, 'showStayRefund'])->name('booking-cancel.stay.show');
+    Route::patch('/stay-refund-requests/{refundRequest}/status', [BookingCancelController::class, 'updateRefundStatus'])->name('booking-cancel.updateStatus');
 });
 
 // ## HOTEL MANAGER ROUTES ##
@@ -233,9 +243,14 @@ Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->na
     // Slot and Seva Management
     Route::resource('slots', SlotController::class)->except(['show']);
     Route::resource('sevas', SevaController::class)->except(['show']);
-
+    Route::get('slots/bulk-create', [SlotController::class, 'bulkCreate'])->name('slots.bulk-create');
+    Route::post('slots/bulk-store', [SlotController::class, 'bulkStore'])->name('slots.bulk-store');
     // Booking Management Routes (Using the renamed BookingController)
     Route::get('bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('bookings/{type}/{id}', [BookingController::class, 'show'])->name('bookings.show');
     Route::patch('bookings/{type}/{id}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+    Route::get('slots/settings', [SlotController::class, 'settings'])->name('slots.settings');
+    Route::post('slots/settings', [SlotController::class, 'updateSettings'])->name('slots.settings.update');
+    Route::post('slots/day-status', [SlotController::class, 'updateDayStatus'])->name('slots.day-status.update');
+    Route::delete('slots/day-status/{id}', [SlotController::class, 'deleteDayStatus'])->name('slots.day-status.delete');
 });

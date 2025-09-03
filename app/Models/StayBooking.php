@@ -10,18 +10,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class StayBooking extends Model
 {
-
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'room_id',
+        'hotel_id',
         'check_in_date',
         'check_out_date',
         'number_of_guests',
         'phone_number',
         'total_amount',
         'status',
+        'refund_status',
     ];
 
     public function room()
@@ -37,5 +43,10 @@ class StayBooking extends Model
     public function guests()
     {
         return $this->hasMany(StayBookingGuest::class);
+    }
+
+    public function refundRequests()
+    {
+        return $this->morphMany(RefundRequest::class, 'bookingable', 'booking_type', 'booking_id');
     }
 }

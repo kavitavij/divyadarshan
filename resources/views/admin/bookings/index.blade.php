@@ -1,10 +1,12 @@
 @extends('layouts.admin')
 
+@section('title', 'Temple Bookings')
+
 @section('content')
     <div class="container-fluid">
-        <h1 class="mb-3">All Bookings</h1>
-        <p class="text-muted">Combined list of all Darshan, Seva, and Accommodation bookings across the platform, sorted by
-            the most recent.</p>
+        <h1 class="mb-3">Temple Bookings</h1>
+        {{-- Updated description --}}
+        <p class="text-muted">Combined list of all Darshan and Seva bookings, sorted by the most recent.</p>
 
         {{-- Filter Form --}}
         <div class="card shadow-sm mt-3">
@@ -14,11 +16,10 @@
                     <div class="col-md-3">
                         <label for="type" class="form-label">Booking Type</label>
                         <select name="type" id="type" class="form-select">
-                            <option value="">All</option>
+                            <option value="">All Temple Bookings</option>
                             <option value="Darshan" {{ request('type') == 'Darshan' ? 'selected' : '' }}>Darshan</option>
                             <option value="Seva" {{ request('type') == 'Seva' ? 'selected' : '' }}>Seva</option>
-                            <option value="Accommodation" {{ request('type') == 'Accommodation' ? 'selected' : '' }}>
-                                Accommodation</option>
+                            {{-- Accommodation option removed --}}
                         </select>
                     </div>
 
@@ -46,10 +47,11 @@
                         <tr>
                             <th>Booking ID</th>
                             <th>Type</th>
-                            <th>Temple / Hotel</th>
+                            <th>Temple</th>
                             <th>User</th>
                             <th>Status</th>
                             <th>Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,30 +59,20 @@
                             <tr>
                                 <td>{{ $booking->id }}</td>
                                 <td>
-                                    <span class="badge
-                                        @if($booking->type === 'Darshan') bg-primary
-                                        @elseif($booking->type === 'Seva') bg-info
-                                        @else bg-secondary @endif">
+                                    <span class="badge {{ $booking->type === 'Darshan' ? 'bg-primary' : 'bg-info' }}">
                                         {{ $booking->type }}
                                     </span>
                                 </td>
+                                <td>{{ $booking->location_name ?? 'N/A' }}</td>
+                                <td>{{ $booking->user_name ?? 'N/A' }}</td>
                                 <td>
-                                    @if ($booking->type === 'Darshan')
-                                        {{ $booking->temple->name ?? 'N/A' }}
-                                    @elseif($booking->type === 'Seva')
-                                        {{ $booking->seva->temple->name ?? 'N/A' }}
-                                    @elseif($booking->type === 'Accommodation')
-                                        {{ $booking->room->hotel->name ?? 'N/A' }}
-                                    @endif
-                                </td>
-                                <td>{{ $booking->user->name ?? 'N/A' }}</td>
-                                <td>
-                                    <span class="badge {{ $booking->status === 'Completed' || $booking->status === 'confirmed' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                    <span class="badge {{ strtolower($booking->status) === 'confirmed' ? 'bg-success' : 'bg-warning text-dark' }}">
                                         {{ Str::ucfirst($booking->status) }}
                                     </span>
                                 </td>
-                                <td>{{ $booking->created_at->format('d M Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y') }}</td>
                                 <td>
+                                    {{-- The link to the generic show page remains correct --}}
                                     <a href="{{ route('admin.bookings.show', ['type' => $booking->type, 'id' => $booking->id]) }}" class="btn btn-sm btn-primary">
                                         View Details
                                     </a>
@@ -94,33 +86,10 @@
                     </tbody>
                 </table>
 
-                {{-- Pagination links --}}
                 <div class="mt-3 d-flex justify-content-center">
                     {{ $bookings->appends(request()->query())->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- Inline CSS for pagination --}}
-    <style>
-        .pagination {
-            font-size: 0.85rem;
-        }
-
-        .pagination .page-link {
-            padding: 0.25rem 0.6rem;
-            border-radius: 4px;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #4a148c;
-            border-color: #4a148c;
-            color: #fff;
-        }
-
-        .pagination .page-link:hover {
-            background-color: #ede7f6;
-        }
-    </style>
 @endsection

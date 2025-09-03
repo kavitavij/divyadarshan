@@ -191,13 +191,21 @@
                                 @endfor
                             </div>
 
-                            <div class="mt-4 mb-3">
-                                <label for="phone_number">Contact Phone Number</label>
-                                <input type="tel" name="phone_number" class="form-control"
-                                    value="{{ old('phone_number') }}" required>
-                            </div>
+                        <div class="price-summary my-4 p-3 bg-light rounded border">
+                            <h5>Price Details</h5>
+                            <p class="mb-1">Number of Nights: <strong id="num-nights">--</strong></p>
+                            <p class="mb-0 fs-5">Total Payable Amount: <strong id="total-amount" class="text-success">₹--</strong></p>
+                            <input type="hidden" name="total_amount" id="total_amount_input" value="0">
+                        </div>
 
-                            <button type="submit" class="btn btn-proceed">Add to Cart</button>
+                        {{-- This is your existing phone number section --}}
+                        <div class="mt-4 mb-3">
+                            <label for="phone_number">Contact Phone Number</label>
+                            <input type="tel" name="phone_number" class="form-control"
+                                value="{{ old('phone_number') }}" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-proceed">Add to Cart</button>
                         </form>
                     </div>
                 </div>
@@ -212,60 +220,92 @@
             });
         </script>
     @endif
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const numberOfGuestsInput = document.getElementById("number_of_guests");
-            const maxGuests = {{ $room->capacity }};
+   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // DEFINE ALL CONSTANTS AT THE TOP
+        const numberOfGuestsInput = document.getElementById("number_of_guests");
+        const maxGuests = {{ $room->capacity }};
+        const checkInInput = document.getElementById("check_in_date"); // Moved to top
+        const checkOutInput = document.getElementById("check_out_date"); // Moved to top
+        const pricePerNight = {{ $room->price_per_night }};
+        const numNightsDisplay = document.getElementById("num-nights");
+        const totalAmountDisplay = document.getElementById("total-amount");
+        const totalAmountInput = document.getElementById("total_amount_input");
 
-            function toggleGuestForms() {
-                const guestCount = parseInt(numberOfGuestsInput.value, 10) || 1;
-                for (let i = 0; i < maxGuests; i++) {
-                    const form = document.getElementById(`guest-form-${i}`);
-                    const nameInput = document.getElementById(`guest_name_${i}`);
-                    const idType = document.getElementById(`guest_id_type_${i}`);
-                    const idNum = document.getElementById(`guest_id_number_${i}`);
+        // PRICE CALCULATION LOGIC
+        function calculateTotal() {
+            const checkInDate = new Date(checkInInput.value);
+            const checkOutDate = new Date(checkOutInput.value);
 
-                    if (i < guestCount) {
-                        form.style.display = "block";
-                        nameInput.required = true;
-                        idType.required = true;
-                        idNum.required = true;
-                        nameInput.disabled = false;
-                        idType.disabled = false;
-                        idNum.disabled = false;
-                    } else {
-                        form.style.display = "none";
-                        nameInput.required = false;
-                        idType.required = false;
-                        idNum.required = false;
-                        nameInput.disabled = true;
-                        idType.disabled = true;
-                        idNum.disabled = true;
-                    }
+            if (checkInInput.value && checkOutInput.value && checkOutDate > checkInDate) {
+                const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                const total = nights * pricePerNight;
+
+                numNightsDisplay.textContent = nights;
+                totalAmountDisplay.textContent = `₹${total.toLocaleString('en-IN')}`;
+                totalAmountInput.value = total;
+            } else {
+                numNightsDisplay.textContent = "--";
+                totalAmountDisplay.textContent = "₹--";
+                totalAmountInput.value = 0;
+            }
+        }
+
+        // GUEST FORM TOGGLING LOGIC
+        function toggleGuestForms() {
+            const guestCount = parseInt(numberOfGuestsInput.value, 10) || 1;
+            for (let i = 0; i < maxGuests; i++) {
+                const form = document.getElementById(`guest-form-${i}`);
+                const nameInput = document.getElementById(`guest_name_${i}`);
+                const idType = document.getElementById(`guest_id_type_${i}`);
+                const idNum = document.getElementById(`guest_id_number_${i}`);
+
+                if (i < guestCount) {
+                    form.style.display = "block";
+                    nameInput.required = true;
+                    idType.required = true;
+                    idNum.required = true;
+                    nameInput.disabled = false;
+                    idType.disabled = false;
+                    idNum.disabled = false;
+                } else {
+                    form.style.display = "none";
+                    nameInput.required = false;
+                    idType.required = false;
+                    idNum.required = false;
+                    nameInput.disabled = true;
+                    idType.disabled = true;
+                    idNum.disabled = true;
                 }
             }
+        }
 
-            numberOfGuestsInput.addEventListener("input", toggleGuestForms);
-            toggleGuestForms();
-
-            // Date validation
-            const checkIn = document.getElementById("check_in_date");
-            const checkOut = document.getElementById("check_out_date");
-
-            function validateDates() {
-                if (checkIn.value) {
-                    let minDate = new Date(checkIn.value);
-                    minDate.setDate(minDate.getDate() + 1);
-                    checkOut.min = minDate.toISOString().split("T")[0];
-                    if (checkOut.value && checkOut.value < checkOut.min) {
-                        checkOut.value = "";
-                    }
+        // DATE VALIDATION LOGIC
+        function validateDates() {
+            if (checkInInput.value) {
+                let minDate = new Date(checkInInput.value);
+                minDate.setDate(minDate.getDate() + 1);
+                checkOutInput.min = minDate.toISOString().split("T")[0];
+                if (checkOutInput.value && checkOutInput.value < checkOutInput.min) {
+                    checkOutInput.value = "";
                 }
             }
-            checkIn.addEventListener("change", validateDates);
-            validateDates();
-        });
-    </script>
+        }
+
+        // ATTACH ALL EVENT LISTENERS
+        numberOfGuestsInput.addEventListener("input", toggleGuestForms);
+        checkInInput.addEventListener("change", validateDates);
+        checkInInput.addEventListener("change", calculateTotal); // Also trigger calculation
+        checkOutInput.addEventListener("change", calculateTotal);
+
+        // INITIALIZE FUNCTIONS
+        toggleGuestForms();
+        validateDates();
+        calculateTotal(); // Run once on page load
+    });
+</script>
+
 </body>
 
 </html>

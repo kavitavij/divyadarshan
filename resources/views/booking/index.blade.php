@@ -46,136 +46,72 @@
 @section('content')
 <div class="container mx-auto px-4 py-5">
     <div class="flex justify-center">
-        <div class="w-full lg:w-10/12">
+        <div class="w-full lg-w-10/12">
             <div class="bg-white shadow rounded-lg">
                 <div class="border-b px-6 py-4">
-                    <h2 class="text-xl font-bold">
-                        {{ isset($selectedTemple) && $selectedTemple ? 'Book Your Darshan for ' . $selectedTemple->name : 'Book Your Darshan' }}
-                    </h2>
+                    <h2 class="text-xl font-bold">Book Your Darshan</h2>
                 </div>
-                <div class="card-body">
-
+                <div class="p-6">
                     {{-- 1. Temple Selector --}}
-                    <div class="form-group">
-                        <label for="temple_id">1. Select Temple</label>
+                    <div class="mb-4">
+                        <label for="temple_id" class="block font-semibold mb-2">1. Select Temple</label>
                         <select name="temple_id" id="temple_id" class="form-control" required>
                             <option value="">-- Please choose a temple --</option>
                             @foreach ($temples as $temple)
-                                <option value="{{ $temple->id }}"
-                                    {{ isset($selectedTemple) && $selectedTemple && $selectedTemple->id == $temple->id ? 'selected' : '' }}>
+                                <option value="{{ $temple->id }}" {{ isset($selectedTemple) && $selectedTemple->id == $temple->id ? 'selected' : '' }}>
                                     {{ $temple->name }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                    @if (isset($selectedTemple) && $selectedTemple)
-                        <form id="bookingForm" action="{{ route('booking.details') }}" method="GET">
-                            @csrf
-                            <input type="hidden" name="temple_id" value="{{ $selectedTemple->id }}">
-                            <input type="hidden" name="selected_date"
-                                value="{{ $selectedDate ? $selectedDate->toDateString() : '' }}">
-                            <input type="hidden" name="slot_details" id="slot_details">
+                    @if (isset($selectedTemple))
+                    {{-- ###################  KEY CHANGES ARE HERE ################### --}}
+                    <form id="bookingForm" action="{{ route('booking.details') }}" method="GET">
+                        <input type="hidden" name="temple_id" value="{{ $selectedTemple->id }}">
 
-                            {{-- 2. Multi-Month Calendar --}}
-                            <div class="form-group mt-6">
-                                <label class="block text-lg font-semibold mb-3 text-center">2. Select an Available Date</label>
-                                <div class="flex justify-center gap-6 my-4 text-sm">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-4 h-4 rounded bg-green-700"></div> Available
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-4 h-4 rounded bg-sky-800"></div> Not Available
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-4 h-4 rounded bg-red-700"></div> Full
-                                    </div>
-                                </div>
+                        {{-- 2. Date Picker (Simplified) --}}
+                        <div class="mb-4">
+                            <label for="darshan_date" class="block font-semibold mb-2">2. Select Darshan Date</label>
+                            {{-- The name is changed to 'selected_date' to match your controller --}}
+                            <input type="date" id="darshan_date" name="selected_date" class="form-control" required>
+                        </div>
 
-                                {{-- Center calendar grid --}}
-                                <div class="flex justify-center">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-                                        @foreach ($calendars as $calendar)
-                                            <div class="border rounded-lg p-4 bg-white shadow w-64">
-                                                <div class="text-center font-bold mb-3">{{ $calendar['month_name'] }}</div>
-                                                <div class="grid grid-cols-7 gap-1 text-center text-sm">
-                                                    {{-- Day names --}}
-                                                    @foreach (['S', 'M', 'T', 'W', 'T', 'F', 'S'] as $dayName)
-                                                        <div class="font-bold text-xs text-gray-500">{{ $dayName }}</div>
-                                                    @endforeach
-
-                                                    {{-- Calendar days --}}
-                                                    @foreach ($calendar['days'] as $day)
-                                                        @if (is_null($day))
-                                                            <div></div>
-                                                        @else
-                                                            @php
-                                                                $statusClass = match ($day['status']) {
-                                                                    'available' => 'bg-green-700 text-white cursor-pointer hover:bg-green-800',
-                                                                    'full' => 'bg-red-700 text-white cursor-not-allowed',
-                                                                    'not_available' => 'bg-sky-800 text-white cursor-not-allowed',
-                                                                    default => '',
-                                                                };
-                                                            @endphp
-                                                            @if ($day['status'] === 'available')
-                                                                <a href="?temple_id={{ $selectedTemple->id }}&selected_date={{ $day['date'] }}"
-                                                                    class="py-1 rounded block {{ $selectedDate && $selectedDate->toDateString() == $day['date'] ? 'bg-blue-600 text-white' : $statusClass }}">
-                                                                    {{ $day['day'] }}
-                                                                </a>
-                                                            @else
-                                                                <div class="py-1 rounded {{ $statusClass }}">
-                                                                    {{ $day['day'] }}
-                                                                </div>
-                                                            @endif
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
+                        {{-- 3. Slots Container (Dynamically Filled) --}}
+                        <div class="mb-4">
+                            <label class="block font-semibold mb-2">3. Select a Time Slot</label>
+                            <div id="slots-loader" class="flex items-center space-x-2 text-blue-600" style="display: none;">
+                                <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                                <span>Loading slots...</span>
                             </div>
+                            <div id="slots-container" class="mt-2">
+                                <p class="text-gray-500">Please select a date to see available time slots.</p>
+                            </div>
+                        </div>
 
-                            {{-- 3. Slots --}}
-                            @if (isset($selectedDate) && $selectedDate)
-                                <div class="form-group mt-6">
-                                    <h4 class="text-lg font-semibold mb-2">Available Slots for: {{ $selectedDate->format('F d, Y') }}</h4>
-                                    @if ($slots->isNotEmpty())
-                                        @foreach ($slots as $slot)
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="radio" name="darshan_slot_id"
-                                                    id="slot_{{ $slot['id'] }}" value="{{ $slot['id'] }}"
-                                                    data-details="{{ $slot['time'] }}" required>
-                                                <label class="form-check-label" for="slot_{{ $slot['id'] }}">
-                                                    {{ $slot['time'] }}
-                                                    <span class="badge bg-success">{{ $slot['capacity'] }} available</span>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        <p class="text-danger">No time slots are available for this day.</p>
-                                    @endif
-                                </div>
+                        {{-- 4. Number of People --}}
+                        <div class="mb-4">
+                            <label for="number_of_people" class="block font-semibold mb-2">4. Number of People</label>
+                            <input type="number" name="number_of_people" id="number_of_people" class="form-control" value="1" min="1" required>
+                        </div>
 
-                                <div class="form-group mt-4">
-                                    <label for="number_of_people">Number of People</label>
-                                    <input type="number" name="number_of_people" id="number_of_people"
-                                        class="form-control" min="1" max="8" required>
-                                </div>
+                        {{-- Darshan Charge & Total --}}
+                        <div class="mt-4">
+                             <p class="font-bold text-lg text-green-700">
+                                 Darshan Charge: ₹{{ number_format($selectedTemple->darshan_charge ?? 0, 2) }} per person
+                             </p>
+                             <p id="totalCharge" class="text-blue-600 font-semibold"></p>
+                        </div>
 
-                                {{-- Darshan Charge --}}
-                                <div class="form-group mt-3">
-                                    <p class="font-bold text-lg text-green-700">
-                                        Darshan Charge: ₹{{ number_format($selectedTemple->darshan_charge ?? 0, 2) }} per person
-                                    </p>
-                                    <p id="totalCharge" class="text-blue-600 font-semibold"></p>
-                                </div>
-                                <br>
-                                <div class="flex justify-center">
-                                    <button type="submit" class="animated-btn"><span>Next</span></button>
-                                </div>
-                            @endif
-                        </form>
+                        <div class="flex justify-center mt-6">
+                           {{-- The button text is changed for clarity --}}
+                           <button type="submit" class="animated-btn"><span>Next</span></button>
+                        </div>
+                    </form>
+                    {{-- ################# END OF KEY CHANGES ##################### --}}
                     @endif
                 </div>
             </div>
@@ -185,43 +121,125 @@
 @endsection
 
 @push('scripts')
-    <script>
-        document.getElementById('temple_id').addEventListener('change', function () {
-            if (this.value) {
-                window.location.href = '/darshan-booking?temple_id=' + this.value;
-            } else {
-                window.location.href = '/darshan-booking';
-            }
-        });
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Temple selection reloads the page
+    document.getElementById('temple_id').addEventListener('change', function () {
+        if (this.value) {
+            window.location.href = '/darshan-booking?temple_id=' + this.value;
+        } else {
+            window.location.href = '/darshan-booking';
+        }
+    });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const slotRadios = document.querySelectorAll('input[name="darshan_slot_id"]');
-            const slotDetailsInput = document.getElementById('slot_details');
-            if (slotRadios.length > 0 && slotDetailsInput) {
-                if (!document.querySelector('input[name="darshan_slot_id"]:checked')) {
-                    slotRadios[0].checked = true;
-                    slotDetailsInput.value = slotRadios[0].dataset.details;
-                }
-                slotRadios.forEach(radio => {
-                    radio.addEventListener('change', function () {
-                        slotDetailsInput.value = this.dataset.details;
+    @if (isset($selectedTemple))
+        const dateInput = document.getElementById('darshan_date');
+        const slotsContainer = document.getElementById('slots-container');
+        const slotsLoader = document.getElementById('slots-loader');
+        const templeId = '{{ $selectedTemple->id }}';
+
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        // Helper function to convert time like "9:00 AM" to "11:00 AM"
+        function formatSlotRange(startTime) {
+            const [time, modifier] = startTime.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+
+            // Convert 12 AM/PM to 0 or 12
+            if (modifier === 'PM' && hours !== 12) hours += 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+
+            // Add 2 hours
+            let endHours = hours + 2;
+
+            // Convert back to 12-hour format
+            const endModifier = endHours >= 12 ? 'PM' : 'AM';
+            if (endHours > 23) endHours = endHours % 24;
+
+            let formattedEndHours = endHours % 12;
+            if (formattedEndHours === 0) formattedEndHours = 12;
+
+            const formattedEndTime = `${formattedEndHours}:${minutes.toString().padStart(2, '0')} ${endModifier}`;
+            return `${startTime} - ${formattedEndTime}`;
+        }
+
+        dateInput.addEventListener('change', function () {
+            const selectedDate = this.value;
+            if (!selectedDate) {
+                alert('Please select a valid date');
+                return;
+            }
+
+            // Reset form elements visibility
+            document.getElementById('number_of_people').closest('.mb-4').style.display = '';
+            document.getElementById('totalCharge').closest('.mt-4').style.display = '';
+            document.querySelector('#bookingForm .flex.justify-center').style.display = '';
+
+            slotsLoader.style.display = 'block';
+            slotsContainer.innerHTML = '';
+
+            const url = `/api/temples/${templeId}/slots-for-date/${selectedDate}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    slotsLoader.style.display = 'none';
+
+                    if (data.closed) {
+                        slotsContainer.innerHTML = `
+                            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded" role="alert">
+                                <strong class="font-bold">Notice:</strong>
+                                <span class="block sm:inline">${data.reason || 'Temple is closed for bookings on this day.'}</span>
+                                <span class="block text-sm mt-2 text-red-500 font-medium">Please choose another date.</span>
+                            </div>
+                        `;
+
+                        // Hide form elements
+                        document.getElementById('number_of_people').closest('.mb-4').style.display = 'none';
+                        document.getElementById('totalCharge').closest('.mt-4').style.display = 'none';
+                        document.querySelector('#bookingForm .flex.justify-center').style.display = 'none';
+                        return;
+                    }
+
+                    // Render available slots
+                    let slotsHtml = '';
+                    data.forEach(slot => {
+                        slotsHtml += `
+                            <div class="flex items-center mb-2">
+                                <input type="radio" name="darshan_slot_id" id="slot_${slot.id}" value="${slot.id}" class="mr-2" required>
+                                <label for="slot_${slot.id}" class="text-sm font-medium text-gray-800">
+                                    ${formatSlotRange(slot.time)}:
+                                    <span class="ml-2 bg-green-200 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">${slot.available} available</span>
+                                </label>
+                            </div>
+                        `;
                     });
+                    slotsContainer.innerHTML = slotsHtml;
+                })
+                .catch(error => {
+                    console.error('Error fetching slots:', error);
+                    slotsLoader.style.display = 'none';
+                    slotsContainer.innerHTML = '<p class="text-red-500">Error fetching slots.</p>';
                 });
-            }
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const numberInput = document.getElementById('number_of_people');
-            const totalChargeEl = document.getElementById('totalCharge');
-            const chargePerPerson = {{ $selectedTemple->darshan_charge ?? 0 }};
+        // Total charge calculation
+        const numberInput = document.getElementById('number_of_people');
+        const totalChargeEl = document.getElementById('totalCharge');
+        const chargePerPerson = {{ $selectedTemple->darshan_charge ?? 0 }};
 
-            if (numberInput) {
-                numberInput.addEventListener('input', function () {
-                    const people = parseInt(this.value) || 0;
-                    const total = people * chargePerPerson;
-                    totalChargeEl.textContent = people > 0 ? `Total Charge: ₹${total.toFixed(2)}` : '';
-                });
-            }
-        });
-    </script>
+        function updateTotal() {
+            const people = parseInt(numberInput.value) || 0;
+            const total = people * chargePerPerson;
+            totalChargeEl.textContent = people > 0 ? `Total Charge: ₹${total.toFixed(2)}` : '';
+        }
+
+        numberInput.addEventListener('input', updateTotal);
+        updateTotal(); // Initial calculation
+    @endif
+});
+</script>
 @endpush
+
