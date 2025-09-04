@@ -21,6 +21,7 @@ class SevaController extends Controller
             return redirect()->route('temple-manager.dashboard')->with('error', 'You are not assigned to a temple.');
         }
         $sevas = $temple->sevas()->latest()->paginate(10);
+        dd(Auth::user());
         return view('temple-manager.sevas.index', compact('temple', 'sevas'));
     }
 

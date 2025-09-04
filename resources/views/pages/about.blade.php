@@ -323,6 +323,48 @@
 
     </div>
 </section>
+<!-- Our Co-Founders Section -->
+<section class="py-16 bg-white text-gray-800">
+  <div class="container mx-auto px-6 lg:px-16 text-center">
+    <h2 class="text-4xl font-bold text-blue-700 mb-12">Our Co-Founders</h2>
+
+    <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Founder 1 -->
+      <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <img src="/images/founder1.jpg" alt="Co-Founder 1"
+             class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
+        <h3 class="text-xl font-semibold text-gray-900">ABCS</h3>
+        <p class="text-sm text-gray-600 mb-3">Co-Founder & Visionary</p>
+        <p class="text-gray-700 text-sm">
+          Passionate about blending technology with spirituality to help devotees connect with temples worldwide.
+        </p>
+      </div>
+
+      <!-- Founder 2 -->
+      <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <img src="/images/founder2.jpg" alt="Co-Founder 2"
+             class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
+        <h3 class="text-xl font-semibold text-gray-900">SOPL</h3>
+        <p class="text-sm text-gray-600 mb-3">Co-Founder & Strategist</p>
+        <p class="text-gray-700 text-sm">
+          Focused on building meaningful cultural bridges and ensuring smooth spiritual experiences for users.
+        </p>
+      </div>
+
+      <!-- Founder 3 (optional, remove if only 2 founders) -->
+      <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <img src="/images/founder3.jpg" alt="Co-Founder 3"
+             class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
+        <h3 class="text-xl font-semibold text-gray-900">////</h3>
+        <p class="text-sm text-gray-600 mb-3">Tech & Operations</p>
+        <p class="text-gray-700 text-sm">
+          Ensuring robust technology, security, and smooth operations to support millions of devotees.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
     <section class="py-16 lg:py-24">
         <div class="max-w-4xl mx-auto text-center px-4 animate-fadeInUp">
@@ -343,8 +385,13 @@
     </section>
 </main>
 
-<a href="#top" class="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition hidden md:block z-50">↑</a>
-
+<a href="#top"
+   x-data="{ show: false }"
+   x-show="show"
+   x-init="window.addEventListener('scroll', () => show = window.scrollY > 300)"
+   class="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition hidden md:block z-50">
+   ↑
+</a>
 
 <footer style="background:#0d0d0d; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
         <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">

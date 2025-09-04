@@ -64,4 +64,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Temple::class, 'manager_id');
     }
+    public function routeNotificationForTwilio()
+    {
+        return $this->phone_number; // Assuming you have a 'phone_number' column
+    }
 }

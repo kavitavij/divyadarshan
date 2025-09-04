@@ -56,7 +56,10 @@
                                 <td>{{ $slot->total_capacity }}</td>
                                 <td>{{ $slot->booked_capacity }}</td>
                                 <td>
-                                    <span class="badge badge-success">{{ $slot->total_capacity - $slot->booked_capacity }}</span>
+                                    <span class="badge badge-success" style="color: #000;">
+    {{ $slot->total_capacity - $slot->booked_capacity }}
+</span>
+
                                 </td>
                                 <td>
                                     <a href="{{ route('temple-manager.slots.edit', $slot) }}" class="btn btn-info btn-sm">

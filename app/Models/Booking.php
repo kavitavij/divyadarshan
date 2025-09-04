@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Devotee;
 class Booking extends Model
 {
     use HasFactory;
@@ -22,11 +22,14 @@ class Booking extends Model
         'default_darshan_slot_id',
         'booking_date',
         'time_slot',
+        'line_number',
         'number_of_people',
         'amount',
         'devotee_details',
         'status',
         'refund_status',
+        'check_in_token',
+        'checked_in_at',
     ];
 
     /**

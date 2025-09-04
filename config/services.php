@@ -37,5 +37,10 @@ return [
     'razorpay' => [
     'key'    => env('RAZORPAY_KEY'),
     'secret' => env('RAZORPAY_SECRET'),
-],
+    ],
+    'twilio' => [
+        'username' => env('TWILIO_USERNAME'),
+        'password' => env('TWILIO_PASSWORD'),
+        'from' => env('TWILIO_FROM'),
+    ],
 ];

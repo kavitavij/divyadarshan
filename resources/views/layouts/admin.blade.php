@@ -27,6 +27,8 @@
             padding-top: 20px;
             transition: all 0.3s ease;
             z-index: 1000;
+            overflow-y: auto;
+    scrollbar-width: thin;
         }
 
         .sidebar h4 {
@@ -141,16 +143,12 @@
             <li><a class="nav-link {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}"
                     href="{{ route('admin.complaints.index') }}"><i class="fa-solid fa-exclamation-circle"></i>
                     <span>Complaints</span></a></li>
-
-                    <a class="nav-link"  href="{{ route('admin.bookings.index') }}">
-                    Darshan & Seva Bookings</a>
-
-                    <a class="nav-link" href="{{ route('admin.bookings.accommodation') }}">
-
-                        Accommodation Bookings
-
-                    </a>
-                </li>
+            <li> <a class="nav-link {{ request()->routeIs('admin.bookings.index') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">
+                    <i class="fa-solid fa-calendar-check"></i> <span>Darshan & Seva Bookings
+                    </span></a></li>
+            <li><a class="nav-link {{ request()->routeIs('admin.bookings.accommodation') ? 'active' : '' }}" href="{{ route('admin.bookings.accommodation') }}">
+                    <i class="fa-solid fa-bed"></i> <span>Accommodation Bookings</span>
+                </a></li>
             <li><a class="nav-link {{ request()->routeIs('admin.booking-cancel.*') ? 'active' : '' }}"
                     href="{{ route('admin.booking-cancel.index') }}"><i class="fa-solid fa-rotate-left"></i>
                     <span>Refund Return</span></a></li>
@@ -163,6 +161,12 @@
             <li><a class="nav-link {{ request()->routeIs('admin.contact-submissions.*') ? 'active' : '' }}"
                     href="{{ route('admin.contact-submissions.index') }}"><i class="fa-solid fa-envelope"></i>
                     <span>Contact Forms</span></a></li>
+            <li class="nav-item {{ request()->routeIs('admin.spiritual-help.index') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.spiritual-help.index') }}">
+                    <i class="fas fa-fw fa-hands-helping"></i>
+                    <span>Spiritual Help</span>
+                </a>
+            </li>
         </ul>
     </div>
 

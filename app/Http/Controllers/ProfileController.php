@@ -119,10 +119,13 @@ class ProfileController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        // Load the PDF view from the correct path: 'bookings.receipt-pdf'
+        // THIS IS THE FIX: Eager load the new 'devotees' and 'temple' relationships
+        $booking->load('temple', 'devotees');
+
+        // Load the PDF view from the correct path
         $pdf = PDF::loadView('booking.receipt-pdf', compact('booking'));
 
-        // Generate a unique filename and stream the PDF to the browser for download
+        // Generate a unique filename and stream the PDF to the browser
         $fileName = 'Darshan-Booking-Receipt-' . str_pad($booking->id, 6, '0', STR_PAD_LEFT) . '.pdf';
         return $pdf->stream($fileName);
     }

@@ -40,6 +40,7 @@
             opacity: 1;
             right: 0;
         }
+
     </style>
 @endpush
 
@@ -205,18 +206,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Render available slots
                     let slotsHtml = '';
-                    data.forEach(slot => {
-                        slotsHtml += `
-                            <div class="flex items-center mb-2">
-                                <input type="radio" name="darshan_slot_id" id="slot_${slot.id}" value="${slot.id}" class="mr-2" required>
-                                <label for="slot_${slot.id}" class="text-sm font-medium text-gray-800">
-                                    ${formatSlotRange(slot.time)}:
-                                    <span class="ml-2 bg-green-200 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">${slot.available} available</span>
-                                </label>
-                            </div>
-                        `;
-                    });
-                    slotsContainer.innerHTML = slotsHtml;
+data.forEach(slot => {
+    // Note: The API now sends a 'line' property
+    const timeLabel = formatSlotRange(slot.time); // Using your existing function
+
+    slotsHtml += `
+        <div class="flex items-center mb-2">
+            <input type="radio" name="darshan_slot_id" id="slot_${slot.id}" value="${slot.id}" class="mr-2" required>
+            <label for="slot_${slot.id}" class="text-sm font-medium text-gray-800">
+                ${timeLabel}:
+                <span class="ml-2 bg-blue-200 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Line L${slot.line}</span>
+                <span class="ml-2 bg-green-200 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">${slot.available} available</span>
+            </label>
+        </div>
+    `;
+});
+slotsContainer.innerHTML = slotsHtml;
                 })
                 .catch(error => {
                     console.error('Error fetching slots:', error);

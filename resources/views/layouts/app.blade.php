@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" /> --}}
 <style>
 .half-screen-slider {
   position: relative;
@@ -65,129 +66,12 @@
   pointer-events: none;
 }
 </style>
-</style>
+
 </head>
 <body x-data="appState()" x-init="initCart()"
     :class="{ 'overflow-hidden': loginModal || cartOpen || isMobileMenuOpen }"
     class="bg-gray-100 font-sans text-gray-800">
-    {{-- <header x-data="{ isMobileMenuOpen: false }" class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex-shrink-0">
-                    <a href="/" class="text-2xl font-bold text-blue-600">DivyaDarshan</a>
-                </div>
-                <nav class="hidden md:flex md:items-center md:space-x-8 text-sm font-medium text-gray-700">
-                    <a href="/" class="hover:text-blue-600">Home</a>
-                    <a href="/about" class="hover:text-blue-600">About</a>
-                    {{-- Temples Dropdown --}}
-                    {{-- <div x-data="{ open: false }" @click.away="open = false" class="relative">
-                        <button @click="open = !open" class="flex items-center gap-1 focus:outline-none">
-                            <span>Temples</span>
-                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div x-show="open" x-transition class="absolute -left-4 mt-2 w-48 bg-white border rounded-md shadow-lg z-40" style="display: none;">
-                            @foreach ($allTemples as $temple)
-                                <a href="{{ route('temples.show', $temple->id) }}" class="block px-4 py-2 text-sm hover:bg-gray-100">{{ $temple->name }}</a>
-                            @endforeach
-                        </div>
-                    </div> --}}
-                    {{-- Online Services Dropdown --}}
-                    {{-- <div x-data="{ open: false }" @click.away="open = false" class="relative">
-                        <button @click="open = !open" class="flex items-center gap-1 focus:outline-none">
-                            <span>Online Services</span>
-                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div x-show="open" x-transition class="absolute -left-4 mt-2 w-56 bg-white border rounded-md shadow-lg z-40" style="display: none;">
-                            <a href="{{ route('booking.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Darshan Booking</a>
-                            <a href="{{ route('sevas.booking.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Sevas</a>
-                            <a href="{{ route('stays.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Accommodation Booking</a>
-                            <a href="{{ route('donations.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Donations</a>
-                        </div>
-                    </div> --}}
-                    {{-- <a href="{{ route('ebooks.index') }}" class="hover:text-blue-600">Ebooks</a>
-                </nav>
-                <div class="hidden md:flex items-center space-x-4">
-                    @guest
-                        <button @click="loginModal = true" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                            Login
-                        </button>
-                    @else --}}
-                        {{-- User Profile Dropdown (Click-based) --}}
-                        {{-- <div x-data="{ open: false }" @click.away="open = false" class="relative">
-                            <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none">
-                                <span>{{ Auth::user()->name }}</span>
-                                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </button>
-                            <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-40" style="display: none;">
-                                @if (Auth::user()->role === 'admin')
-                                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
-                                @endif
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                                <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My eBooks</a>
-                                <a href="{{ route('profile.my-orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Orders</a>
-                                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Log Out</button>
-                                </form>
-                            </div>
-                        </div>
-                    @endguest
-                    <a href="{{ route('cart.view') }}" class="relative text-gray-600 hover:text-blue-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        @if (session('cart') && count(session('cart')) > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ count(session('cart')) }}</span>
-                        @endif
-                    </a>
-                </div> --}}
-                {{-- Mobile menu button and cart --}}
-                {{-- <div class="md:hidden flex items-center">
-                    <a href="{{ route('cart.view') }}" class="relative text-gray-600 hover:text-blue-600 mr-4">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        @if (session('cart') && count(session('cart')) > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ count(session('cart')) }}</span>
-                        @endif
-                    </a>
-                    <button @click="isMobileMenuOpen = true" class="text-gray-700 hover:text-blue-600 focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                    </button>
-                </div>
-            </div>
-        </div> --}}
-        {{-- Mobile Menu --}}
-        {{-- <div x-show="isMobileMenuOpen" x-transition class="fixed inset-0 z-50 md:hidden" style="display: none;">
-            <div @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black bg-opacity-50"></div>
-            <div class="relative w-64 h-full bg-white p-4">
-                <button @click="isMobileMenuOpen = false" class="absolute top-4 right-4 text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-                <nav class="mt-10 flex flex-col space-y-4 text-gray-700">
-                    <a href="/" class="hover:text-blue-600">Home</a>
-                    <a href="/about" class="hover:text-blue-600">About</a>
-                    <h3 class="font-semibold text-gray-500 text-sm pt-2 border-t">Temples</h3>
-                    @foreach ($allTemples as $temple)
-                        <a href="{{ route('temples.show', $temple->id) }}" class="pl-4 hover:text-blue-600">{{ $temple->name }}</a>
-                    @endforeach
-                    <h3 class="font-semibold text-gray-500 text-sm pt-2 border-t">Online Services</h3>
-                    <a href="{{ route('booking.index') }}" class="pl-4 hover:text-blue-600">Darshan Booking</a>
-                    <a href="{{ route('sevas.booking.index') }}" class="pl-4 hover:text-blue-600">Sevas</a>
-                    <a href="{{ route('stays.index') }}" class="pl-4 hover:text-blue-600">Accommodation Booking</a>
-                    <a href="{{ route('ebooks.index') }}" class="pt-2 border-t hover:text-blue-600">Ebooks</a>
-                    <div class="pt-4 border-t">
-                        @guest
-                            <a href="#" @click="loginModal = true; isMobileMenuOpen = false" class="block w-full text-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">Login</a>
-                        @else
-                            <a href="{{ route('profile.my-orders.index') }}" class="block mb-2 hover:text-blue-600">My Orders</a>
-                            <a href="{{ route('profile.edit') }}" class="block mb-4 hover:text-blue-600">Profile</a>
-                            <form method="POST" action="{{ route('logout') }}" class="w-full">
-                                @csrf
-                                <button type="submit" class="block w-full text-left text-red-600 hover:bg-red-50 p-2 rounded-md">Log Out</button>
-                            </form>
-                        @endguest
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </header> --}}
+
 <header class="bg-[#0d0d0d] text-[#ccc] sticky top-0 z-50 font-poppins">
     <div class="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-4">
         <!-- Logo on Left -->
@@ -304,18 +188,20 @@
           {{-- <button>Participate Now</button> --}}
         </div>
       </div>
-      <div class="swiper-slide" style="background-image: url('https://www.shutterstock.com/image-photo/ganesh-illustration-colorful-hindu-lord-600nw-2344967115.jpg');">
+     <div class="swiper-slide" style="background-image: url('https://www.shutterstock.com/image-photo/ganesh-illustration-colorful-hindu-lord-600nw-2344967115.jpg');">
         <div class="slide-content">
-          <h1>Experience the Power of Sacred Rituals</h1>
-          <p>Let the light guide your path to peace and purpose</p>
-          <button>Book Your Puja</button>
+            <h1>Experience the Power of Sacred Rituals</h1>
+            <p>Let the light guide your path to peace and purpose</p>
+            <a href="{{ route('booking.index') }}">
+            <button>Book Your Puja</button>
+            </a>
         </div>
-      </div>
+        </div>
       <div class="swiper-slide" style="background-image: url('https://www.shopperspointindia.com/cdn/shop/files/611b3hJzzKL._SL1500.jpg?v=1725436797&width=1445');">
         <div class="slide-content">
           <h1>Join Thousands in a Soulful Journey</h1>
           <p>Your devotion, our guidance</p>
-          <button>Get Spiritual Help</button>
+          <button @click="spiritualHelpModal = true">Get Spiritual Help</button>
         </div>
       </div>
     </div>
@@ -344,12 +230,12 @@
                     </div>
                 </div>
             @endif
-            @if (session('success'))
+            {{-- @if (session('success'))
                 <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-6"
                     role="alert">
                     <span class="block sm:inline">{{ session('success') }}</span>
                 </div>
-            @endif
+            @endif --}}
             @if ($errors->any())
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6"
                     role="alert">
@@ -364,29 +250,7 @@
         </div>
         @yield('content')
     </main>
-    {{-- <footer class="bg-gray-200 border-t py-4 text-sm text-gray-700">
-        <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
-            <div>&copy; {{ date('Y') }} DivyaDarshan. All rights reserved.</div>
-            <div>
-                Contact: +91-1234567890 |
-                <a href="mailto:support@divyadarshan.com"
-                    class="text-blue-600 hover:underline">support@divyadarshan.com</a>
-            </div>
-            <div>
-                <a href="{{ route('terms') }}" class="text-blue-600 hover:underline">Terms & Condition</a> |
-                <a href="{{ route('guidelines') }}" class="text-blue-600 hover:underline">Guidelines</a> |
-                <a href="{{ route('complaint.form') }}" class="text-blue-600 hover:underline">Complaint</a>|
-                <a href="/reviews" class="text-blue-600 hover:underline">Reviews</a>
-            </div>
-            <div class="flex gap-2">
-                <a href="#" class="hover:text-blue-600">Facebook</a>
-                <a href="#" class="hover:text-blue-600">Twitter</a>
-                <a href="#" class="hover:text-blue-600">Instagram</a>
-            </div>
-        </div>
-    </footer> --}}
-    <!-- Footer Section -->
-<!-- Footer Section -->
+
 <footer style="background:#0d0d0d; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
 
     <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">
@@ -625,6 +489,118 @@
             </template>
         </div>
     </div>
+<div x-show="spiritualHelpModal" @keydown.escape.window="spiritualHelpModal = false"
+    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[999] p-4"
+    x-cloak
+    x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
+    <div @click.away="spiritualHelpModal = false"
+         class="bg-[#1a1a1a] border border-yellow-500/20 text-gray-300 rounded-xl shadow-2xl shadow-yellow-500/5 w-full max-w-2xl max-h-[95vh] flex flex-col transform transition-all"
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+
+        <div class="flex items-center justify-between p-5 border-b border-gray-800">
+            <div class="flex items-center gap-4">
+                <i class="fas fa-praying-hands text-yellow-400 text-3xl"></i>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-100 font-serif">Spiritual Guidance</h2>
+                    <p class="text-sm text-gray-500">We're here to help you on your journey.</p>
+                </div>
+            </div>
+            <button @click="spiritualHelpModal = false" class="text-gray-500 hover:text-white transition rounded-full h-10 w-10 flex items-center justify-center hover:bg-gray-800">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-6 md:p-8 overflow-y-auto">
+            <form action="{{ route('spiritual-help.store') }}" method="POST">
+                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-400 mb-1">Name</label>
+                        <div class="relative">
+                            <i class="fas fa-user absolute top-3.5 left-4 text-gray-500"></i>
+                            <input type="text" name="name" id="name" required placeholder="Your full name"
+                                   class="pl-11 w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="contact_info" class="block text-sm font-medium text-gray-400 mb-1">Email / Phone</label>
+                        <div class="relative">
+                           <i class="fas fa-at absolute top-3.5 left-4 text-gray-500"></i>
+                            <input type="text" name="contact_info" id="contact_info" required placeholder="Your contact details"
+                                   class="pl-11 w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-400 mb-1">City</label>
+                        <input type="text" name="city" id="city" required placeholder="e.g., Varanasi"
+                               class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                    </div>
+
+                    <div>
+                        <label for="query_type" class="block text-sm font-medium text-gray-400 mb-1">Query Type</label>
+                        <select name="query_type" id="query_type" required
+                                class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="Pooja Booking">Pooja Booking</option>
+                            <option value="Astrology">Astrology</option>
+                            <option value="Donation">Donation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="temple_id" class="block text-sm font-medium text-gray-400 mb-1">For Which Temple (Optional)</label>
+                        <select name="temple_id" id="temple_id"
+                                class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                            <option value="">Any Temple / General Question</option>
+                            @foreach($allTemples as $temple)
+                                <option value="{{ $temple->id }}">{{ $temple->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="preferred_time" class="block text-sm font-medium text-gray-400 mb-1">Preferred Time to Contact</label>
+                        <select name="preferred_time" id="preferred_time" required
+                                class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                            <option>Morning (9am - 12pm)</option>
+                            <option>Afternoon (12pm - 4pm)</option>
+                            <option>Evening (4pm - 8pm)</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="message" class="block text-sm font-medium text-gray-400 mb-1">Your Message/Query</label>
+                        <textarea name="message" id="message" rows="5" required placeholder="Please describe your query in detail..."
+                                  class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-5 border-t border-gray-800 flex justify-end gap-4">
+                    <button type="button" @click="spiritualHelpModal = false"
+                            class="px-6 py-3 bg-gray-800 text-gray-300 font-semibold rounded-lg hover:bg-gray-700 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-8 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-400 transition shadow-lg shadow-yellow-500/10">
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
     @stack('scripts')
     <script type="text/javascript">
         var Tawk_API = Tawk_API || {},
@@ -645,6 +621,7 @@
                 isMobileMenuOpen: false,
                 loginModal: false,
                 modalView: 'login',
+                spiritualHelpModal: false,
                 cartOpen: false,
                 cartItems: [],
                 total: 0,

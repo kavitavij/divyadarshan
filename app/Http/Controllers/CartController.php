@@ -22,6 +22,8 @@ use Razorpay\Api\Api;
 use Exception;
 use Illuminate\Support\Str;
 use App\Models\DefaultDarshanSlot;
+use App\Models\DarshanSlot;
+
 class CartController extends Controller
 {
     public function addSeva(Request $request)
@@ -243,122 +245,102 @@ class CartController extends Controller
     /**
      * UPDATED: This is the fully corrected paymentSuccess method.
      */
+    // In app/HttpControllers/CartController.php
+
     public function paymentSuccess(Request $request)
-{
-    $validated = $request->validate([
-        'razorpay_payment_id' => 'required|string',
-        'razorpay_order_id'   => 'required|string',
-        'razorpay_signature'  => 'required|string',
-    ]);
+    {
+        $validated = $request->validate([
+            'razorpay_payment_id' => 'required|string',
+            'razorpay_order_id'   => 'required|string',
+            'razorpay_signature'  => 'required|string',
+        ]);
 
-    $cart = session()->get('cart', []);
-    if (empty($cart) || !Auth::check()) {
-        return redirect()->route('home')->with('error', 'Your session has expired or you are not logged in.');
-    }
+        $cart = session()->get('cart', []);
+        $user = Auth::user();
 
-    $totalAmount = collect($cart)->sum(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 1));
-    $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+        if (empty($cart) || !$user) {
+            return redirect()->route('home')->with('error', 'Your session has expired or you are not logged in.');
+        }
 
-    try {
-        $api->utility->verifyPaymentSignature($validated);
-        Log::info('Razorpay signature verified for order: ' . $validated['razorpay_order_id']);
+        $totalAmount = collect($cart)->sum(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 1));
+        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
-        DB::transaction(function () use ($cart, $validated, $totalAmount) {
-            $userId = Auth::id();
+        try {
+            $api->utility->verifyPaymentSignature($validated);
+            Log::info('Razorpay signature verified for order: ' . $validated['razorpay_order_id']);
 
-            $order = Order::create([
-                'user_id'       => $userId,
-                'order_number'  => 'DD-' . strtoupper(Str::random(10)),
-                'total_amount'  => $totalAmount,
-                'status'        => 'Completed',
-                'payment_id'    => $validated['razorpay_payment_id'],
-                'order_details' => $cart,
-            ]);
+            $finalOrder = null;
 
-            foreach ($cart as $item) {
-                if ($item['type'] === 'darshan') {
-                    $details = $item['details'];
-                    $slotIdString = $details['darshan_slot_id'];
-                    $numberOfPeople = $details['number_of_people'];
-                    $bookingData = [
-                        'user_id'           => $userId,
-                        'order_id'          => $order->id,
-                        'temple_id'         => $details['temple_id'],
-                        'booking_date'      => $details['selected_date'],
-                        'number_of_people'  => $numberOfPeople,
-                        'status'            => 'Confirmed',
-                        'devotee_details'   => [], // Kept for legacy, but new details are in the devotees table
-                    ];
+            DB::transaction(function () use ($cart, $validated, $totalAmount, $user, &$finalOrder) {
+                $order = Order::create([
+                    'user_id'       => $user->id,
+                    'order_number'  => 'DD-' . strtoupper(Str::random(10)),
+                    'total_amount'  => $totalAmount,
+                    'status'        => 'Completed',
+                    'payment_id'    => $validated['razorpay_payment_id'],
+                    'order_details' => $cart,
+                ]);
 
-                    // ### THIS IS THE NEW LOGIC ###
-                    if (str_starts_with($slotIdString, 'default-')) {
-                        // Handle default slot booking
-                        $defaultSlotId = (int)str_replace('default-', '', $slotIdString);
-                        $defaultSlot = DefaultDarshanSlot::findOrFail($defaultSlotId);
+                foreach ($cart as $item) {
+                    if ($item['type'] === 'darshan') {
+                        $details = $item['details'];
+                        $slotIdString = $details['darshan_slot_id'];
+                        $isDefaultSlot = str_starts_with($slotIdString, 'default-');
+                        $slotId = $isDefaultSlot ? (int)str_replace('default-', '', $slotIdString) : (int)$slotIdString;
 
-                        // Final availability check to prevent race conditions
-                        $bookedCount = Booking::where('default_darshan_slot_id', $defaultSlotId)
-                                              ->where('booking_date', $details['selected_date'])
-                                              ->sum('number_of_people');
-                        if (($defaultSlot->capacity - $bookedCount) < $numberOfPeople) {
-                            throw new Exception('A slot became unavailable while you were paying. Please try again.');
-                        }
-
-                        $bookingData['default_darshan_slot_id'] = $defaultSlotId;
-                        $bookingData['time_slot'] = date('g:i A', strtotime($defaultSlot->start_time));
-
-                    } else {
-                        // Handle override slot booking
-                        $slotId = (int)$slotIdString;
-                        $slot = DarshanSlot::where('id', $slotId)->lockForUpdate()->firstOrFail();
-
-                        if (($slot->total_capacity - $slot->booked_capacity) < $numberOfPeople) {
-                           throw new Exception('A slot became unavailable while you were paying. Please try again.');
-                        }
-
-                        $bookingData['darshan_slot_id'] = $slotId;
-                        $bookingData['time_slot'] = date('g:i A', strtotime($slot->start_time));
-
-                        $slot->booked_capacity += $numberOfPeople;
-                        $slot->save();
-                    }
-
-                    $booking = Booking::create($bookingData);
-
-                    // Save devotee details to the separate table
-                    foreach ($details['devotees'] as $devoteeData) {
-                        Devotee::create([
-                            'booking_id'      => $booking->id,
-                            'full_name'       => $devoteeData['full_name'],
-                            'age'             => $devoteeData['age'],
-                            'gender'          => $devoteeData['gender'],
-                            'email'           => $devoteeData['email'],
-                            'phone_number'    => $devoteeData['phone_number'],
-                            'pincode'         => $devoteeData['pincode'],
-                            'address'         => $devoteeData['address'],
-                            'city'            => $devoteeData['city'],
-                            'state'           => $devoteeData['state'],
-                            'id_type'         => $devoteeData['id_type'],
-                            'id_number'       => $devoteeData['id_number'],
-                            'id_photo_path'   => $devoteeData['id_photo_path'],
+                        // --- THE FIX IS HERE ---
+                        // STEP 1: Create the main Booking record first
+                        $booking = Booking::create([
+                            'user_id' => $user->id,
+                            'order_id' => $order->id,
+                            'temple_id' => $details['temple_id'],
+                            'booking_date' => $details['selected_date'],
+                            'number_of_people' => $details['number_of_people'],
+                            'status' => 'Confirmed',
+                            'check_in_token' => Str::uuid(),
+                            'darshan_slot_id' => $isDefaultSlot ? null : $slotId,
+                            'default_darshan_slot_id' => $isDefaultSlot ? $slotId : null,
+                            // Add any other required fields for the bookings table
                         ]);
+
+                        // STEP 2: Now that we have a booking, save the devotees with its ID
+                        foreach ($details['devotees'] as $devoteeData) {
+                            Devotee::create([
+                                'booking_id'   => $booking->id, // Use the ID from the booking we just created
+                                'full_name'    => $devoteeData['full_name'],
+                                'age'          => $devoteeData['age'],
+                                'gender'       => $devoteeData['gender'],
+                                'email'        => $devoteeData['email'],
+                                'phone_number' => $devoteeData['phone_number'],
+                                'pincode'      => $devoteeData['pincode'],
+                                'city'         => $devoteeData['city'],
+                                'state'        => $devoteeData['state'],
+                                'address'      => $devoteeData['address'],
+                                'id_type'      => $devoteeData['id_type'],
+                                'id_number'    => $devoteeData['id_number'],
+                                'id_photo_path' => $devoteeData['id_photo_path'] ?? null,
+                            ]);
+                        }
                     }
-
-                } elseif ($item['type'] === 'stay') {
-                    // ... your existing stay booking logic ...
+                    // Handle other booking types like stay, seva, etc.
                 }
-                // ... handle other item types ...
+
+                $finalOrder = $order;
+            });
+
+            if ($finalOrder) {
+                $user->notify(new \App\Notifications\OrderConfirmation($finalOrder));
             }
-        });
 
-        session()->forget('cart');
-        return redirect()->route('profile.my-orders.index')->with('success', 'Payment successful! Your order has been placed.');
+            session()->forget('cart');
 
-    } catch (Exception $e) {
-        Log::error('Payment failed during DB transaction for order ' . $request->razorpay_order_id . ': ' . $e->getMessage());
-        return redirect()->route('cart.view')->with('error', $e->getMessage() ?: 'A problem occurred while processing your payment.');
+            return redirect()->route('profile.my-orders.index')->with('success', 'Payment successful! Your order has been placed.');
+
+        } catch (Exception $e) {
+            Log::error('Payment failed for order ' . $request->razorpay_order_id . ': ' . $e->getMessage());
+            return redirect()->route('cart.view')->with('error', $e->getMessage() ?: 'A problem occurred while processing your payment.');
+        }
     }
-}
 
     public function addDonation(Request $request)
     {

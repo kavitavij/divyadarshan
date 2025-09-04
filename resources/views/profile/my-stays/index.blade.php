@@ -30,17 +30,32 @@
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">
                 🏨 {{ $booking->room->hotel->name }}
             </h2>
-            @php
-                $statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-                if (strtolower($booking->status) === 'confirmed') {
-                    $statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-                } elseif (strtolower($booking->status) === 'cancelled') {
-                    $statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-                }
-            @endphp
-            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full {{ $statusClass }}">
-                {{ $booking->status }}
-            </span>
+           @php
+    $statusText = $booking->status;
+    $statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'; // Default
+
+    if (strtolower($booking->status) === 'confirmed') {
+        $statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+
+    } elseif (strtolower($booking->status) === 'cancelled') {
+
+        // This is the new logic
+        if ($booking->refund_status === 'Pending') {
+            $statusText = 'Refund Pending';
+            $statusClass = 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+        } elseif ($booking->refund_status === 'Successful') {
+            $statusText = 'Refund Successful';
+            $statusClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'; // Blue for successful refund
+        } else {
+             $statusText = 'Cancelled';
+             $statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+        }
+    }
+@endphp
+
+<span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full {{ $statusClass }}">
+    {{ $statusText }}
+</span>
         </div>
 
         {{-- Booking Details section --}}
