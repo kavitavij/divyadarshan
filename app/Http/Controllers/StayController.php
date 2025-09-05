@@ -10,23 +10,73 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use App\Models\Temple;
 class StayController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $hotels = Hotel::with('rooms')->paginate(10);
-        return view('stays.index', compact('hotels'));
+        // Start a base query for hotels
+        $query = Hotel::query()->with('temple');
+
+        // 1. Conditionally apply the search term filter
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            // Search by hotel name OR location
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  ->orWhere('location', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // 2. Conditionally apply the temple filter
+        if ($request->filled('temple_id')) {
+            $query->where('temple_id', $request->input('temple_id'));
+        }
+
+        // Eager load the minimum price for each hotel's rooms
+        // This is an efficient way to show "Prices from..."
+        $query->withMin('rooms', 'price_per_night');
+
+        // Paginate the results
+        $hotels = $query->latest()->paginate(9);
+
+        // 3. Append the filter criteria to pagination links
+        // This ensures filters are not lost when you go to page 2, 3, etc.
+        $hotels->appends($request->all());
+
+        // Get all temples to populate the filter dropdown
+        $temples = Temple::orderBy('name')->get();
+
+        // Pass the hotels and temples to the view
+        return view('stays.index', [
+            'hotels' => $hotels,
+            'temples' => $temples,
+        ]);
     }
 
     public function show(Hotel $hotel)
     {
-        $hotel->load('rooms');
-        return view('stays.show', compact('hotel'));
+        // THIS IS THE FIX: We load ALL the required relationships and attributes.
+        $hotel->load(['rooms', 'temple', 'reviews.user', 'images', 'amenities']);
+
+        // ... rest of the method is the same ...
+        $averageRating = $hotel->reviews->avg('rating');
+        $similarHotels = Hotel::where('location', $hotel->location)
+                            ->where('id', '!=', $hotel->id)
+                            ->limit(3)
+                            ->get();
+
+        return view('stays.show', [
+            'hotel' => $hotel,
+            'averageRating' => number_format($averageRating, 1),
+            'similarHotels' => $similarHotels,
+        ]);
     }
 
     public function details(Room $room)
     {
+        // The 'with()' efficiently loads the hotel information along with the room
+        $room->load('hotel');
         return view('stays.details', compact('room'));
     }
 

@@ -82,7 +82,27 @@
                 </form>
             @endif
         </div>
+        {{-- In resources/views/profile/my-stays/index.blade.php, inside the loop --}}
+<div class="mt-4 pt-4 border-t dark:border-gray-700 flex justify-end">
 
+    @if($booking->review)
+        {{-- If the booking HAS a review --}}
+        <span class="px-4 py-2 text-sm font-medium bg-green-200 text-green-800 rounded-lg">
+            Reviewed
+        </span>
+    @elseif($booking->check_out_date->isPast())
+        {{-- If the stay is over AND it has NOT been reviewed --}}
+        <a href="{{ route('reviews.create', $booking) }}" class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            Leave a Review
+        </a>
+    @else
+        {{-- If the stay is in the future --}}
+        <span class="px-4 py-2 text-sm font-medium bg-gray-200 text-gray-800 rounded-lg">
+            Awaiting Stay
+        </span>
+    @endif
+
+</div>
         {{-- This logic is now more reliable --}}
         @if (strtolower($booking->status) === 'confirmed')
             <a href="{{ route('profile.my-stays.receipt', $booking) }}" class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">

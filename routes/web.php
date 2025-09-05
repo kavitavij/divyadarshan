@@ -43,13 +43,14 @@ use App\Http\Controllers\Admin\CancelledBookingController;
 use App\Http\Controllers\Admin\BookingCancelController;
 use App\Http\Controllers\Admin\SlotController as AdminSlotController;
 use App\Http\Controllers\Admin\SpiritualHelpController as AdminSpiritualHelpController;
+use App\Http\Controllers\Admin\AmenityController;
 
 // Hotel Manager Controllers
 use App\Http\Controllers\HotelManager\DashboardController as HotelManagerDashboardController;
 use App\Http\Controllers\HotelManager\HotelController as HotelManagerHotelController;
 use App\Http\Controllers\HotelManager\RoomController as HotelManagerRoomController;
 use App\Http\Controllers\HotelManager\GuestListController;
-
+use App\Http\Controllers\HotelManager\HotelImageController;
 // Temple Manager Controllers
 use App\Http\Controllers\TempleManager\DashboardController as TempleManagerDashboardController;
 use App\Http\Controllers\TempleManager\TempleController as TempleManagerController;
@@ -196,7 +197,9 @@ Route::delete('/profile/my-stays/{booking}/cancel', [ProfileController::class, '
         Route::get('/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('download-invoice');
     });
         Route::get('/donations/{donation}/receipt', [ProfileController::class, 'downloadDonationReceipt'])->name('donations.receipt.download');
-});
+Route::get('/stays/bookings/{stayBooking}/review', [ReviewController::class, 'create'])->name('reviews.create');
+Route::post('/stays/bookings/{stayBooking}/review', [ReviewController::class, 'store'])->name('reviews.store');
+    });
 
 
 
@@ -225,6 +228,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/accommodation-bookings', [AdminBookingController::class, 'accommodationIndex'])->name('bookings.accommodation');
     Route::get('/accommodation-bookings/{booking}', [AdminBookingController::class, 'showAccommodation'])->name('bookings.accommodation.show');
     Route::resource('spiritual-help', AdminSpiritualHelpController::class)->only(['index', 'destroy']);
+    Route::resource('amenities', AmenityController::class);
 });
     // // Routes for Stay Refunds
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -240,6 +244,10 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::put('/hotel', [HotelManagerHotelController::class, 'update'])->name('hotel.update');
     Route::resource('rooms', HotelManagerRoomController::class);
     Route::get('/guest-list', [GuestListController::class, 'index'])->name('guest-list.index');
+    Route::get('/gallery', [HotelImageController::class, 'index'])->name('gallery.index');
+    Route::post('/gallery', [HotelImageController::class, 'store'])->name('gallery.store');
+    Route::delete('/gallery/{image}', [HotelImageController::class, 'destroy'])->name('gallery.destroy');
+
 });
 
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {

@@ -15,11 +15,31 @@ class Hotel extends Model
      * @var array
      */
     protected $fillable = [
-        'temple_id',
         'name',
         'location',
         'description',
         'image',
+        'temple_id',
+        'rating',
+        // Amenity fields
+        'has_wifi',
+        'has_ac',
+        'has_parking',
+        'has_food',
+        // JSON fields
+        'policies',
+        'nearby_attractions',
+        //map
+        'latitude',
+        'longitude',
+    ];
+    protected $casts = [
+        'has_wifi' => 'boolean',
+        'has_ac' => 'boolean',
+        'has_parking' => 'boolean',
+        'has_food' => 'boolean',
+        'policies' => 'array',
+        'nearby_attractions' => 'array',
     ];
 
     /**
@@ -37,8 +57,21 @@ class Hotel extends Model
     {
         return $this->belongsTo(Temple::class);
     }
-    public function manager()
-{
-    return $this->belongsTo(User::class, 'manager_id');
-}
+        public function manager()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+        public function images()
+    {
+        return $this->hasMany(HotelImage::class);
+    }
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class);
+    }
+
 }

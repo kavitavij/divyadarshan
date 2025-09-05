@@ -1,155 +1,230 @@
 @extends('layouts.hotel-manager')
 
+@section('title', 'Edit Hotel Details')
+
 @section('content')
-    <style>
-        /* Container */
-        .edit-hotel-container {
-            background: #f9f9ff;
-            min-height: 100vh;
-        }
+@push('styles')
+<style>
+    .search-box {
+        width: 100%;
+        max-width: 100%; /* makes it span the container */
+        padding: 14px 18px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
 
-        /* Header */
-        .edit-hotel-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2c3e50;
-        }
+    .search-box:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+    }
+</style>
+@endpush
 
-        .edit-hotel-lead {
-            font-size: 1.1rem;
-            color: #555;
-        }
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
 
-        /* Card */
-        .edit-hotel-card {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s ease;
-        }
+            <div class="card border-0 shadow-xl rounded-4">
+                <div class="card-header bg-gradient-primary text-white py-3 d-flex align-items-center">
+                    <i class="fas fa-hotel me-2"></i>
+                    <h4 class="mb-0">Edit Hotel - <strong>{{ $hotel->name }}</strong></h4>
+                </div>
 
-        .edit-hotel-card:hover {
-            transform: translateY(-3px);
-        }
+                <div class="card-body p-4">
+                    <form action="{{ route('hotel-manager.hotel.update') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
 
-        /* Labels */
-        .form-label {
-            font-weight: 600;
-            color: #2c3e50;
-        }
+                        {{-- Hotel Info --}}
+                        <h5 class="text-primary fw-bold mb-3">
+                            <i class="fas fa-info-circle me-2"></i> Basic Information
+                        </h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">🏨 Hotel Name</label>
+                                <input type="text" name="name" class="form-control form-control-lg"
+                                    value="{{ old('name', $hotel->name) }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">📍 Location / City</label>
+                                <input type="text" name="location" class="form-control form-control-lg"
+                                    value="{{ old('location', $hotel->location) }}" required>
+                            </div>
+                        </div>
 
-        /* Inputs */
-        .form-control,
-        .form-select {
-            border-radius: 8px;
-            padding: 10px 14px;
-            border: 1px solid #ddd;
-            transition: border-color 0.2s;
-        }
+                        {{-- Description --}}
+<div class="mb-4">
+    <label class="form-label fw-semibold">📝 Description</label>
+    <textarea name="description"
+              class="form-control form-control-lg w-100"
+              rows="5"
+              placeholder="Describe your hotel in detail...">{{ old('description', $hotel->description) }}</textarea>
+</div>
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #4b6cb7;
-            box-shadow: 0 0 0 0.2rem rgba(75, 108, 183, 0.25);
-        }
 
-        /* Buttons */
-        .btn {
-            border-radius: 8px;
-            padding: 10px 18px;
-            font-weight: 500;
-            transition: transform 0.2s ease;
-        }
+                        <hr class="my-4">
 
-        .btn:hover {
-            transform: scale(1.05);
-        }
+                        {{-- Policies --}}
+                        <h5 class="text-primary fw-bold mb-3">
+                            <i class="fas fa-clipboard-list me-2"></i> Policies
+                        </h5>
+                        <div class="mb-4">
+                            <textarea name="policies" class="form-control" rows="3" placeholder="Enter one policy per line">{{ old('policies', is_array($hotel->policies) ? implode("\n", $hotel->policies) : '') }}</textarea>
+                        </div>
 
-        /* Image Preview */
-        .current-image {
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            padding: 4px;
-            background: #fff;
-        }
-    </style>
+                        {{-- Nearby Attractions --}}
+                        <h5 class="text-primary fw-bold mb-3">
+                            <i class="fas fa-map-marked-alt me-2"></i> Nearby Attractions
+                        </h5>
+                        <div class="mb-4">
+                            <textarea name="nearby_attractions" class="form-control" rows="3" placeholder="Enter one attraction per line">{{ old('nearby_attractions', is_array($hotel->nearby_attractions) ? implode("\n", $hotel->nearby_attractions) : '') }}</textarea>
+                        </div>
 
-    <div class="container py-5 edit-hotel-container">
+                        <hr class="my-4">
 
-        {{-- Header --}}
-        <div class="mb-4">
-            <h1 class="edit-hotel-title text-primary">✏️ Edit Hotel Details</h1>
-            <p class="edit-hotel-lead">
-                Update the information for <strong>{{ $hotel->name }}</strong>.
-            </p>
-        </div>
-
-        {{-- Card --}}
-        <div class="card edit-hotel-card">
-            <div class="card-body">
-                <form action="{{ route('hotel-manager.hotel.update') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-
-                    {{-- Hotel Name --}}
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Hotel Name</label>
-                        <input type="text" name="name" class="form-control" value="{{ old('name', $hotel->name) }}"
-                            required>
-                    </div>
-
-                    {{-- Location --}}
-                    <div class="mb-3">
-                        <label for="location" class="form-label">Location / City</label>
-                        <input type="text" name="location" class="form-control"
-                            value="{{ old('location', $hotel->location) }}" required>
-                    </div>
-
-                    {{-- Temple Association --}}
-                    <div class="mb-3">
-                        <label for="temple_id" class="form-label">Associated Temple (Optional)</label>
-                        <select name="temple_id" class="form-select">
-                            <option value="">None</option>
-                            @foreach ($temples as $temple)
-                                <option value="{{ $temple->id }}" @if ($hotel->temple_id == $temple->id) selected @endif>
-                                    {{ $temple->name }}
-                                </option>
+                        {{-- Amenities --}}
+                        <h5 class="text-primary fw-bold mb-3">
+                            <i class="fas fa-concierge-bell me-2"></i> Amenities
+                        </h5>
+                        <div class="row mb-4">
+                            @foreach($amenities as $amenity)
+                                <div class="col-md-4 col-6 mb-2">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox"
+                                            name="amenities[]" value="{{ $amenity->id }}"
+                                            id="amenity-{{ $amenity->id }}"
+                                            {{ in_array($amenity->id, $hotelAmenities) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="amenity-{{ $amenity->id }}">
+                                            <i class="{{ $amenity->icon }} text-primary me-1"></i> {{ $amenity->name }}
+                                        </label>
+                                    </div>
+                                </div>
                             @endforeach
-                        </select>
-                    </div>
+                        </div>
 
-                    {{-- Description --}}
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="4">{{ old('description', $hotel->description) }}</textarea>
-                    </div>
+                        <hr class="my-4">
 
-                    {{-- Image Upload --}}
-                    <div class="mb-3">
-                        <label class="form-label">Current Image</label>
-                        <div class="mb-2">
+                        {{-- Map --}}<h5 class="text-primary fw-bold mb-3">
+    <i class="fas fa-map me-2"></i> Location Map
+</h5>
+<p class="small text-muted mb-2">Search for a location or drag the marker to set your hotel's exact position.</p>
+
+<input id="pac-input" class="form-control search-box mb-3" type="text" placeholder="🔍 Search location..."/>
+
+<div id="map" style="height: 300px; border-radius: 10px; border: 1px solid #ddd;" class="mb-4"></div>
+<input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $hotel->latitude) }}">
+<input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $hotel->longitude) }}">
+                        <h5 class="text-primary fw-bold mb-3">
+                            <i class="fas fa-map me-2"></i> Location Map
+                        </h5>
+                        {{-- <p class="small text-muted mb-2">Drag the marker to set your hotel's exact location.</p>
+                        <div id="map" style="height: 300px; border-radius: 10px; border: 1px solid #ddd;" class="mb-4"></div>
+                        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $hotel->latitude) }}">
+                        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $hotel->longitude) }}">
+
+                        <hr class="my-4"> --}}
+
+                        {{-- Image --}}
+                        <h5 class="text-primary fw-bold mb-3">
+                            <i class="fas fa-image me-2"></i> Hotel Image
+                        </h5>
+                        <div class="text-center mb-3">
                             @if ($hotel->image)
-                                <img src="{{ asset($hotel->image) }}" height="100" class="current-image shadow-sm"
-                                    alt="{{ $hotel->name }}">
+                                <img src="{{ asset('storage/' . $hotel->image) }}" class="rounded shadow-sm mb-3" style="max-height: 200px;" alt="{{ $hotel->name }}">
                             @else
-                                <p class="text-muted">No image uploaded.</p>
+                                <p class="text-muted fst-italic">No image uploaded yet</p>
                             @endif
                         </div>
-                        <label for="image" class="form-label">Upload New Image (optional)</label>
                         <input type="file" name="image" class="form-control">
-                    </div>
 
-                    {{-- Buttons --}}
-                    <div class="d-flex gap-3 mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            💾 Update Details
-                        </button>
-                        <a href="{{ route('hotel-manager.dashboard') }}" class="btn btn-outline-secondary">
-                            ⬅️ Cancel
-                        </a>
-                    </div>
-                </form>
+                        {{-- Buttons --}}
+                        <div class="d-flex justify-content-between mt-5">
+                            <a href="{{ route('hotel-manager.dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">
+                                ⬅ Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                💾 Update Details
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
             </div>
+
         </div>
     </div>
+</div>
 @endsection
+
+@push('scripts')
+@push('scripts')
+<script>
+    let map;
+    let marker;
+    const latInput = document.getElementById('latitude');
+    const lngInput = document.getElementById('longitude');
+
+    function initMap() {
+        const initialPosition = {
+            lat: parseFloat(latInput.value) || 28.6139,
+            lng: parseFloat(lngInput.value) || 77.2090
+        };
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 14,
+            center: initialPosition,
+        });
+
+        marker = new google.maps.Marker({
+            position: initialPosition,
+            map: map,
+            draggable: true,
+        });
+
+        // --- NEW SEARCH BOX LOGIC ---
+        const input = document.getElementById("pac-input");
+        const searchBox = new google.maps.places.SearchBox(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener("bounds_changed", () => {
+            searchBox.setBounds(map.getBounds());
+        });
+
+        // Listen for the event fired when the user selects a prediction and retrieve more details for that place.
+        searchBox.addListener("places_changed", () => {
+            const places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                return;
+            }
+
+            const place = places[0];
+            if (!place.geometry || !place.geometry.location) {
+                console.log("Returned place contains no geometry");
+                return;
+            }
+
+            // Move the map and marker to the new location
+            map.setCenter(place.geometry.location);
+            marker.setPosition(place.geometry.location);
+
+            // Update the hidden input fields
+            latInput.value = place.geometry.location.lat();
+            lngInput.value = place.geometry.location.lng();
+        });
+        // --- END OF NEW SEARCH BOX LOGIC ---
+
+
+        // Update hidden inputs when marker is dragged
+        google.maps.event.addListener(marker, 'dragend', function(event) {
+            latInput.value = event.latLng.lat();
+            lngInput.value = event.latLng.lng();
+        });
+    }
+
+    window.initMap = initMap;
+</script>
+@endpush
+@endpush

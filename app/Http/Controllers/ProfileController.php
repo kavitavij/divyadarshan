@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use App\Models\Donation;
 use App\Models\Booking;
 use App\Models\StayBooking;
+use App\Models\DarshanSlot;
 use App\Models\RefundRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 class ProfileController extends Controller
@@ -130,23 +131,31 @@ class ProfileController extends Controller
         return $pdf->stream($fileName);
     }
     public function cancelBooking(Booking $booking): RedirectResponse
-    {
-        // Security Check
-        if (Auth::id() !== $booking->user_id) {
-            abort(403, 'Unauthorized action.');
+{
+    // Security Check
+    if (Auth::id() !== $booking->user_id) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // Use a transaction for safety
+    DB::transaction(function () use ($booking) {
+        // Find the associated slot and give back the capacity
+        if ($booking->darshan_slot_id) {
+            $slot = DarshanSlot::find($booking->darshan_slot_id);
+            if ($slot) {
+                $slot->booked_capacity = max(0, $slot->booked_capacity - $booking->number_of_people);
+                $slot->save();
+            }
         }
 
         // Update booking status
         $booking->status = 'Cancelled';
         $booking->save();
+    });
 
-        //  Redirect to the refund request form instead of the bookings list
-        // return Redirect::route('profile.my-bookings.refund.request', ['booking' => $booking])
-        //                ->with('status', 'Booking cancelled. Please fill out the form to request your refund.');
-    // This new line will redirect back to the bookings list with a simple success message
     return Redirect::route('profile.my-bookings.index')
-                ->with('success', 'Booking cancelled successfully.');
-    }
+                   ->with('success', 'Booking cancelled successfully.');
+}
 
     /**
      * Show the refund request form.

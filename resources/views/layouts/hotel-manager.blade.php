@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <title>Hotel Manager | DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
             box-sizing: border-box;
@@ -158,7 +159,13 @@
             class="{{ request()->routeIs('hotel-manager.rooms.*') ? 'active' : '' }}">Manage Rooms</a>
         <a href="{{ route('hotel-manager.guest-list.index') }}"
             class="{{ request()->routeIs('hotel-manager.guest-list.index') ? 'active' : '' }}">View Bookings</a>
-    </div>
+    <li class="nav-item">
+    <a class="nav-link" href="{{ route('hotel-manager.gallery.index') }}">
+        <i class="fas fa-fw fa-images"></i>
+        <span>Manage Gallery</span>
+    </a>
+</li>
+        </div>
 
     <!-- Content -->
     <div class="content">
@@ -175,6 +182,10 @@
             document.getElementById("sidebar").classList.toggle("active");
         }
     </script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdR-7EGvRdTcL0NSvxG1pKan2bQu3nXuo&libraries=places&callback=initMap" async defer></script>@stack('scripts')
 
 </body>
 

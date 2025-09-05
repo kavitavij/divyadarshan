@@ -165,6 +165,12 @@
                 <a class="nav-link" href="{{ route('admin.spiritual-help.index') }}">
                     <i class="fas fa-fw fa-hands-helping"></i>
                     <span>Spiritual Help</span>
+                    <li class="nav-item">
+    <a class="nav-link" href="{{ route('admin.amenities.index') }}">
+        <i class="fas fa-fw fa-concierge-bell"></i>
+        <span>Manage Amenities</span>
+    </a>
+</li>
                 </a>
             </li>
         </ul>

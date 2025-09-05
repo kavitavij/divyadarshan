@@ -40,6 +40,7 @@ class Booking extends Model
     protected $casts = [
         'devotee_details' => 'array',
         'booking_date' => 'date',
+        'checked_in_at' => 'datetime',
     ];
 
     // --- RELATIONSHIPS ---

@@ -29,6 +29,11 @@ class StayBooking extends Model
         'status',
         'refund_status',
     ];
+     protected $casts = [
+        'check_in_date' => 'date',
+        'check_out_date' => 'date',
+        'checked_in_at' => 'datetime',
+    ];
 
     public function room()
     {
@@ -48,5 +53,10 @@ class StayBooking extends Model
     public function refundRequests()
     {
         return $this->morphMany(RefundRequest::class, 'bookingable', 'booking_type', 'booking_id');
+    }
+    public function review()
+    {
+
+        return $this->hasOne(Review::class);
     }
 }
