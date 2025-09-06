@@ -3,11 +3,12 @@
 @section('content')
     <div class="container-fluid">
         <h4 class="mb-3">Dashboard Overview</h4>
-        <p class="text-muted">This is your central admin dashboard. Use the quick actions below to manage different sections
-            of your site.</p>
+        <p class="text-muted">
+            This is your central admin dashboard. Use the quick actions below to manage different sections
+            of your site.
+        </p>
 
         <div class="row">
-            <!-- Manage Temples -->
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
@@ -18,7 +19,6 @@
                 </div>
             </div>
 
-            <!-- Manage Ebooks -->
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
@@ -29,7 +29,6 @@
                 </div>
             </div>
 
-            <!-- Latest Updates -->
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
@@ -40,7 +39,6 @@
                 </div>
             </div>
 
-            <!-- Complaints -->
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
@@ -51,7 +49,6 @@
                 </div>
             </div>
 
-            <!-- Bookings -->
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
@@ -61,7 +58,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Cancel/return -->
+
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
@@ -71,7 +68,7 @@
                     </div>
                 </div>
             </div>
-            {{-- Donations --}}
+
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
@@ -81,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Hotels -->
+
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
@@ -92,13 +89,32 @@
                 </div>
             </div>
 
-            <!-- Contact Messages -->
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body text-center">
                         <h5 class="card-title">Contact Messages</h5>
                         <p class="text-muted">Read and respond to user messages.</p>
                         <a href="{{ route('admin.contact-submissions.index') }}" class="btn btn-dark">View Messages</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Spiritual Help</h5>
+                        <p class="text-muted">Review and manage spiritual help forms.</p>
+                        <a href="{{ route('admin.spiritual-help.index') }}" class="btn btn-primary">Spiritual Help</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Manage Amenities</h5>
+                        <p class="text-muted">Add or edit hotel amenities.</p>
+                        <a href="{{ route('admin.amenities.index') }}" class="btn btn-primary">Manage Amenities</a>
                     </div>
                 </div>
             </div>

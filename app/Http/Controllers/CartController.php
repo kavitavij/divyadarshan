@@ -317,6 +317,17 @@ class CartController extends Controller
                                 'id_photo_path' => $devoteeData['id_photo_path'] ?? null,
                             ]);
                         }
+
+                        $slot = $isDefaultSlot
+                            ? DefaultDarshanSlot::find($slotId)
+                            : DarshanSlot::find($slotId);
+
+                        if ($slot) {
+                            // *** THE FIX IS HERE ***
+                            // The column name is 'capacity', not 'available_slots'.
+                            $slot->decrement('capacity', $details['number_of_people']);
+                        }
+
                     }
                     else if ($item['type'] === 'stay') {
                         $details = $item['details'];
@@ -342,7 +353,7 @@ class CartController extends Controller
                             'user_id'  => $user->id,
                             'order_id' => $order->id,
                             'seva_id'  => $item['id'],
-                            'amount'   => $item['price'], // <-- CORRECTED
+                            'amount'   => $item['price'],
                             'quantity' => $item['quantity'],
                             'status'   => 'Completed',
                         ]);
@@ -381,7 +392,6 @@ class CartController extends Controller
             return redirect()->route('cart.view')->with('error', $e->getMessage() ?: 'A problem occurred while processing your payment.');
         }
     }
-
     public function addDonation(Request $request)
     {
         $validated = $request->validate([

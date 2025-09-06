@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Devotee;
+use Carbon\Carbon;
+
 class Booking extends Model
 {
     use HasFactory;
@@ -45,64 +46,72 @@ class Booking extends Model
 
     // --- RELATIONSHIPS ---
 
-    /**
-     * Get the user that made the booking.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the temple associated with the booking (if any).
-     */
     public function temple()
     {
         return $this->belongsTo(Temple::class);
     }
 
-    /**
-     * Get the hotel associated with the booking (if any).
-     * This is the required relationship to fix the error.
-     */
     public function hotel()
     {
         return $this->belongsTo(Hotel::class);
     }
 
-    /**
-     * Get the specific darshan slot for the booking.
-     */
-    public function slot()
-    {
-        return $this->belongsTo(DarshanSlot::class, 'darshan_slot_id');
-    }
-
-    /**
-     * Get the devotees associated with the booking.
-     * Note: This assumes you have a Devotee model and table.
-     */
     public function devotees()
     {
         return $this->hasMany(Devotee::class);
     }
-        public function refundRequest()
-    {
-        return $this->hasOne(\App\Models\RefundRequest::class);
-    }
-    public function darshanSlot()
-    {
-        return $this->belongsTo(DarshanSlot::class);
-    }
-    // In app/Models/Booking.php
+
     public function refundRequests()
     {
         return $this->morphMany(RefundRequest::class, 'bookingable', 'booking_type', 'booking_id');
     }
-    // In app/Models/Booking.php
-public function defaultDarshanSlot()
-{
-    return $this->belongsTo(DefaultDarshanSlot::class);
-}
+
+    /**
+     * Get the specific (custom) darshan slot for the booking.
+     */
+    public function darshanSlot()
+    {
+        return $this->belongsTo(DarshanSlot::class);
+    }
+
+    /**
+     * Get the default darshan slot for the booking.
+     */
+    public function defaultDarshanSlot()
+    {
+        return $this->belongsTo(DefaultDarshanSlot::class);
+    }
+
+    // --- ACCESSORS ---
+
+    /**
+     * NEW ACCESSOR: This creates a "virtual" `slot` attribute.
+     * It intelligently returns whichever slot relationship (custom or default) is not null.
+     * This fixes the "undefined relationship [slot]" error.
+     */
+    public function getSlotAttribute()
+    {
+        return $this->darshanSlot ?? $this->defaultDarshanSlot;
+    }
+
+    /**
+     * This "virtual" attribute provides the correct slot time.
+     * It checks if a custom slot or a default slot is linked and returns its time.
+     * Your dashboard view uses this to display the correct information.
+     */
+    public function getSlotTimeAttribute(): string
+    {
+        // This is now simpler because it uses the new `slot` accessor above.
+        if ($this->slot) {
+            return Carbon::parse($this->slot->start_time)->format('h:i A') . ' - ' . Carbon::parse($this->slot->end_time)->format('h:i A');
+        }
+
+        return 'N/A';
+    }
 }
 

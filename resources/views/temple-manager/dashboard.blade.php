@@ -27,12 +27,9 @@
                 <h5 class="mb-3">⚡ Quick Actions</h5>
                 <div class="btn-group gap-2 flex-wrap">
                     <a href="{{ route('temple-manager.temple.edit') }}" class="btn btn-outline-primary">✏️ Edit Temple</a>
-
-                    {{-- Manage T&C Button --}}
                     <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#termsModal">
                         📄 Manage T&C
                     </button>
-
                     <a href="{{ route('temple-manager.slots.index') }}" class="btn btn-outline-dark">🗓️ Manage Slots</a>
                     <a href="{{ route('temple-manager.sevas.index') }}" class="btn btn-outline-secondary">🙏 Manage Sevas</a>
                     <a href="{{ route('temple-manager.bookings.index') }}" class="btn btn-outline-success">📖 View Bookings</a>
@@ -135,10 +132,14 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $booking->user->name }}</td>
-                            <td>{{ $booking->date ? \Carbon\Carbon::parse($booking->date)->format('d M, Y') : 'N/A' }}</td>
-                            <td>{{ $booking->slot->time ?? 'N/A' }}</td>
+                            {{-- FIX 1: Use the correct column 'booking_date' --}}
+                            <td>{{ $booking->booking_date ? \Carbon\Carbon::parse($booking->booking_date)->format('d M, Y') : 'N/A' }}</td>
+
+                            {{-- FIX 2: Use the new smart 'slot_time' attribute from the model --}}
+                            <td>{{ $booking->slot_time }}</td>
+
                             <td>
-                                <span class="badge bg-{{ $booking->status == 'confirmed' ? 'success' : 'warning' }} text-capitalize">
+                                <span class="badge bg-{{ $booking->status == 'Confirmed' ? 'success' : 'warning' }} text-capitalize">
                                     {{ $booking->status }}
                                 </span>
                             </td>
@@ -164,17 +165,13 @@
             <form action="{{ route('temple-manager.temple.update') }}" method="POST">
                 @csrf
                 @method('PUT')
-
-                {{-- ADD THIS HIDDEN INPUT --}}
                 <input type="hidden" name="update_source" value="terms_modal">
-
                 <div class="modal-header">
                     <h5 class="modal-title" id="termsModalLabel">Manage T&C for {{ $temple->name }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p class="text-muted">Add, edit, or remove terms. Each line will appear as a numbered list item to the user.</p>
-
                     <div id="terms-container">
                         @if($temple->terms_and_conditions)
                             @foreach($temple->terms_and_conditions as $term)
@@ -185,7 +182,6 @@
                             @endforeach
                         @endif
                     </div>
-
                     <button type="button" class="btn btn-outline-success btn-sm mt-2 add-term-btn">
                         <i class="fas fa-plus"></i> Add Term
                     </button>
