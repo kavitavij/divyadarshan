@@ -1,27 +1,33 @@
 <?php
 
-// In database/migrations/xxxx_add_details_to_hotels_table.php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('hotels', function (Blueprint $table) {
-            // Adding a rating column
-            $table->decimal('rating', 2, 1)->nullable()->after('location');
-            // JSON columns to store structured data
-            $table->json('policies')->nullable()->after('has_food');
-            $table->json('nearby_attractions')->nullable()->after('policies');
+            // THE FIX IS HERE:
+            // We have removed the ->after('has_food') constraint.
+            // This allows the database to simply add these new columns to the
+            // end of the 'hotels' table, resolving the error.
+            $table->json('policies')->nullable();
+            $table->json('nearby_attractions')->nullable();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('hotels', function (Blueprint $table) {
-            $table->dropColumn(['rating', 'policies', 'nearby_attractions']);
+            $table->dropColumn(['policies', 'nearby_attractions']);
         });
     }
 };

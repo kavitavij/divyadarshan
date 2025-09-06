@@ -9,21 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
 {
     Schema::table('users', function (Blueprint $table) {
-        // ADD THIS LINE
-        $table->string('role')->default('user');
+        $table->unsignedBigInteger('role_id')->nullable()->after('password');
     });
 }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
-    }
+public function down()
+{
+    Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn('role_id');
+    });
+}
+
 };
