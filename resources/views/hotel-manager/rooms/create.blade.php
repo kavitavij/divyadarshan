@@ -21,6 +21,16 @@
     .btn-secondary:hover{background:#e3e7ef}
     .alert{border-radius:8px;padding:10px 14px;margin-bottom:16px}
     .alert-danger{background:#ffe9e9;color:#9c1c1c}
+
+    /* New Styles for Photo Upload and Facilities */
+    .photo-uploader { border: 2px dashed #cfd6de; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; }
+    .photo-uploader:hover { border-color: #4b6cb7; }
+    .photo-uploader .upload-text { font-weight: 600; color: #34495e; }
+    .photo-preview { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+    .photo-preview img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; }
+    .facilities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .facility-item { display: flex; align-items: center; }
+    .facility-item input { margin-right: 8px; }
 </style>
 
 <div class="room-form-wrapper">
@@ -33,11 +43,29 @@
         @if ($errors->any())
             <div class="alert alert-danger">
                 <strong>Please fix the errors below.</strong>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
-        <form action="{{ route('hotel-manager.rooms.store') }}" method="POST">
+        {{-- IMPORTANT: Add enctype for file uploads --}}
+        <form action="{{ route('hotel-manager.rooms.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+
+            {{-- Room Photos --}}
+            <div class="field">
+                <label for="photos">Room Photos</label>
+                <div class="photo-uploader" onclick="document.getElementById('photos').click()">
+                    <span class="upload-text">Click to select images</span>
+                    <input type="file" name="photos[]" id="photos" class="control" multiple accept="image/*" style="display: none;">
+                </div>
+                <div class="photo-preview" id="photo-preview"></div>
+                @error('photos.*') <small class="text-danger">{{ $message }}</small> @enderror
+                @error('photos') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
 
             {{-- Room Type --}}
             <div class="field">
@@ -51,7 +79,7 @@
                 @error('type') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
-            {{-- Capacity / Price / Total --}}
+            {{-- Capacity / Price / Total / Room Size --}}
             <div class="row-3">
                 <div class="field">
                     <label for="capacity">Capacity (people)</label>
@@ -68,6 +96,11 @@
                     <input type="number" name="total_rooms" id="total_rooms" class="control" value="{{ old('total_rooms') }}" required>
                     @error('total_rooms') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
+                 <div class="field">
+                    <label for="room_size">Room Size (sq. ft.)</label>
+                    <input type="number" name="room_size" id="room_size" class="control" value="{{ old('room_size') }}">
+                    @error('room_size') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
             </div>
 
             {{-- Description --}}
@@ -75,6 +108,23 @@
                 <label for="description">Description</label>
                 <textarea name="description" id="description" class="control" rows="4">{{ old('description') }}</textarea>
                 @error('description') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            {{-- Facilities --}}
+            <div class="field">
+                <label>Facilities</label>
+                @php
+                    $facilities = ['Free toiletries', 'Toilet', 'Bath or shower', 'Hairdryer', 'Air conditioning', 'Safety deposit box', 'Desk', 'TV', 'Refrigerator', 'Ironing facilities', 'Tea/Coffee maker', 'Flat-screen TV', 'Minibar', 'Cable channels', 'Wake-up service', 'Alarm clock', 'Wardrobe or closet', 'Free Wifi'];
+                @endphp
+                <div class="facilities-grid">
+                    @foreach ($facilities as $facility)
+                    <div class="facility-item">
+                        <input type="checkbox" name="facilities[]" value="{{ $facility }}" id="facility_{{ \Illuminate\Support\Str::slug($facility) }}" {{ is_array(old('facilities')) && in_array($facility, old('facilities')) ? 'checked' : '' }}>
+                        <label for="facility_{{ \Illuminate\Support\Str::slug($facility) }}">{{ $facility }}</label>
+                    </div>
+                    @endforeach
+                </div>
+                 @error('facilities') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
             {{-- Actions --}}
@@ -85,4 +135,27 @@
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.getElementById('photos').addEventListener('change', function(event) {
+    const previewContainer = document.getElementById('photo-preview');
+    previewContainer.innerHTML = ''; // Clear previous previews
+    const files = event.target.files;
+    if (files) {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+@endpush
 @endsection

@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <title>Hotel Manager | DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <style>
         * {
             box-sizing: border-box;
@@ -16,96 +18,151 @@
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
             background-color: #f4f6f9;
+            color: #2c3e50;
         }
 
-        /* Navbar */
         .navbar {
-            background-color: #ffffff;
-            padding: 10px 20px;
+            background: #1e293b;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #ddd;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
+            color: #fff;
         }
 
         .navbar .brand {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
+            color: #fff;
         }
 
-        .navbar .logout button {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
+        .user-menu {
+            position: relative;
+        }
+
+        .user-btn {
+            background: none;
             border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
+            color: #fff;
+            font-size: 15px;
             cursor: pointer;
             font-weight: 500;
-            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .navbar .logout button:hover {
-            background: linear-gradient(135deg, #c0392b, #a93226);
-            transform: scale(1.05);
+        .user-btn i {
+            font-size: 14px;
         }
 
-        /* Sidebar */
+        .dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 38px;
+            background: #fff;
+            color: #333;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            min-width: 160px;
+            z-index: 1001;
+        }
+
+        .dropdown a,
+        .dropdown button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 10px 15px;
+            border: none;
+            background: none;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .dropdown a:hover,
+        .dropdown button:hover {
+            background: #f1f1f1;
+        }
+
+        .user-menu.active .dropdown {
+            display: block;
+        }
+
         .sidebar {
-            width: 220px;
-            background-color: #2c3e50;
-            color: #ecf0f1;
+            width: 240px;
+            background: #1e293b;
+            color: #fff;
             height: 100vh;
             position: fixed;
-            top: 50px;
+            top: 55px;
             left: 0;
-            padding-top: 20px;
+            padding-top: 25px;
             transition: all 0.3s ease-in-out;
         }
 
         .sidebar a {
-            display: block;
+            display: flex;
+            align-items: center;
             padding: 12px 20px;
-            color: #ecf0f1;
+            color: #fff;
             text-decoration: none;
             transition: 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar a i {
+            margin-right: 12px;
+            font-size: 16px;
         }
 
         .sidebar a:hover,
         .sidebar .active {
-            background-color: #34495e;
+            background-color: #334155;
+            color: #fff;
+            border-left: 4px solid #facc15;
         }
 
-        /* Content */
         .content {
-            margin-left: 220px;
-            margin-top: 70px;
-            padding: 20px;
+            margin-left: 240px;
+            margin-top: 75px;
+            padding: 25px;
             transition: all 0.3s;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 15px;
             background-color: #fff;
             border-top: 1px solid #ddd;
-            margin-left: 220px;
+            margin-left: 240px;
             margin-top: 40px;
+            font-size: 14px;
+            color: #777;
             transition: all 0.3s;
         }
 
-        /* Hamburger menu for mobile */
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
         .menu-toggle {
             display: none;
             font-size: 22px;
             background: none;
             border: none;
             cursor: pointer;
+            color: #fff;
         }
 
         @media (max-width: 768px) {
@@ -114,7 +171,7 @@
             }
 
             .sidebar {
-                left: -220px;
+                left: -240px;
                 top: 0;
                 height: 100%;
             }
@@ -125,7 +182,7 @@
 
             .content {
                 margin-left: 0;
-                margin-top: 70px;
+                margin-top: 80px;
             }
 
             .footer {
@@ -137,42 +194,57 @@
 
 <body>
 
-    <!-- Navbar -->
     <div class="navbar">
         <div class="brand">Hotel Manager Panel</div>
-        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-        <div class="logout">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button onclick="event.preventDefault(); this.closest('form').submit();">Log Out</button>
-            </form>
+        <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="user-menu" id="userMenu">
+            <button class="user-btn" onclick="toggleUserMenu()">
+                <i class="fas fa-user-circle"></i>
+                {{ Auth::user()->name }}
+                <i class="fas fa-caret-down"></i>
+            </button>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-user"></i> Profile</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button onclick="event.preventDefault(); this.closest('form').submit();">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <a href="{{ route('hotel-manager.dashboard') }}"
-            class="{{ request()->routeIs('hotel-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
+            class="{{ request()->routeIs('hotel-manager.dashboard') ? 'active' : '' }}">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
         <a href="{{ route('hotel-manager.hotel.edit') }}"
-            class="{{ request()->routeIs('hotel-manager.hotel.edit') ? 'active' : '' }}">My Hotel Details</a>
+            class="{{ request()->routeIs('hotel-manager.hotel.edit') ? 'active' : '' }}">
+            <i class="fas fa-hotel"></i> My Hotel Details
+        </a>
         <a href="{{ route('hotel-manager.rooms.index') }}"
-            class="{{ request()->routeIs('hotel-manager.rooms.*') ? 'active' : '' }}">Manage Rooms</a>
+            class="{{ request()->routeIs('hotel-manager.rooms.*') ? 'active' : '' }}">
+            <i class="fas fa-bed"></i> Manage Rooms
+        </a>
         <a href="{{ route('hotel-manager.guest-list.index') }}"
-            class="{{ request()->routeIs('hotel-manager.guest-list.index') ? 'active' : '' }}">View Bookings</a>
-    <li class="nav-item">
-    <a class="nav-link" href="{{ route('hotel-manager.gallery.index') }}">
-        <i class="fas fa-fw fa-images"></i>
-        <span>Manage Gallery</span>
-    </a>
-</li>
-        </div>
+            class="{{ request()->routeIs('hotel-manager.guest-list.index') ? 'active' : '' }}">
+            <i class="fas fa-book"></i> View Bookings
+        </a>
+        <a href="{{ route('hotel-manager.gallery.index') }}"
+            class="{{ request()->routeIs('hotel-manager.gallery.index') ? 'active' : '' }}">
+            <i class="fas fa-images"></i> Manage Gallery
+        </a>
+    </div>
 
-    <!-- Content -->
     <div class="content">
         @yield('content')
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         &copy; {{ date('Y') }} <a href="/">DivyaDarshan</a>. All rights reserved.
     </div>
@@ -181,12 +253,23 @@
         function toggleSidebar() {
             document.getElementById("sidebar").classList.toggle("active");
         }
-    </script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdR-7EGvRdTcL0NSvxG1pKan2bQu3nXuo&libraries=places&callback=initMap" async defer></script>@stack('scripts')
+        function toggleUserMenu() {
+            document.getElementById("userMenu").classList.toggle("active");
+        }
+
+        window.addEventListener('click', function (e) {
+            const userMenu = document.getElementById("userMenu");
+            if (!userMenu.contains(e.target)) {
+                userMenu.classList.remove("active");
+            }
+        });
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdR-7EGvRdTcL0NSvxG1pKan2bQu3nXuo&libraries=places&callback=initMap"
+        async defer></script>
+    @stack('scripts')
 
 </body>
-
 </html>

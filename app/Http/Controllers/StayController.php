@@ -46,20 +46,21 @@ class StayController extends Controller
 
         // Get all temples to populate the filter dropdown
         $temples = Temple::orderBy('name')->get();
-
+        $amenities = \App\Models\Amenity::orderBy('name')->get();
         // Pass the hotels and temples to the view
         return view('stays.index', [
             'hotels' => $hotels,
             'temples' => $temples,
+            'amenities' => $amenities,
         ]);
     }
 
     public function show(Hotel $hotel)
     {
-        // THIS IS THE FIX: We load ALL the required relationships and attributes.
-        $hotel->load(['rooms', 'temple', 'reviews.user', 'images', 'amenities']);
+        // ** THE FIX IS HERE **
+        // We use nested eager loading 'rooms.photos' to get the photos for each room.
+        $hotel->load(['rooms.photos', 'temple', 'reviews.user', 'images', 'amenities']);
 
-        // ... rest of the method is the same ...
         $averageRating = $hotel->reviews->avg('rating');
         $similarHotels = Hotel::where('location', $hotel->location)
                             ->where('id', '!=', $hotel->id)

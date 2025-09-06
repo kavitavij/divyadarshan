@@ -268,7 +268,7 @@
 
         <!-- Right side: image -->
         <div class="animate-fadeInUp" style="animation-delay: 0.2s;">
-            <img src="-"
+            <img src="https://media.istockphoto.com/id/517188688/photo/mountain-landscape.jpg?s=1024x1024&w=0&k=20&c=z8_rWaI8x4zApNEEG9DnWlGXyDIXe-OmsAyQ5fGPVV8="
                 alt="About DivyaDarshan"
                 class="rounded-xl shadow-lg w-full object-cover">
         </div>
@@ -282,7 +282,7 @@
 
         <!-- Left side: image -->
         <div class="animate-fadeInUp">
-            <img src=""
+            <img src="https://media.istockphoto.com/id/814423752/photo/eye-of-model-with-colorful-art-make-up-close-up.jpg?s=612x612&w=0&k=20&c=l15OdMWjgCKycMMShP8UK94ELVlEGvt7GmB_esHWPYE="
                 alt="Our Philosophy"
                 class="rounded-xl shadow-lg w-full object-cover">
         </div>
@@ -316,7 +316,7 @@
 
         <!-- Right side: image -->
         <div class="animate-fadeInUp" style="animation-delay: 0.2s;">
-            <img src=""
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTs-EsR-sgUkYoaJ84q4t4bofokFETqGYtlhQ&s"
                 alt="Culture We Cherish"
                 class="rounded-xl shadow-lg w-full object-cover">
         </div>
@@ -331,7 +331,7 @@
     <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
       <!-- Founder 1 -->
       <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl shadow hover:shadow-lg transition">
-        <img src="/images/founder1.jpg" alt="Co-Founder 1"
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuUOmlLIqMj57HpPqDvCuEmJyXwIlcN-mxtA&s" alt="Co-Founder 1"
              class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">
         <h3 class="text-xl font-semibold text-gray-900">ABCS</h3>
         <p class="text-sm text-gray-600 mb-3">Co-Founder & Visionary</p>

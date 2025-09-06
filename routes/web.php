@@ -247,6 +247,7 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::get('/gallery', [HotelImageController::class, 'index'])->name('gallery.index');
     Route::post('/gallery', [HotelImageController::class, 'store'])->name('gallery.store');
     Route::delete('/gallery/{image}', [HotelImageController::class, 'destroy'])->name('gallery.destroy');
+    Route::delete('/rooms/photo/{photo}', [HotelManagerRoomController::class, 'deletePhoto'])->name('rooms.photo.delete');
 
 });
 

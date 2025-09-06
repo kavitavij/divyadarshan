@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use App\Models\StayBooking;
+use Illuminate\Support\Facades\Auth;
 class ReviewController extends Controller
 {
     public function index()
@@ -19,7 +20,7 @@ class ReviewController extends Controller
         abort_if($stayBooking->review()->exists(), 403, 'You have already submitted a review for this stay.');
         abort_if(now()->lt($stayBooking->check_out_date), 403, 'You can only review a stay after the check-out date.');
 
-        return view('reviews.create', ['booking' => $stayBooking]);
+        return view('reviews.create', compact('stayBooking'));
     }
     public function store(Request $request, StayBooking $stayBooking)
     {

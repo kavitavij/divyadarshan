@@ -164,13 +164,11 @@
             <li class="nav-item {{ request()->routeIs('admin.spiritual-help.index') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('admin.spiritual-help.index') }}">
                     <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>Spiritual Help</span>
-                    <li class="nav-item">
-    <a class="nav-link" href="{{ route('admin.amenities.index') }}">
-        <i class="fas fa-fw fa-concierge-bell"></i>
-        <span>Manage Amenities</span>
-    </a>
-</li>
+                    <span>Spiritual Help</span></a></li>
+            <li><a class="nav-link {{ request()->routeIs('admin.amenities.index') ? 'active' : '' }}"
+                    href="{{ route('admin.amenities.index') }}">
+                    <i class="fas fa-fw fa-concierge-bell"></i>
+                    <span>Manage Amenities</span></a></li>
                 </a>
             </li>
         </ul>

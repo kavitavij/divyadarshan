@@ -288,8 +288,6 @@ class CartController extends Controller
                         $isDefaultSlot = str_starts_with($slotIdString, 'default-');
                         $slotId = $isDefaultSlot ? (int)str_replace('default-', '', $slotIdString) : (int)$slotIdString;
 
-                        // --- THE FIX IS HERE ---
-                        // STEP 1: Create the main Booking record first
                         $booking = Booking::create([
                             'user_id' => $user->id,
                             'order_id' => $order->id,
@@ -300,13 +298,11 @@ class CartController extends Controller
                             'check_in_token' => Str::uuid(),
                             'darshan_slot_id' => $isDefaultSlot ? null : $slotId,
                             'default_darshan_slot_id' => $isDefaultSlot ? $slotId : null,
-                            // Add any other required fields for the bookings table
                         ]);
 
-                        // STEP 2: Now that we have a booking, save the devotees with its ID
                         foreach ($details['devotees'] as $devoteeData) {
                             Devotee::create([
-                                'booking_id'   => $booking->id, // Use the ID from the booking we just created
+                                'booking_id'   => $booking->id,
                                 'full_name'    => $devoteeData['full_name'],
                                 'age'          => $devoteeData['age'],
                                 'gender'       => $devoteeData['gender'],
@@ -322,7 +318,51 @@ class CartController extends Controller
                             ]);
                         }
                     }
-                    // Handle other booking types like stay, seva, etc.
+                    else if ($item['type'] === 'stay') {
+                        $details = $item['details'];
+                        $stayBooking = StayBooking::create([
+                            'user_id'          => $user->id,
+                            'order_id'         => $order->id,
+                            'room_id'          => $details['room_id'],
+                            'check_in_date'    => $details['check_in_date'],
+                            'check_out_date'   => $details['check_out_date'],
+                            'number_of_guests' => $details['number_of_guests'],
+                            'phone_number'     => $details['phone_number'],
+                            'total_amount'     => $item['price'],
+                            'status'           => 'Confirmed',
+                        ]);
+
+                        foreach ($details['guests'] as $guestData) {
+                            $stayBooking->guests()->create($guestData);
+                        }
+                    }
+                    // --- HANDLE SEVA ---
+                    else if ($item['type'] === 'seva') {
+                        SevaBooking::create([
+                            'user_id'  => $user->id,
+                            'order_id' => $order->id,
+                            'seva_id'  => $item['id'],
+                            'amount'   => $item['price'], // <-- CORRECTED
+                            'quantity' => $item['quantity'],
+                            'status'   => 'Completed',
+                        ]);
+                    }
+                    // --- HANDLE EBOOK ---
+                    else if ($item['type'] === 'ebook') {
+                        $user->ebooks()->attach($item['id']);
+                    }
+                    // --- HANDLE DONATION ---
+                    else if ($item['type'] === 'donation') {
+                        Donation::create([
+                            'user_id'          => $user->id,
+                            'order_id'         => $order->id,
+                            'temple_id'        => $item['details']['temple_id'] ?? null,
+                            'amount'           => $item['price'],
+                            'status'           => 'Completed',
+                            'transaction_id'   => $validated['razorpay_payment_id'],
+                            'donation_purpose' => $item['details']['donation_purpose'] ?? 'General Donation',
+                        ]);
+                    }
                 }
 
                 $finalOrder = $order;

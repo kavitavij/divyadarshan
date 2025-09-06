@@ -1,100 +1,128 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-gray-100 dark:bg-gray-900 min-h-screen">
-    <div class="container mx-auto px-4 py-12">
-        <h1 class="text-4xl font-extrabold text-center mb-4 text-gray-800 dark:text-gray-100">Book Your Pilgrim Stay</h1>
-        <p class="text-center text-gray-600 dark:text-gray-400 mb-10">Find comfortable and convenient accommodation near your destination temple.</p>
+<div class="bg-gray-100 dark:bg-gray-800">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-10">
-            <form action="{{ route('stays.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-
-                {{-- Filter by Temple --}}
-                <div class="md:col-span-1">
-                    <label for="temple_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Temple</label>
-                    <select name="temple_id" id="temple_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm rounded-md">
-                        <option value="">All Temples</option>
-                        @foreach($temples as $temple)
-                            <option value="{{ $temple->id }}" {{ request('temple_id') == $temple->id ? 'selected' : '' }}>
-                                {{ $temple->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Search by Name/Location --}}
-                <div class="md:col-span-1">
-                    <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search by Name or City</label>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="e.g., 'Shanti Niwas' or 'Rishikesh'" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500">
-                </div>
-
-                {{-- Action Buttons --}}
-                <div class="md:col-span-1 flex gap-2">
-                    <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-black bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
-                        Search
-                    </button>
-                    <a href="{{ route('stays.index') }}" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
-                        Reset
-                    </a>
-                </div>
-            </form>
+        {{-- Page Header --}}
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white">Book Your Pilgrim Stay</h1>
+            <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">Find comfortable accommodation near your destination temple.</p>
         </div>
 
-        @if($hotels->isEmpty())
-            <p class="text-center text-gray-500 dark:text-gray-400 py-16">No stays found matching your criteria. Please try different filters.</p>
-        @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($hotels as $hotel)
-                    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden flex flex-col group transform hover:-translate-y-1 transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-yellow-500">
-                        <div class="relative">
-                            {{-- Handle both public/uploads and storage/app/public --}}
-                            <img src="{{ $hotel->image
-                                ? (Str::startsWith($hotel->image, 'http')
-                                    ? $hotel->image
-                                    : (file_exists(public_path($hotel->image))
-                                        ? asset($hotel->image)
-                                        : asset('storage/' . $hotel->image)))
-                                : 'https://placehold.co/600x400/EBF4FF/7F9CF5?text=Hotel' }}"
-                                alt="{{ $hotel->name }}" class="w-full h-52 object-cover">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-                            @if($hotel->temple)
-                               <span class="absolute top-3 left-3 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded">
-                                   Near {{ $hotel->temple->name }}
-                               </span>
-                            @endif
-                        </div>
+            {{-- ======================= --}}
+            {{-- 1. FILTER SIDEBAR (LEFT) --}}
+            {{-- ======================= --}}
+            <aside class="lg:col-span-1">
+                <form action="{{ route('stays.index') }}" method="GET" class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg space-y-6">
 
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h3 class="font-bold text-xl mb-1 text-gray-900 dark:text-white">{{ $hotel->name }}</h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">{{ $hotel->location }}</p>
-
-                            {{-- Displaying starting price --}}
-                            @if($hotel->rooms_min_price_per_night)
-                                <div class="mb-4">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Rooms from</span>
-                                    <span class="text-2xl font-bold text-green-600 dark:text-green-400">
-                                        ₹{{ number_format($hotel->rooms_min_price_per_night) }}
-                                    </span>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">/ night</span>
-                                </div>
-                            @endif
-
-                            <p class="text-gray-700 dark:text-gray-300 text-sm flex-grow">{{ Str::limit($hotel->description, 90) }}</p>
-
-                            <div class="mt-auto pt-5">
-                                <a href="{{ route('stays.show', $hotel) }}" class="inline-block bg-indigo-600 text-white px-5 py-3 rounded-lg hover:bg-indigo-700 w-full text-center font-semibold group-hover:bg-yellow-500 group-hover:text-black transition-colors duration-300">
-                                    View Rooms & Details
-                                </a>
-                            </div>
-                        </div>
+                    {{-- Search by Name/Location --}}
+                    <div>
+                        <label for="search" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Search Hotel or City</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="e.g., 'Shanti Niwas'" class="block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500">
                     </div>
-                @endforeach
-            </div>
 
-            <div class="mt-12">
-                {{ $hotels->links() }}
-            </div>
-        @endif
+                    {{-- Filter by Temple --}}
+                    <div>
+                        <label for="temple_id" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Near Temple</label>
+                        <select name="temple_id" id="temple_id" class="block w-full text-base border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 rounded-md">
+                            <option value="">All Locations</option>
+                            @foreach($temples as $temple)
+                                <option value="{{ $temple->id }}" {{ request('temple_id') == $temple->id ? 'selected' : '' }}>
+                                    {{ $temple->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Facilities Filter (Now Functional) --}}
+<div>
+    <h4 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3 border-b dark:border-gray-700 pb-2">Facilities</h4>
+    <div class="space-y-2">
+        @foreach($amenities as $amenity)
+        <div class="flex items-center">
+            <input id="facility_{{ $amenity->id }}"
+                   name="facilities[]"
+                   value="{{ $amenity->name }}"
+                   type="checkbox"
+                   class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+                   {{ is_array(request('facilities')) && in_array($amenity->name, request('facilities')) ? 'checked' : '' }}>
+            <label for="facility_{{ $amenity->id }}" class="ml-3 text-sm text-gray-600 dark:text-gray-300">{{ $amenity->name }}</label>
+        </div>
+        @endforeach
+    </div>
+</div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="w-full justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-black bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                            Apply Filters
+                        </button>
+                        <a href="{{ route('stays.index') }}" class="mt-2 w-full inline-flex justify-center py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Reset
+                        </a>
+                    </div>
+                </form>
+            </aside>
+
+            {{-- ============================ --}}
+            {{-- 2. HOTEL RESULTS (RIGHT) --}}
+            {{-- ============================ --}}
+            <main class="lg:col-span-3">
+                @if($hotels->isEmpty())
+                    <div class="text-center py-16 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
+                        <h3 class="mt-2 text-lg font-semibold text-gray-900 dark:text-gray-200">No Accommodations Found</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your search filters.</p>
+                    </div>
+                @else
+                    <div class="space-y-6">
+                        @foreach($hotels as $hotel)
+                        <div class="bg-white dark:bg-gray-900 shadow-lg rounded-xl overflow-hidden md:flex transition-shadow duration-300 hover:shadow-2xl border dark:border-gray-800">
+
+                            {{-- Image Section --}}
+                            <div class="md:w-1/3">
+                                <img src="{{ $hotel->image ? asset('storage/' . $hotel->image) : 'https://placehold.co/600x400/1a1a1a/444444?text=DivyaDarshan' }}"
+                                     alt="Image of {{ $hotel->name }}"
+                                     class="h-full w-full object-cover">
+                            </div>
+
+                            {{-- Details Section --}}
+                            <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $hotel->name }}</h3>
+                                            <p class="text-sm text-yellow-500 font-semibold mb-2">{{ $hotel->location }}</p>
+                                        </div>
+                                        {{-- TODO: Replace with dynamic review data --}}
+                                        <div class="flex-shrink-0 ml-4 text-right">
+                                            <div class="px-3 py-1 bg-blue-700 text-white text-lg font-bold rounded-md">4.5</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">120 reviews</div>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm mt-2">
+                                        {{ Str::limit($hotel->description, 150) }}
+                                    </p>
+                                </div>
+                                <div class="mt-6 flex justify-end items-center">
+                                    <a href="{{ route('stays.show', $hotel) }}" class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 font-semibold transition-colors duration-300">
+                                        Show Prices & Details
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-12">
+                        {{ $hotels->appends(request()->query())->links() }}
+                    </div>
+                @endif
+            </main>
+
+        </div>
     </div>
 </div>
 @endsection
