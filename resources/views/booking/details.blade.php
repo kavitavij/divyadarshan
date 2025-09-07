@@ -8,26 +8,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body { background-color: #f7f8fa; font-family: 'Poppins', sans-serif; }
+
         .progress-stepper { display: flex; justify-content: space-between; width: 100%; position: relative; margin-bottom: 2.5rem; }
         .progress-stepper::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background-color: #e0e0e0; transform: translateY(-50%); z-index: 1; }
+
         .step { text-align: center; position: relative; z-index: 2; }
         .step-icon { width: 40px; height: 40px; border-radius: 50%; background-color: #fff; border: 2px solid #e0e0e0; display: flex; align-items: center; justify-content: center; color: #bdbdbd; font-weight: bold; margin: 0 auto 0.5rem; }
         .step-label { font-size: 0.85rem; color: #757575; }
+
+        /* ✅ Completed step (green) */
         .step.completed .step-icon { background-color: #e8f5e9; border-color: #4caf50; color: #4caf50; }
-        .step.active .step-icon { background-color: #fff3e0; border-color: #ff9800; color: #ff9800; }
-        .step.active .step-label { font-weight: 600; color: #ff9800; }
+
+        /* ✅ Active step (purple) */
+        .step.active .step-icon { background-color: #4f46e5; border-color: #4f46e5; color: #fff; }
+        .step.active .step-label { font-weight: 600; color: #4f46e5; }
+
+        /* ✅ Card styling */
         .main-card { border: none; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border-radius: 12px; background-color: #fff; }
         .main-card-header { background-color: transparent; border-bottom: 1px solid #eee; padding: 1.25rem 1.5rem; font-size: 1.25rem; font-weight: 600; }
+
         .accordion-item { border: 1px solid #e0e0e0 !important; border-radius: 8px !important; margin-bottom: 1rem; }
         .accordion-button { font-weight: 600; color: #333; }
-        .accordion-button:not(.collapsed) { background-color: #fff3e0; color: #ff9800; box-shadow: none; }
-        .accordion-button:focus { box-shadow: 0 0 0 0.25rem rgba(255, 152, 0, 0.25); }
+        .accordion-button:not(.collapsed) { background-color: #f3f0ff; color: #4f46e5; box-shadow: none; }
+        .accordion-button:focus { box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25); }
+
         .summary-card { position: sticky; top: 20px; }
         .summary-list li { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px dashed #eee; }
         .summary-list li:last-child { border-bottom: none; }
         .total-payable { background-color: #e8f5e9; border-radius: 8px; padding: 1rem; }
-        .btn-proceed { background: linear-gradient(90deg, #ff9800, #f57c00); border: none; padding: 0.75rem 1.5rem; font-size: 1.1rem; font-weight: 600; border-radius: 8px; }
-        .terms-link { color: #ff9800; text-decoration: none; font-weight: 600; }
+
+        /* ✅ Button purple */
+        .btn-proceed { background: linear-gradient(90deg, #4f46e5, #4338ca); border: none; padding: 0.75rem 1.5rem; font-size: 1.1rem; font-weight: 600; border-radius: 8px; color: #fff; }
+        .terms-link { color: #4f46e5; text-decoration: none; font-weight: 600; }
+
         .pincode-wrapper { position: relative; }
         .pincode-loader { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); display: none; }
     </style>

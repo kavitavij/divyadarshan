@@ -79,7 +79,6 @@
                             class="btn-service bg-purple-600 text-white">Book Stay</a>
                     </div>
                 @endif
-
                 {{-- Donation --}}
                 @if (in_array('donation', $temple->offered_services ?? []))
                     <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition-shadow">
@@ -90,7 +89,6 @@
                         <a href="#" class="btn-service bg-pink-600 text-white">Donate</a>
                     </div>
                 @endif
-
                 {{-- E-Books --}}
                 @if (in_array('ebooks', $temple->offered_services ?? []))
                     <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition-shadow">
@@ -101,15 +99,12 @@
                         <a href="#" class="btn-service bg-indigo-600 text-white">Browse E-Books</a>
                     </div>
                 @endif
-
-
             </div>
         </div>
         {{-- Slot Booking Tab Content --}}
         <div id="slots" class="tab-content hidden">
             <div class="form-group mt-4">
                 <h2 class="text-2xl font-semibold mb-4 text-center">Darshan Slot Booking</h2>
-
                 <p class="text-center text-gray-600 max-w-2xl mx-auto mb-6">
                     Devotees can conveniently check and book available darshan slots online.
                     Please select your preferred date and time to ensure a smooth and divine darshan experience at
@@ -129,7 +124,6 @@
                 </div>
             </div>
         </div>
-
         {{-- News Tab Content --}}
         <div id="news" class="tab-content hidden">
             <h2 class="text-2xl font-semibold mb-4 text-center">News & Updates</h2>
@@ -148,7 +142,6 @@
                 <p class="text-center">Currenty, No news updated by temple commitee .</p>
             @endif
         </div>
-
         {{-- Social Services Tab Content --}}
         <div id="social" class="tab-content hidden">
             <h2 class="text-2xl font-semibold mb-4 text-center">Social Services at {{ $temple->name }}</h2>
@@ -161,7 +154,6 @@
                         blessings of {{ $temple->name }}.</p>
                     <a href="#" class="btn-service bg-green-600 text-white">Contribute</a>
                 </div>
-
                 <!-- Health Camps Card -->
                 <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition-shadow">
                     <i class="fas fa-heartbeat text-4xl text-red-500 mb-4"></i>

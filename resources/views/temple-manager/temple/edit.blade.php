@@ -49,7 +49,6 @@
                         <label for="social_services">Social Services Section</label>
                         <textarea name="social_services" class="form-control" rows="5">{{ old('social_services', $temple->social_services) }}</textarea>
                     </div>
-
                     <button type="submit" class="btn btn-primary">Update Details</button>
                     <a href="{{ route('temple-manager.dashboard') }}" class="btn btn-secondary">Cancel</a>
                 </form>

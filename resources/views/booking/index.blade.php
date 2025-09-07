@@ -1,6 +1,87 @@
 @extends('layouts.app')
 
 @push('styles')
+    {{-- Stepper CSS (unchanged) --}}
+    <style>
+        .stepper-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2.5rem; /* More space below */
+        }
+        .stepper-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .stepper-item::before {
+            position: absolute;
+            content: "";
+            border-bottom: 3px solid #e5e7eb; /* Gray line */
+            width: 100%;
+            top: 20px;
+            left: -50%;
+            z-index: 2;
+        }
+        .stepper-item::after {
+            position: absolute;
+            content: "";
+            border-bottom: 3px solid #e5e7eb; /* Gray line */
+            width: 100%;
+            top: 20px;
+            left: 50%;
+            z-index: 2;
+        }
+        .stepper-item .step-counter {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px; /* Circle */
+            background: #ffffff;
+            border: 3px solid #e5e7eb;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #6b7280; /* Gray text */
+        }
+        .stepper-item.active .step-counter {
+            border-color: #4f46e5; /* Primary purple */
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+        .stepper-item.completed .step-counter {
+            border-color: #16a34a; /* Green */
+            background-color: #16a34a;
+            color: #ffffff;
+        }
+        .stepper-item.completed::after {
+            position: absolute;
+            content: "";
+            border-bottom: 3px solid #16a34a;
+            width: 100%;
+            top: 20px;
+            left: 50%;
+            z-index: 3;
+        }
+        .stepper-item:first-child::before { content: none; }
+        .stepper-item:last-child::after { content: none; }
+        .step-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            color: #6b7280;
+        }
+        .stepper-item.active .step-name {
+            font-weight: 700;
+            color: #4f46e5;
+        }
+    </style>
+
+    {{-- Slot Selection CSS (unchanged) --}}
     <style>
         .slot-list { display: flex; flex-direction: column; gap: 0.75rem; }
         .slot-item { display: flex; align-items: center; border: 2px solid #e5e7eb; border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s ease-in-out; }
@@ -22,6 +103,9 @@
                     <h2 class="text-xl font-bold">Book Your Darshan</h2>
                 </div>
                 <div class="p-6">
+                    
+                    {{-- The stepper code was here... --}}
+
                     <div class="mb-4">
                         <label for="temple_id" class="block font-semibold mb-2">1. Select Temple</label>
                         <select name="temple_id" id="temple_id" class="form-control" required>
@@ -32,7 +116,26 @@
                         </select>
                     </div>
 
+                    {{-- This @if block now controls the visibility of the stepper AND the form --}}
                     @if (isset($selectedTemple))
+                    
+                    {{-- MOVED HERE: Progress Stepper now only shows when a temple is selected --}}
+                    <div class="stepper-wrapper">
+                        <div class="stepper-item active">
+                            <div class="step-counter">1</div>
+                            <div class="step-name">Select Date & Time</div>
+                        </div>
+                        <div class="stepper-item">
+                            <div class="step-counter">2</div>
+                            <div class="step-name">Add Devotee(s) Details</div>
+                        </div>
+                        <div class="stepper-item">
+                            <div class="step-counter">3</div>
+                            <div class="step-name">Review & Pay</div>
+                        </div>
+                    </div>
+                    {{-- END MOVED HERE --}}
+                    
                     <form id="bookingForm" action="{{ route('booking.details') }}" method="GET">
                         <input type="hidden" name="temple_id" value="{{ $selectedTemple->id }}">
                         <div class="mb-4">
@@ -51,7 +154,7 @@
                             <input type="number" name="number_of_people" id="number_of_people" class="form-control" value="1" min="1" required>
                         </div>
                         <div class="mt-4">
-                             <p id="totalCharge" class="text-blue-600 font-semibold"></p>
+                            <p id="totalCharge" class="text-blue-600 font-semibold"></p>
                         </div>
                         <div class="flex justify-center mt-6">
                            <button type="submit" class="animated-btn"><span>Next</span></button>
@@ -66,6 +169,7 @@
 @endsection
 
 @push('scripts')
+{{-- YOUR EXISTING SCRIPT IS UNCHANGED --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -89,64 +193,59 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set minimum selectable date to today
     dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
 
-   dateInput.addEventListener('change', function () {
-    const selectedDate = this.value;
-    if (!selectedDate) return;
+    dateInput.addEventListener('change', function () {
+        const selectedDate = this.value;
+        if (!selectedDate) return;
 
-    slotsLoader.style.display = 'block';
-    slotsContainer.innerHTML = '';
+        slotsLoader.style.display = 'block';
+        slotsContainer.innerHTML = '';
 
-    // Use route() helper to avoid hardcoded URL issues
-    const url = '{{ route("api.temples.slots_for_date", ["temple" => $selectedTemple->id, "date" => "DATE_PLACEHOLDER"]) }}'.replace('DATE_PLACEHOLDER', encodeURIComponent(selectedDate));
-    console.log('Fetching slots from:', url);
+        const url = '{{ route("api.temples.slots_for_date", ["temple" => $selectedTemple->id, "date" => "DATE_PLACEHOLDER"]) }}'.replace('DATE_PLACEHOLDER', encodeURIComponent(selectedDate));
+        
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                slotsLoader.style.display = 'none';
 
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            slotsLoader.style.display = 'none';
+                if (data.closed) {
+                    slotsContainer.innerHTML = `<div class="alert alert-warning">${data.reason || 'Temple is closed on this date.'}</div>`;
+                    return;
+                }
 
-            if (data.closed) {
-                slotsContainer.innerHTML = `<div class="alert alert-warning">${data.reason || 'Temple is closed on this date.'}</div>`;
-                return;
-            }
+                if (!data || data.length === 0) {
+                    slotsContainer.innerHTML = '<p class="text-red-500">No slots available for this date.</p>';
+                    return;
+                }
 
-            if (!data || data.length === 0) {
-                slotsContainer.innerHTML = '<p class="text-red-500">No slots available for this date.</p>';
-                return;
-            }
-
-            let html = '<div class="slot-list">';
-            data.forEach(slot => {
-                html += `
-                    <label class="slot-item" for="slot_${slot.id}">
-                        <input type="radio" name="darshan_slot_id" id="slot_${slot.id}" value="${slot.id}" required>
-                        <div class="slot-time">${slot.start_time} - ${slot.end_time}</div>
-                        <div class="slot-availability">${slot.available} available</div>
-                    </label>
-                `;
-            });
-            html += '</div>';
-            slotsContainer.innerHTML = html;
-
-            document.querySelectorAll('.slot-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    document.querySelectorAll('.slot-item').forEach(i => i.classList.remove('selected'));
-                    this.classList.add('selected');
-                    this.querySelector('input[type="radio"]').checked = true;
+                let html = '<div class="slot-list">';
+                data.forEach(slot => {
+                    html += `
+                        <label class="slot-item" for="slot_${slot.id}">
+                            <input type="radio" name="darshan_slot_id" id="slot_${slot.id}" value="${slot.id}" required>
+                            <div class="slot-time">${slot.start_time} - ${slot.end_time}</div>
+                            <div class="slot-availability">${slot.available} available</div>
+                        </label>
+                    `;
                 });
+                html += '</div>';
+                slotsContainer.innerHTML = html;
+
+                document.querySelectorAll('.slot-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        document.querySelectorAll('.slot-item').forEach(i => i.classList.remove('selected'));
+                        this.classList.add('selected');
+                        this.querySelector('input[type="radio"]').checked = true;
+                    });
+                });
+
+            })
+            .catch(err => {
+                slotsLoader.style.display = 'none';
+                slotsContainer.innerHTML = '<p class="text-red-500">Error fetching slots.</p>';
+                console.error(err);
             });
-
-        })
-        .catch(err => {
-            slotsLoader.style.display = 'none';
-            slotsContainer.innerHTML = '<p class="text-red-500">Error fetching slots.</p>';
-            console.error(err);
-        });
-
-});
-
+    });
     @endif
 });
 </script>
 @endpush
-

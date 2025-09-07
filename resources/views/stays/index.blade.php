@@ -12,9 +12,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-            {{-- ======================= --}}
-            {{-- 1. FILTER SIDEBAR (LEFT) --}}
-            {{-- ======================= --}}
+            {{-- 1. FILTER SIDEBAR (LEFT) --}}           
             <aside class="lg:col-span-1">
                 <form action="{{ route('stays.index') }}" method="GET" class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg space-y-6">
 

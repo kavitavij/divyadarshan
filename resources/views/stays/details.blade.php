@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enter Guest Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <style>
         body {
             background-color: #f4f7f6;
@@ -293,19 +292,15 @@
             }
         }
 
-        // ATTACH ALL EVENT LISTENERS
         numberOfGuestsInput.addEventListener("input", toggleGuestForms);
         checkInInput.addEventListener("change", validateDates);
         checkInInput.addEventListener("change", calculateTotal); // Also trigger calculation
         checkOutInput.addEventListener("change", calculateTotal);
 
-        // INITIALIZE FUNCTIONS
         toggleGuestForms();
         validateDates();
-        calculateTotal(); // Run once on page load
+        calculateTotal(); 
     });
 </script>
-
 </body>
-
 </html>

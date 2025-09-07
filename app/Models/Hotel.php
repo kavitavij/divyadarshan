@@ -73,5 +73,12 @@ class Hotel extends Model
     {
         return $this->belongsToMany(Amenity::class);
     }
-
+     public function getPoliciesAttribute($value)
+    {
+        return json_decode($value, true) ?? [];
+    }
+    public function getNearbyAttractionsAttribute($value)
+    {
+        return json_decode($value, true) ?? [];
+    }
 }
