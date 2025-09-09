@@ -5,7 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Complaint;
-
+use App\Models\Booking;
+use App\Models\Temple;
+use App\Models\User;
+use App\Models\SevaBooking;
+use App\Models\AccommodationBooking;
+use App\Models\Hotel;
 class AdminController extends Controller
 {
     public function dashboard()
