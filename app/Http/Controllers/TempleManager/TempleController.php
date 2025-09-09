@@ -5,7 +5,7 @@ namespace App\Http\Controllers\TempleManager;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
 class TempleController extends Controller
 {
     /**
@@ -31,34 +31,43 @@ class TempleController extends Controller
             return redirect()->back()->with('error', 'You are not assigned to a temple.');
         }
 
-        // Check if the update is coming from the T&C modal
-        if ($request->input('update_source') === 'terms_modal') {
-            $validatedData = $request->validate([
-                'terms_and_conditions'   => 'nullable|array',
-                'terms_and_conditions.*' => 'nullable|string|max:1000',
-            ]);
-
-            $terms = $validatedData['terms_and_conditions'] ?? [];
-            $temple->terms_and_conditions = array_filter($terms);
-            $temple->save();
-
-            return redirect()->back()->with('success', 'Terms & Conditions updated successfully.');
-        }
-
-        // --- Otherwise, handle the FULL edit form ---
+        // ✅ FIXED: Add all your form fields to the validation rules
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048',
             'description' => 'nullable|string',
+            'about' => 'nullable|string',
+            'online_services' => 'nullable|string',
+            'social_services' => 'nullable|string',
         ]);
 
+        // Prepare the data for the update
+        $updateData = $request->only([
+            'name',
+            'location',
+            'description',
+            'about',
+            'online_services',
+            'social_services'
+        ]);
+
+        // ✅ FIXED: Add proper image handling logic
         if ($request->hasFile('image')) {
-            // Handle image upload logic here
+            // Delete the old image if it exists
+            if ($temple->image) {
+                Storage::disk('public')->delete($temple->image);
+            }
+            // Store the new image and get its path
+            $path = $request->file('image')->store('temples', 'public');
+            // Add the new image path to our data
+            $updateData['image'] = $path;
         }
 
-        $temple->update($validatedData);
+        // Update the temple with all the new data
+        $temple->update($updateData);
 
         return redirect()->route('temple-manager.dashboard')->with('success', 'Temple details updated successfully.');
     }
 }
+

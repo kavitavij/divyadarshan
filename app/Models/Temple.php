@@ -18,6 +18,7 @@ class Temple extends Model
     'online_services',
     'news',
     'social_services',
+    'offered_social_services',
     'slot_data',
     'darshan_charge',
     'offered_services',
@@ -25,6 +26,7 @@ class Temple extends Model
 ];
     protected $casts = [
     'offered_services' => 'array',
+    'offered_social_services' => 'array',
     'slot_data' => 'array',
     'news' => 'array',
     'terms_and_conditions' => 'array',
@@ -57,5 +59,9 @@ class Temple extends Model
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
+    }
+    public function galleryImages()
+    {
+        return $this->hasMany(TempleImage::class);
     }
 }

@@ -119,7 +119,7 @@
                  <button @click="spiritualHelpModal = true" class="text-[#ccc] hover:text-yellow-400 transition font-medium">
                     Spiritual Help
                 </button>
-                
+
                 @guest
                     <button @click="loginModal = true" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
                         Login
@@ -228,7 +228,7 @@
                         </div>
                     </div>
                 @endif
-            
+
         </div>
         @yield('content')
     </main>
@@ -508,7 +508,7 @@
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-400 mb-1">Name</label>
                             <div class="relative">
-                                <i class="fas fa-user absolute top-3.5 left-4 text-gray-500"></i>
+                                <i class="fas fa-user absolute top-1/2 -translate-y-1/2 left-4 text-gray-500"></i>
                                 <input type="text" name="name" id="name" required placeholder="Your full name"
                                     class="pl-11 w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
                             </div>
@@ -517,7 +517,7 @@
                         <div>
                             <label for="contact_info" class="block text-sm font-medium text-gray-400 mb-1">Email / Phone</label>
                             <div class="relative">
-                            <i class="fas fa-at absolute top-3.5 left-4 text-gray-500"></i>
+                            <i class="fas fa-at absolute top-1/2 -translate-y-1/2 left-4 text-gray-500"></i>
                                 <input type="text" name="contact_info" id="contact_info" required placeholder="Your contact details"
                                     class="pl-11 w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
                             </div>
@@ -583,7 +583,7 @@
             </div>
         </div>
     </div>
-    
+
     {{-- ✅ FIX: Swiper library is now loaded BEFORE the initialization script --}}
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
@@ -603,11 +603,11 @@
         },
       });
     </script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/spotlight.js@0.7.8/dist/spotlight.min.js" defer></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
-    
+
     {{-- Alpine JS State --}}
     <script>
         function appState() {
@@ -623,11 +623,10 @@
                     this.cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
                     this.updateTotal();
                 },
-                // ... other alpine functions
             }
         }
     </script>
-    
+
     @stack('scripts')
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">

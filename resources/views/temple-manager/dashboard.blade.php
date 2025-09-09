@@ -33,6 +33,7 @@
                     <a href="{{ route('temple-manager.slots.index') }}" class="btn btn-outline-dark">🗓️ Manage Slots</a>
                     <a href="{{ route('temple-manager.sevas.index') }}" class="btn btn-outline-secondary">🙏 Manage Sevas</a>
                     <a href="{{ route('temple-manager.bookings.index') }}" class="btn btn-outline-success">📖 View Bookings</a>
+                    <a href="{{ route('temple-manager.gallery.index') }}" class="btn btn-outline-success">Gallery</a>
                 </div>
             </div>
         </div>

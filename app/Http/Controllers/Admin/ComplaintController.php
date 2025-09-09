@@ -13,7 +13,6 @@ class ComplaintController extends Controller
         $complaints = Complaint::latest()->paginate(15);
         return view('admin.complaints.index', ['complaints' => $complaints]);
     }
-
     /**
      * NEW: Display the specified complaint.
      */

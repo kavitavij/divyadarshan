@@ -15,44 +15,50 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fadeInUp { animation: fadeInUp 0.8s ease-in-out both; }
-
         html { scroll-behavior: smooth; }
-
         [x-cloak] { display: none !important; }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
+        body { font-family: 'Poppins', sans-serif; }
         .hero-section {
-            height: 50vh;
-            width: 100%;
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-                        url('https://www.shutterstock.com/image-photo/grand-illustrated-indian-temple-background-260nw-2604158189.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
+            height: 50vh; width: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://www.shutterstock.com/image-photo/grand-illustrated-indian-temple-background-260nw-2604158189.jpg');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            display: flex; align-items: center; justify-content: center;
+            color: white; text-align: center;
         }
-        .hero-section h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-        }
-        .hero-section p {
-            font-size: 1.5rem;
-            font-weight: 400;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        .hero-section h1 { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+        .hero-section p { font-size: 1.5rem; font-weight: 400; max-width: 800px; margin: 0 auto; }
     </style>
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
-<body id="top" class="bg-white text-slate-800 font-sans" x-data="{ loginModal: false, modalView: 'login' }">
+<body id="top" class="bg-white text-slate-800 font-sans">
+
+{{--  Alpine.js logic to handle auto-opening the contact modal --}}
+<div x-data="{
+    loginModal: false,
+    modalView: 'login',
+    infoModalOpen: @json($openFaqModal ?? $openContactModal ?? false),
+    modalTitle: '',
+    modalContent: '',
+    showInfo(type) {
+        const contentEl = document.querySelector(`#${type}-content`);
+        if (contentEl) {
+            this.modalTitle = contentEl.dataset.title;
+            this.modalContent = contentEl.innerHTML;
+            this.infoModalOpen = true;
+        }
+    }
+}" x-init="() => {
+    // Automatically populate content if a modal should be open on page load
+    if (infoModalOpen) {
+        let contentType = @json(session('open_faq_modal') || ($errors->has('name') || $errors->has('email') || $errors->has('question'))) ? 'faq' : 'contact';
+        const contentEl = document.querySelector(`#${contentType}-content`);
+        if (contentEl) {
+            modalTitle = contentEl.dataset.title;
+            modalContent = contentEl.innerHTML;
+        }
+    }
+}">
+
 {{-- Header --}}
 <header class="bg-[#0d0d0d] text-[#ccc] sticky top-0 z-50 font-poppins">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -85,44 +91,49 @@
                     <a href="{{ route('ebooks.index') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">E-Books</a>
                 </div>
             </div>
-            <div x-data="{ open: false }" class="relative">
+             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
                     General Info <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
                 </button>
                 <div x-show="open" @click.outside="open = false" x-transition class="absolute bg-[#1a1a1a] border border-[#333] rounded shadow mt-2 min-w-max z-20" style="display: none;">
-                     <a href="{{ route('info.faq') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">FAQs</a>
-                     <a href="{{ route('info.sevas') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
-                     <a href="{{ route('info.dress-code') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Dress Code</a>
-                     <a href="{{ route('info.privacy') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Privacy Policy</a>
-                     <a href="{{ route('info.cancellation') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Cancellation Policy</a>
-                     <a href="{{ route('info.contact') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
+                      <a href="#" @click.prevent="showInfo('faq')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">FAQs</a>
+                      <a href="#" @click.prevent="showInfo('sevas')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
+                      <a href="#" @click.prevent="showInfo('dress-code')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Dress Code</a>
+                      <a href="#" @click.prevent="showInfo('privacy')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Privacy Policy</a>
+                      <a href="#" @click.prevent="showInfo('cancellation')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Cancellation Policy</a>
+                      <a href="#" @click.prevent="showInfo('contact')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
                 </div>
             </div>
         </nav>
         {{-- Auth buttons --}}
         <div>
             @guest
-                <button @click="loginModal = true; modalView = 'login'" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] rounded hover:bg-yellow-400 transition">Login</button>
-            @else
-                <div class="relative group">
-                    <button class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] rounded hover:bg-yellow-400 transition">
-                        <span>{{ Auth::user()->name }}</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <button @click="loginModal = true" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
+                        Login
                     </button>
-                    <div class="absolute hidden group-hover:block right-0 bg-[#1a1a1a] border border-[#333] rounded shadow-lg mt-2 min-w-max z-20">
-                        @if (Auth::user()->role === 'admin')
-                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Admin Dashboard</a>
-                        @endif
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Profile</a>
-                        <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">My eBooks</a>
-                        <a href="{{ route('profile.my-orders.index') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">My Orders</a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="block px-4 py-2 hover:bg-red-600 hover:text-[#0d0d0d]">Log Out</a>
-                        </form>
+                @else
+                    <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                        <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
+                            <span>{{ Auth::user()->name }}</span>
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                            @if (Auth::user()->role === 'admin')
+                                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Admin Dashboard</a>
+                            @endif
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Profile</a>
+                            <a href="{{ route('cart.view') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Cart</a>
+                            <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My ebooks</a>
+                            <a href="{{ route('profile.my-orders.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Orders</a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-[#0d0d0d]">Log Out</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            @endguest
+                @endguest
         </div>
     </div>
 </header>
@@ -408,9 +419,9 @@
             </div>
 
             <div>
-                <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Contact Us</h3>
                 <p style="font-size:15px; color:#bbb; line-height:1.7;">
-                    📍 SOPL, Mohali, India <a href="{{ route('info.contact') }}" style="color:#93e018; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Contact</a>
+                    📍 SOPL, Mohali, India <a href="#" @click.prevent="showInfo('contact')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
+
                     📞 +91 9876543210 <br>
                     ✉️ <a href="mailto:support@divyadarshan.com" style="color:#facc15; text-decoration:none;">support@divyadarshan.com</a>
                 </p>
@@ -433,6 +444,18 @@
         </div>
     </footer>
 
+     {{-- General Info Modal --}}
+    <div x-show="infoModalOpen" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[999] p-4">
+        <div @click.away="infoModalOpen = false" class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h2 class="text-2xl font-bold text-slate-800" x-text="modalTitle"></h2>
+                <button @click="infoModalOpen = false" class="text-slate-500 hover:text-slate-800 text-3xl">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto prose max-w-none" x-html="modalContent">
+                {{-- Content will be injected here by Alpine.js --}}
+            </div>
+        </div>
+    </div>
 
 {{-- EXACT LOGIN/REGISTER/FORGOT MODAL FROM YOUR LAYOUT FILE --}}
 <div x-show="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
@@ -524,6 +547,185 @@
             </div>
         </template>
     </div>
+</div>
+{{-- Hidden Content for Modals --}}
+<div class="hidden">
+    <div class="hidden">
+        {{-- The  FAQ template --}}
+        <template id="faq-content" data-title="Frequently Asked Questions">
+        <div class="space-y-4">
+            {{-- Display existing FAQs from the database --}}
+            @if($faqs->isNotEmpty())
+                @foreach($faqs as $faq)
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-lg text-gray-800">{{ $faq->question }}</h3>
+                        <div class="text-gray-600 mt-2 prose max-w-none">
+                            {!! $faq->answer !!}
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                {{-- If no FAQs are in the database, show these default ones --}}
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-lg text-gray-800">How do I book a darshan online?</h3>
+                    <p class="text-gray-600 mt-2">
+                        To book a darshan, go to the "Online Services" dropdown in the main menu and select "Darshan Booking". From there, choose your preferred temple and select an available date from the calendar to complete your booking.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-lg text-gray-800">What is the dress code for visiting the temples?</h3>
+                    <p class="text-gray-600 mt-2">
+                        All devotees are requested to wear modest and traditional attire that covers the shoulders and knees. For detailed guidelines, please refer to the "Dress Code" page under the "General Information" section.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-lg text-gray-800">Can I view my past bookings?</h3>
+                    <p class="text-gray-600 mt-2">
+                        Yes. Once you're logged in, click on your name in the top-right corner and select "My Bookings" from the dropdown menu. This will show all your past and upcoming bookings.
+                    </p>
+                </div>
+            @endif
+        </div>
+
+        {{-- Ask a Question Form --}}
+        <div class="mt-8 pt-6 border-t">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Have a Question? Ask Us!</h2>
+            <p class="text-gray-600 mb-4">
+                If you have a question that isn’t listed above, feel free to reach out. Just provide your name, email, and your question using the form provided on the page. Our support team will get back to you as soon as possible.
+            </p>
+
+            @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                    <p>{{ session('success') }}</p>
+                </div>
+            @endif
+            @if($errors->has('name') || $errors->has('email') || $errors->has('question'))
+                 <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('info.faq.submit') }}" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Your Name</label>
+                    <input type="text" name="name" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="{{ old('name') }}" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Your Email</label>
+                    <input type="email" name="email" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="{{ old('email') }}" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Your Question</label>
+                    <textarea name="question" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>{{ old('question') }}</textarea>
+                </div>
+                <div class="text-right">
+                    <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">
+                        Submit Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </template>
+
+    <template id="sevas-content" data-title="About Sevas">
+        {{-- 1. Using {!! !!} to render HTML from the database --}}
+        {!! $settings['page_content_sevas'] ?? '<p>Sevas information is not available yet.</p>' !!}
+
+        {{-- 2. Added a static footer with the clickable email --}}
+        <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+        <p>For more enquiry, contact <a href="mailto:info@divyadarshan.com" style="color: #b45309; text-decoration: underline;">info@divyadarshan.com</a></p>
+    </template>
+
+    <template id="dress-code-content" data-title="Dress Code Guidelines">
+        {!! $settings['page_content_dress_code'] ?? '<p>Dress code information is not available yet.</p>' !!}
+        <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+        <p>For more enquiry, contact <a href="mailto:info@divyadarshan.com" style="color: #b45309; text-decoration: underline;">info@divyadarshan.com</a></p>
+    </template>
+
+    <template id="privacy-content" data-title="Privacy Policy">
+        {!! $settings['page_content_privacy'] ?? '<p>Privacy Policy is not available yet.</p>' !!}
+        <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+        <p>For more enquiry, contact <a href="mailto:info@divyadarshan.com" style="color: #b45309; text-decoration: underline;">info@divyadarshan.com</a></p>
+    </template>
+
+    <template id="contact-content" data-title="Contact Us">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {{-- Left side: Get in Touch info --}}
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Get in Touch</h3>
+                    <p class="text-gray-600 mb-4">We are here to help you with any questions. Please feel free to reach out to us.</p>
+                    <div class="space-y-3">
+                        <p class="flex items-center text-gray-700">
+                             <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span>123 Sector 82 , Mohali, India</span>
+                        </p>
+                        <p class="flex items-center text-gray-700">
+                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            <a href="mailto:support@divyadarshan.com" class="text-blue-600 hover:underline">support@divyadarshan.com</a>
+                        </p>
+                         <p class="flex items-center text-gray-700">
+                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            <span>+91-1234567890</span>
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Right side: The Form --}}
+                <div>
+                    @if (session('success'))
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                            <span class="block sm:inline">{{ session('success') }}</span>
+                        </div>
+                    @endif
+                    @if ($errors->any())
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                            <strong class="font-bold">Please correct the errors below:</strong>
+                            <ul class="mt-3 list-disc list-inside text-sm">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('info.contact.submit') }}" method="POST" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                            <input type="email" name="email" id="email" value="{{ old('email') }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                            <textarea name="message" id="message" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>{{ old('message') }}</textarea>
+                        </div>
+                        <div class="text-right">
+                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </template>
+
+    <template id="contact-content" data-title="Contact Us">
+         {{-- This content is still static as requested --}}
+         <p>For any inquiries or support, please reach out to us:</p>
+         <ul>
+             <li><strong>Email:</strong> <a href="mailto:support@divyadarshan.com">support@divyadarshan.com</a></li>
+             <li><strong>Phone:</strong> +91 9876543210</li>
+             <li><strong>Address:</strong> SOPL, Mohali, India</li>
+         </ul>
+    </template>
 </div>
 </body>
 </html>

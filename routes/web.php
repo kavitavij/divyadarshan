@@ -25,6 +25,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SpiritualHelpController;
 use App\Http\Controllers\CheckInController;
+use App\Http\Controllers\ContactFormController;
+use App\Http\Controllers\FaqController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\AdminController;
@@ -44,6 +46,7 @@ use App\Http\Controllers\Admin\BookingCancelController;
 use App\Http\Controllers\Admin\SlotController as AdminSlotController;
 use App\Http\Controllers\Admin\SpiritualHelpController as AdminSpiritualHelpController;
 use App\Http\Controllers\Admin\AmenityController;
+use App\Http\Controllers\Admin\SettingsController;
 
 // Hotel Manager Controllers
 use App\Http\Controllers\HotelManager\DashboardController as HotelManagerDashboardController;
@@ -60,7 +63,7 @@ use App\Http\Controllers\TempleManager\SevaController as TempleManagerSevaContro
 use App\Http\Controllers\TempleManager\DarshanSlotController as TempleManagerDarshanSlotController;
 use App\Http\Controllers\TempleManager\DashboardController;
 use App\Http\Controllers\TempleManager\SlotController;
-
+use App\Http\Controllers\TempleManager\GalleryController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -91,6 +94,8 @@ Route::get('/profile/my-stays/{booking}/refund', [ProfileController::class, 'req
 Route::post('/profile/my-stays/{booking}/refund', [ProfileController::class, 'storeStayRefundRequest'])->name('profile.my-stays.refund.store');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.store');
 Route::get('/api/temples/{temple}/slots-for-date/{date}', [DarshanBookingController::class, 'getSlotsForDate'])->name('api.temples.slots_for_date');
+Route::post('/contact-submit', [ContactFormController::class, 'store'])->name('info.contact.submit');
+Route::post('/faq-submit', [FaqController::class, 'store'])->name('info.faq.submit');
 // The URL the QR code points to
 Route::get('/check-in/{token}', [CheckInController::class, 'show'])->name('check-in.show');
 
@@ -230,6 +235,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/accommodation-bookings/{booking}', [AdminBookingController::class, 'showAccommodation'])->name('bookings.accommodation.show');
     Route::resource('spiritual-help', AdminSpiritualHelpController::class)->only(['index', 'destroy']);
     Route::resource('amenities', AmenityController::class);
+    Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
+    Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
 });
     // // Routes for Stay Refunds
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -274,4 +281,7 @@ Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->na
     Route::post('slots/settings', [SlotController::class, 'updateSettings'])->name('slots.settings.update');
     Route::post('slots/day-status', [SlotController::class, 'updateDayStatus'])->name('slots.day-status.update');
     Route::delete('slots/day-status/{id}', [SlotController::class, 'deleteDayStatus'])->name('slots.day-status.delete');
+    Route::get('gallery', [GalleryController::class, 'index'])->name('gallery.index');
+    Route::post('gallery', [GalleryController::class, 'store'])->name('gallery.store');
+    Route::delete('gallery/{image}', [GalleryController::class, 'destroy'])->name('gallery.destroy');
 });

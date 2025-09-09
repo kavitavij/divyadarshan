@@ -221,11 +221,12 @@
     {{-- Sidebar --}}
     <nav class="sidebar" id="sidebar" aria-label="Sidebar menu">
         <a href="{{ route('temple-manager.dashboard') }}" class="{{ request()->routeIs('temple-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
-        <a href="# " tabindex="-1">📄 Terms & Conditions</a>
+
         <a href="{{ route('temple-manager.slots.index') }}" class="{{ request()->routeIs('temple-manager.slots*') ? 'active' : '' }}">🗓️ Manage Slots</a>
         <a href="{{ route('temple-manager.sevas.index') }}" class="{{ request()->routeIs('temple-manager.sevas*') ? 'active' : '' }}">🙏 Manage Sevas</a>
         <a href="{{ route('temple-manager.bookings.index') }}" class="{{ request()->routeIs('temple-manager.bookings*') ? 'active' : '' }}">📅 Bookings</a>
         <a href="{{ route('temple-manager.temple.edit') }}" class="{{ request()->routeIs('temple-manager.temples*') ? 'active' : '' }}">🏛️ Manage Temple</a>
+        <a href="{{ route('temple-manager.gallery.index') }}"class="{{ request()->routeIs('temple-manager.gallery*') ? 'active' : '' }}">🖼️ Manage Gallery</a>
     </nav>
     {{-- Overlay for mobile --}}
     <div class="overlay" id="overlay" onclick="closeSidebar()" tabindex="-1" aria-hidden="true"></div>

@@ -9,7 +9,7 @@
         </div>
     @endif
 
-    <!-- ✅ Our Services -->
+    <!-- Our Services -->
     <div class="mb-12">
         <h2 class="text-2xl font-bold text-center text-blue-700 mb-6">Our Services</h2>
         <p class="text-center text-gray-600 mb-8">All essential services for your spiritual journey</p>
@@ -227,15 +227,18 @@
 
         <!-- Video/Right Side -->
         <div class="flex justify-center">
-            <div class="w-full md:w-4/5 aspect-video bg-gray-200 rounded-lg shadow-lg overflow-hidden">
-                <!-- Replace with actual video embed -->
-                <video controls class="w-full h-full">
-                    <source src="sample-video.mp4" type="video/mp4">
-                    Your browser does not support video playback.
-                </video>
-            </div>
-        </div>
+        <div class="w-full md:w-4/5 aspect-video bg-gray-200 rounded-lg shadow-lg overflow-hidden">
+            <iframe
+                class="w-full h-full"
+                src="https://www.youtube.com/embed/wDchsz8nmbo"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+            </iframe>
 
+        </div>
+    </div>
     </div>
 </section>
 

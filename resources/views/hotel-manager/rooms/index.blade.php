@@ -147,7 +147,7 @@
 
     .btn-hide { background-color: #feefc3; color: #92400e; }
     .btn-hide:hover { background-color: #fde68a; }
-    
+
     .btn-show { background-color: #d1fae5; color: #065f46; }
     .btn-show:hover { background-color: #a7f3d0; }
 
@@ -189,7 +189,7 @@
     </div>
 
     @if(session('success'))
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" 
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
              class="alert-container" x-transition>
             <div class="alert alert-success shadow-lg">
                 {{ session('success') }}
@@ -234,7 +234,7 @@
                         <button type="submit" class="btn-action btn-show"><i class="fas fa-eye"></i> Show</button>
                     @endif
                 </form>
-                
+
                 <a href="{{ route('hotel-manager.rooms.edit', $room->id) }}" class="btn-action btn-edit">
                     <i class="fas fa-pencil-alt"></i> Edit
                 </a>

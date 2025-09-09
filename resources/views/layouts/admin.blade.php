@@ -171,6 +171,10 @@
                     <span>Manage Amenities</span></a></li>
                 </a>
             </li>
+            <li><a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+                href="{{ route('admin.settings.edit') }}">
+                <i class="fa-solid fa-file-alt"></i> <span>Page Content</span>
+            </a></li>
         </ul>
     </div>
 

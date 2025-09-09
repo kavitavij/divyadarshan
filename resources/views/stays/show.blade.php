@@ -30,7 +30,7 @@
     {{-- HEADER --}}
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold mb-2 text-gray-800">{{ $hotel->name }}</h1>
+            <h1 class="text-3xl font-bold mb-2 text-red-800">{{ $hotel->name }}</h1>
             <p class="text-gray-500 mb-6">{{ $hotel->location }}</p>
         </div>
         @if($hotel->reviews->count() > 0)

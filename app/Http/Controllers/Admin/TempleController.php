@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Temple;
 use App\Models\User;
-use App\Models\Booking; // Import the Booking model
-use App\Models\SevaBooking; // Import the SevaBooking model
+use App\Models\Booking;
+use App\Models\SevaBooking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class TempleController extends Controller
 {
@@ -61,24 +62,7 @@ class TempleController extends Controller
 
     public function update(Request $request, Temple $temple)
     {
-        // Check if the update is coming from the T&C modal.
-        if ($request->input('update_source') === 'terms_modal') {
-            $validatedData = $request->validate([
-                'terms_and_conditions'   => 'nullable|array',
-                'terms_and_conditions.*' => 'nullable|string|max:1000',
-            ]);
-
-            // If the user removes all terms, default to an empty array.
-            $terms = $validatedData['terms_and_conditions'] ?? [];
-
-            // Update only the terms and conditions.
-            $temple->terms_and_conditions = array_filter($terms);
-            $temple->save();
-
-            return redirect()->route('admin.temples.index')->with('success', 'Terms & Conditions updated successfully.');
-        }
-
-        // --- Otherwise, handle the FULL edit form from the main Edit page ---
+        // --- This is the main edit form logic ---
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
@@ -89,10 +73,17 @@ class TempleController extends Controller
             'online_services' => 'nullable|string',
             'social_services' => 'nullable|string',
             'offered_services' => 'nullable|array',
+            'offered_social_services' => 'nullable|array',
             'slot_data' => 'nullable|array',
             'news_items' => 'nullable|array',
             'news_tickers' => 'nullable|array',
         ]);
+
+        // ✅ **THE FIX IS HERE**
+        // Ensure that if no checkboxes are checked, an empty array is saved,
+        // preventing old data from persisting.
+        $validatedData['offered_services'] = $request->input('offered_services', []);
+        $validatedData['offered_social_services'] = $request->input('offered_social_services', []);
 
         // Rebuild the news array structure
         $newsItemsInput = $request->input('news_items', []);
@@ -108,21 +99,20 @@ class TempleController extends Controller
         }
         $validatedData['news'] = $news;
 
-        // Handle image upload
+        // Handle image upload using Storage
         if ($request->hasFile('image')) {
-            if ($temple->image && file_exists(public_path($temple->image))) {
-                unlink(public_path($temple->image));
+            if ($temple->image) {
+                Storage::disk('public')->delete($temple->image);
             }
-            $imageName = time().'.'.$request->image->extension();
-            $request->image->move(public_path('images/temples'), $imageName);
-            $validatedData['image'] = 'images/temples/' . $imageName;
+            $path = $request->file('image')->store('temples', 'public');
+            $validatedData['image'] = $path;
         }
 
+        // The $validatedData array now contains everything correctly.
         $temple->update($validatedData);
 
         return redirect()->route('admin.temples.index')->with('success', 'Temple updated successfully.');
     }
-
     public function destroy(Temple $temple)
     {
         if ($temple->image && file_exists(public_path($temple->image))) {

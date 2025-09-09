@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-8">Frequently Asked Questions (FAQs)</h1>
-    
+
     <div class="max-w-3xl mx-auto space-y-4">
         {{-- Question 1 --}}
         <div class="bg-white p-6 rounded-lg shadow-md">
@@ -33,19 +33,19 @@
     {{-- Ask Your Question Form --}}
     <div class="max-w-3xl mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Have a Question? Ask Us!</h2>
-        
+
         <form action="#" method="POST">
             @csrf
             <div class="mb-4">
                 <label class="block text-gray-700 font-medium mb-2">Your Name</label>
                 <input type="text" name="name" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" required>
             </div>
-            
+
             <div class="mb-4">
                 <label class="block text-gray-700 font-medium mb-2">Your Email</label>
                 <input type="email" name="email" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" required>
             </div>
-            
+
             <div class="mb-4">
                 <label class="block text-gray-700 font-medium mb-2">Your Question</label>
                 <textarea name="question" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" required></textarea>

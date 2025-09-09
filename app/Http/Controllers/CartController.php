@@ -166,7 +166,6 @@ class CartController extends Controller
 
     return redirect()->route('cart.view')->with('success', 'Darshan booking added to your cart!');
 }
-
     public function addStay(Request $request)
     {
         $validated = $request->validate([
@@ -213,7 +212,6 @@ class CartController extends Controller
         session()->put('cart', $cart);
         return redirect()->route('cart.view')->with('success', 'Item added to cart successfully!');
     }
-
     public function pay(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -241,11 +239,6 @@ class CartController extends Controller
             'razorpay_key' => config('services.razorpay.key')
         ]);
     }
-
-    /**
-     * UPDATED: This is the fully corrected paymentSuccess method.
-     */
-    // In app/HttpControllers/CartController.php
 
     public function paymentSuccess(Request $request)
     {

@@ -103,9 +103,6 @@
                     <h2 class="text-xl font-bold">Book Your Darshan</h2>
                 </div>
                 <div class="p-6">
-                    
-                    {{-- The stepper code was here... --}}
-
                     <div class="mb-4">
                         <label for="temple_id" class="block font-semibold mb-2">1. Select Temple</label>
                         <select name="temple_id" id="temple_id" class="form-control" required>
@@ -116,10 +113,7 @@
                         </select>
                     </div>
 
-                    {{-- This @if block now controls the visibility of the stepper AND the form --}}
                     @if (isset($selectedTemple))
-                    
-                    {{-- MOVED HERE: Progress Stepper now only shows when a temple is selected --}}
                     <div class="stepper-wrapper">
                         <div class="stepper-item active">
                             <div class="step-counter">1</div>
@@ -134,8 +128,7 @@
                             <div class="step-name">Review & Pay</div>
                         </div>
                     </div>
-                    {{-- END MOVED HERE --}}
-                    
+
                     <form id="bookingForm" action="{{ route('booking.details') }}" method="GET">
                         <input type="hidden" name="temple_id" value="{{ $selectedTemple->id }}">
                         <div class="mb-4">
@@ -201,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
         slotsContainer.innerHTML = '';
 
         const url = '{{ route("api.temples.slots_for_date", ["temple" => $selectedTemple->id, "date" => "DATE_PLACEHOLDER"]) }}'.replace('DATE_PLACEHOLDER', encodeURIComponent(selectedDate));
-        
+
         fetch(url)
             .then(res => res.json())
             .then(data => {

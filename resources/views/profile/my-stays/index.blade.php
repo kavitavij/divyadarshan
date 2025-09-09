@@ -102,7 +102,7 @@
                             {{-- View Receipt Button (shows for confirmed bookings) --}}
                             @if (strtolower($booking->status) === 'confirmed')
                                 <a href="{{ route('profile.my-stays.receipt', $booking) }}" class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
-                                    📄 View Receipt
+                                    📄 Download Receipt
                                 </a>
                             @endif
                         </div>

@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            {{-- Offered Services --}}
+             {{-- Offered Services --}}
             <div class="card mb-4">
                 <div class="card-header">
                     <h3 class="card-title">Offered Services</h3>
@@ -79,14 +79,44 @@
                             </label>
                         </div>
                     @endforeach
-
                 </div>
             </div>
+
+            {{-- ✅ NEW: Offered Social Services --}}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Offered Social Services</h3>
+                </div>
+                <div class="card-body">
+                    @php
+                        $social_services_options = [
+                            'annadaan' => 'Annadaan (Food Donation)',
+                            'health_camps' => 'Health Camps',
+                            'education_aid' => 'Education Aid',
+                            'environment_care' => 'Environment Care',
+                            'community_seva' => 'Community Seva',
+                        ];
+                        $offered_social = $temple->offered_social_services ?? [];
+                    @endphp
+
+                    @foreach ($social_services_options as $key => $label)
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="offered_social_services[]"
+                                value="{{ $key }}" id="{{ $key }}"
+                                {{ in_array($key, $offered_social) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="{{ $key }}">
+                                {{ $label }}
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
 
             {{-- Page Content --}}
             <div class="card mb-4">
                 <div class="card-header">
-                    <h3 class="card-title">Page Content (HTML/CSS Support)</h3>
+                    <h3 class="card-title">Page Content </h3>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
