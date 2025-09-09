@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
 class RoomController extends Controller
 {
     private function getManagerHotel()
@@ -163,6 +162,16 @@ class RoomController extends Controller
             Log::error('Error deleting photo: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Server error, could not delete photo.']);
         }
+    }
+    public function toggleVisibility(Room $room)
+    {
+        // Flip the boolean value
+        $room->is_visible = !$room->is_visible;
+        $room->save();
+
+        $status = $room->is_visible ? 'visible' : 'hidden';
+        
+        return redirect()->back()->with('success', "Room '{$room->type}' is now {$status}.");
     }
 }
 

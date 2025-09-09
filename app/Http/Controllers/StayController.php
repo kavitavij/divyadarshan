@@ -33,15 +33,15 @@ class StayController extends Controller
             $query->where('temple_id', $request->input('temple_id'));
         }
 
-        // Eager load the minimum price for each hotel's rooms
-        // This is an efficient way to show "Prices from..."
-        $query->withMin('rooms', 'price_per_night');
+        // ✅ FIX: Only calculate the minimum price based on VISIBLE rooms.
+        $query->withMin(['rooms' => function ($query) {
+            $query->where('is_visible', true);
+        }], 'price_per_night');
 
         // Paginate the results
         $hotels = $query->latest()->paginate(9);
 
         // 3. Append the filter criteria to pagination links
-        // This ensures filters are not lost when you go to page 2, 3, etc.
         $hotels->appends($request->all());
 
         // Get all temples to populate the filter dropdown
@@ -57,9 +57,16 @@ class StayController extends Controller
 
     public function show(Hotel $hotel)
     {
-        // ** THE FIX IS HERE **
-        // We use nested eager loading 'rooms.photos' to get the photos for each room.
-        $hotel->load(['rooms.photos', 'temple', 'reviews.user', 'images', 'amenities']);
+        // ✅ FIX: Eager load only the VISIBLE rooms for the hotel.
+        $hotel->load([
+            'rooms' => function ($query) {
+                $query->where('is_visible', true)->with('photos');
+            },
+            'temple',
+            'reviews.user',
+            'images',
+            'amenities'
+        ]);
 
         $averageRating = $hotel->reviews->avg('rating');
         $similarHotels = Hotel::where('location', $hotel->location)
@@ -76,6 +83,11 @@ class StayController extends Controller
 
     public function details(Room $room)
     {
+        // ✅ FIX: Prevent users from viewing a hidden room's detail page.
+        if (!$room->is_visible) {
+            abort(404);
+        }
+        
         // The 'with()' efficiently loads the hotel information along with the room
         $room->load('hotel');
         return view('stays.details', compact('room'));
@@ -100,6 +112,12 @@ class StayController extends Controller
             'guests.*.id_type' => 'required|string',
             'guests.*.id_number' => 'required|string|max:255',
         ]);
+
+        // ✅ FIX: Add a final check to prevent booking a hidden room.
+        $room = Room::findOrFail($validatedData['room_id']);
+        if (!$room->is_visible) {
+            return redirect()->back()->with('error', 'This room is not available for booking.')->withInput();
+        }
 
         $booking = null;
 
@@ -136,3 +154,4 @@ class StayController extends Controller
                          ->with('success', 'Booking details saved! Please proceed to payment.');
     }
 }
+

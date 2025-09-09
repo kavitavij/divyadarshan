@@ -17,7 +17,8 @@ class Room extends Model
         'price_per_night',
         'total_rooms',
         'facilities',
-        'room_size'
+        'room_size',
+        'is_visible'
     ];
 
     /**
@@ -31,7 +32,10 @@ class Room extends Model
      * @var array
      */
     protected $with = ['photos'];
-
+    
+    protected $casts = [
+        'is_visible' => 'boolean', 
+    ];
     public function hotel()
     {
         return $this->belongsTo(Hotel::class);

@@ -51,6 +51,7 @@ use App\Http\Controllers\HotelManager\HotelController as HotelManagerHotelContro
 use App\Http\Controllers\HotelManager\RoomController as HotelManagerRoomController;
 use App\Http\Controllers\HotelManager\GuestListController;
 use App\Http\Controllers\HotelManager\HotelImageController;
+use App\Http\Controllers\HotelManager\RoomController;
 // Temple Manager Controllers
 use App\Http\Controllers\TempleManager\DashboardController as TempleManagerDashboardController;
 use App\Http\Controllers\TempleManager\TempleController as TempleManagerController;
@@ -248,7 +249,9 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::post('/gallery', [HotelImageController::class, 'store'])->name('gallery.store');
     Route::delete('/gallery/{image}', [HotelImageController::class, 'destroy'])->name('gallery.destroy');
     Route::delete('/rooms/photo/{photo}', [HotelManagerRoomController::class, 'deletePhoto'])->name('rooms.photo.delete');
+    Route::patch('rooms/{room}/toggle-visibility', [RoomController::class, 'toggleVisibility'])->name('hotel-manager.rooms.toggleVisibility');
 
+Route::patch('rooms/{room}/toggle-visibility', [HotelManagerRoomController::class, 'toggleVisibility'])->name('rooms.toggleVisibility');
 });
 
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {
