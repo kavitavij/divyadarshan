@@ -14,9 +14,6 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        // REMOVE THIS LINE
-        // DB::table('users')->truncate(); 
-
         $users = [
             [
                 'name' => 'Superadmin',

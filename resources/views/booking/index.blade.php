@@ -144,7 +144,7 @@
                         </div>
                         <div class="mb-4">
                             <label for="number_of_people" class="block font-semibold mb-2">4. Number of People</label>
-                            <input type="number" name="number_of_people" id="number_of_people" class="form-control" value="1" min="1" required>
+                            <input type="number" name="number_of_people" id="number_of_people" class="form-control" value="1" min="1" max="8" required>
                         </div>
                         <div class="mt-4">
                             <p id="totalCharge" class="text-blue-600 font-semibold"></p>

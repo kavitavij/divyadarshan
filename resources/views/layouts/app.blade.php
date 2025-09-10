@@ -109,10 +109,10 @@
                         <a href="{{ route('sevas.booking.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
                         <a href="{{ route('stays.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Accommodation Booking</a>
                         <a href="{{ route('donations.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Donations</a>
+                        <a href="{{ route('ebooks.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Ebooks</a>
+
                     </div>
                 </div>
-
-                <a href="{{ route('ebooks.index') }}" class="hover:text-yellow-400 transition">Ebooks</a>
             </nav>
 
             <div class="hidden md:flex items-center gap-4">
@@ -192,7 +192,7 @@
                         <h1>Experience the Power of Sacred Rituals</h1>
                         <p>Let the light guide your path to peace and purpose</p>
                         <a href="{{ route('booking.index') }}">
-                            <button>Book Your Puja</button>
+                            <button>Book Your Darshan</button>
                         </a>
                     </div>
                 </div>
@@ -501,7 +501,7 @@
             </div>
 
             <div class="p-6 md:p-8 overflow-y-auto">
-                <form action="{{ route('spiritual-help.store') }}" method="POST">
+                <form action="{{ route('spiritual-help.submit') }}" method="POST">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
 

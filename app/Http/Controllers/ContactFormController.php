@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ContactSubmission;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactFormMail;
 
 class ContactFormController extends Controller
 {
@@ -17,7 +19,9 @@ class ContactFormController extends Controller
 
         ContactSubmission::create($validated);
 
-        // Redirect back with a flag to re-open the modal
+        $adminEmail = 'truckares@gmail.com';
+        Mail::to($adminEmail)->send(new ContactFormMail($validated));
+
         return redirect()->back()
             ->with('success', 'Thank you for your message! We will get back to you shortly.')
             ->with('open_contact_modal', true);

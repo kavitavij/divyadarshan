@@ -37,18 +37,20 @@
                     </div>
                     <hr>
                     <h4 class="mt-4">Page Content Sections</h4>
-                    <div class="form-group mb-3">
-                        <label for="about">About Section</label>
-                        <textarea name="about" class="form-control" rows="5">{{ old('about', $temple->about) }}</textarea>
+                    <div class="card-body">
+                    <div class="mb-3">
+                        <label for="about" class="form-label">About Section</label>
+                        <textarea class="form-control wysiwyg-editor" name="about">{{ old('about', $temple->about) }}</textarea>
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="online_services">Online Services Section</label>
-                        <textarea name="online_services" class="form-control" rows="5">{{ old('online_services', $temple->online_services) }}</textarea>
+                    <div class="mb-3">
+                        <label for="online_services" class="form-label">Online Services Section</label>
+                        <textarea class="form-control wysiwyg-editor" name="online_services">{{ old('online_services', $temple->online_services) }}</textarea>
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="social_services">Social Services Section</label>
-                        <textarea name="social_services" class="form-control" rows="5">{{ old('social_services', $temple->social_services) }}</textarea>
+                    <div class="mb-3">
+                        <label for="social_services" class="form-label">Social Services Section</label>
+                        <textarea class="form-control wysiwyg-editor" name="social_services">{{ old('social_services', $temple->social_services) }}</textarea>
                     </div>
+                </div>
                     <button type="submit" class="btn btn-primary">Update Details</button>
                     <a href="{{ route('temple-manager.dashboard') }}" class="btn btn-secondary">Cancel</a>
                 </form>

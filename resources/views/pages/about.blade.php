@@ -91,7 +91,7 @@
                     <a href="{{ route('ebooks.index') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">E-Books</a>
                 </div>
             </div>
-             <div x-data="{ open: false }" class="relative">
+             {{-- <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
                     General Info <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
                 </button>
@@ -103,7 +103,7 @@
                       <a href="#" @click.prevent="showInfo('cancellation')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Cancellation Policy</a>
                       <a href="#" @click.prevent="showInfo('contact')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
                 </div>
-            </div>
+            </div> --}}
         </nav>
         {{-- Auth buttons --}}
         <div>
@@ -401,24 +401,35 @@
 <footer style="background:#0d0d0d; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
         <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">
 
-            <div>
+            {{-- <div>
                 <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">About DivyaDarshan</h3>
                 <p style="font-size:15px; line-height:1.6; color:#bbb;">
                     Connecting devotees to divinity through online puja, darshan, seva, and temple services — anywhere, anytime.
                 </p>
-            </div>
+            </div> --}}
 
             <div>
                 <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Quick Links</h3>
                 <ul style="list-style:none; padding:0; margin:0;">
-                    <li><a href="/services" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Services</a></li>
-                    <li><a href="/reviews" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Reviews</a></li>
-                    <li><a href="{{ route('guidelines') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px;">Guidelines</a></li>
-                    <li><a href="{{ route('complaint.form') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px;">Complaint</a></li>
+                    <li><a href="/services" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Services</a></li>
+                    <li><a href="/reviews" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Reviews</a></li>
+                    <li><a href="{{ route('guidelines') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Guidelines</a></li>
+                    <li><a href="{{ route('complaint.form') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Complaint</a></li>
                 </ul>
             </div>
-
             <div>
+                <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">General Info</h3>
+                <ul style="list-style:none; padding:0; margin:0;">
+                    <li><a href="#" @click.prevent="showInfo('faq')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">FAQs</a></li>
+                    <li><a href="#" @click.prevent="showInfo('sevas')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a></li>
+                    <li><a href="#" @click.prevent="showInfo('dress-code')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Dress Code</a></li>
+                    <li><a href="#" @click.prevent="showInfo('privacy')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Privacy Policy</a></li>
+                    <li><a href="#" @click.prevent="showInfo('cancellation')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Cancellation Policy</a></li>
+                    <a href="#" @click.prevent="showInfo('contact')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Contact Us</h3>
                 <p style="font-size:15px; color:#bbb; line-height:1.7;">
                     📍 SOPL, Mohali, India <a href="#" @click.prevent="showInfo('contact')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
 
@@ -633,10 +644,7 @@
     </template>
 
     <template id="sevas-content" data-title="About Sevas">
-        {{-- 1. Using {!! !!} to render HTML from the database --}}
         {!! $settings['page_content_sevas'] ?? '<p>Sevas information is not available yet.</p>' !!}
-
-        {{-- 2. Added a static footer with the clickable email --}}
         <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
         <p>For more enquiry, contact <a href="mailto:info@divyadarshan.com" style="color: #b45309; text-decoration: underline;">info@divyadarshan.com</a></p>
     </template>
@@ -651,6 +659,12 @@
         {!! $settings['page_content_privacy'] ?? '<p>Privacy Policy is not available yet.</p>' !!}
         <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
         <p>For more enquiry, contact <a href="mailto:info@divyadarshan.com" style="color: #b45309; text-decoration: underline;">info@divyadarshan.com</a></p>
+    </template>
+
+    <template id="cancellation-content" data-title="Cancellation Policy">
+    {!! $settings['page_content_cancellation'] ?? '<p>Cancellation Policy information is not available yet.</p>' !!}
+    <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+    <p>For more enquiry, contact <a href="mailto:info@divyadarshan.com" style="color: #b45309; text-decoration: underline;">info@divyadarshan.com</a></p>
     </template>
 
     <template id="contact-content" data-title="Contact Us">

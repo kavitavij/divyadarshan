@@ -17,25 +17,19 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // First, check if the user is authenticated.
+
         if (!Auth::check()) {
-            // If not logged in, redirect to the login page.
             return redirect('login');
         }
 
         // Get the authenticated user.
         $user = Auth::user();
 
-        // Loop through the roles required for the route (e.g., 'admin', 'temple_manager').
         foreach ($roles as $role) {
-            // Check if the user's role column matches the required role.
             if ($user->role === $role) {
-                // If a match is found, allow the request to proceed.
                 return $next($request);
             }
         }
-
-        // If no matching role was found, block access.
         abort(403, 'Unauthorized action.');
     }
 }

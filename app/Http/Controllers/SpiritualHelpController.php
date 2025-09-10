@@ -1,7 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\SpiritualHelpRequest;
+use App\Models\Temple;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SpiritualFormMail;
 
 class SpiritualHelpController extends Controller
 {
@@ -18,7 +23,28 @@ class SpiritualHelpController extends Controller
         ]);
 
         SpiritualHelpRequest::create($validated);
+        $templeName = 'Not specified / General Inquiry';
+        if (!empty($validated['temple_id'])) {
+            $temple = Temple::find($validated['temple_id']);
+            if ($temple) {
+                $templeName = $temple->name;
+            } else {
+                $templeName = 'Temple ID not found in database';
+            }
+        }
 
+        $orderedMailData = [
+            'Name' => $validated['name'],
+            'Contact Info' => $validated['contact_info'],
+            'City' => $validated['city'],
+            'Query Type' => $validated['query_type'],
+            'Temple' => $templeName,
+            'Preferred Time' => $validated['preferred_time'],
+            'Message' => $validated['message'],
+        ];
+        $adminEmail = 'truckares@gmail.com';
+        Mail::to($adminEmail)->send(new SpiritualFormMail($orderedMailData));
         return redirect()->back()->with('success', 'Your request has been submitted successfully! We will contact you soon.');
     }
 }
+

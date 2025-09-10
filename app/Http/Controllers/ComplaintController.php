@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Complaint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ComplaintMail;
 
 class ComplaintController extends Controller
 {
@@ -11,24 +13,28 @@ class ComplaintController extends Controller
     {
         return view('pages.complaint');
     }
-     public function store(Request $request)
+
+    public function store(Request $request)
     {
-        // It's a good practice to validate the input
+        // 1. Validate all the incoming form data
         $validatedData = $request->validate([
-            // Add your form fields here for validation
-            // Example: 'name' => 'required|string|max:255',
-            // 'email' => 'required|email',
-            // 'details' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'issue_type' => 'required|string|max:255',
+            'message' => 'required|string',
         ]);
 
-        // Create the complaint using only validated data
-        $complaint = Complaint::create($request->all()); // Or use $validatedData
+        Complaint::create($validatedData);
 
-        // Instead of redirecting, return a JSON response
+        $adminEmail = 'truckares@gmail.com';
+        Mail::to($adminEmail)->send(new ComplaintMail($validatedData));
+
         return response()->json([
             'success' => true,
-            'message' => 'Thank you! Your complaint has been submitted.',
-            'redirect_url' => route('home')
+            'message' => 'Thank you! Your complaint has been submitted successfully.',
+            'redirect_url' => route('home') // Provide the URL for the "Back to Home" button
         ]);
     }
 }
+

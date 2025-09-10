@@ -23,7 +23,8 @@ use Exception;
 use Illuminate\Support\Str;
 use App\Models\DefaultDarshanSlot;
 use App\Models\DarshanSlot;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderConfirmation;
 class CartController extends Controller
 {
     public function addSeva(Request $request)
@@ -96,76 +97,73 @@ class CartController extends Controller
         return view('cart.checkout', compact('cart', 'totalAmount'));
     }
     public function addDarshan(Request $request)
-{
-    // 1. UPDATED VALIDATION LOGIC
-    $validatedData = $request->validate([
-        'temple_id' => 'required|exists:temples,id',
-        'selected_date' => 'required|date',
-        'number_of_people' => 'required|integer|min:1',
-        'devotees' => 'required|array',
-        'devotees.*.full_name' => 'required|string|max:255',
-        'devotees.*.age' => 'required|integer|min:1',
-        'devotees.*.gender' => 'required|string',
-        'devotees.*.email' => 'required|email',
-        'devotees.*.phone_number' => 'required|string|max:15',
-        'devotees.*.pincode' => 'required|string|max:6',
-        'devotees.*.city' => 'required|string',
-        'devotees.*.state' => 'required|string',
-        'devotees.*.address' => 'required|string',
-        'devotees.*.id_type' => 'required|string',
-        'devotees.*.id_number' => 'required|string',
-        'devotees.*.id_photo' => 'required|file|mimes:jpg,jpeg,png|max:2048', // File validation
-        'darshan_slot_id' => [
-            'required',
-            'string',
-            // Custom rule to validate both 'default-ID' and regular IDs
-            function ($attribute, $value, $fail) {
-                if (str_starts_with($value, 'default-')) {
-                    $id = (int) str_replace('default-', '', $value);
-                    if (!DB::table('default_darshan_slots')->where('id', $id)->exists()) {
-                        $fail('The selected darshan slot is invalid.');
+    {
+        $validatedData = $request->validate([
+            'temple_id' => 'required|exists:temples,id',
+            'selected_date' => 'required|date',
+            'number_of_people' => 'required|integer|min:1',
+            'devotees' => 'required|array',
+            'devotees.*.full_name' => 'required|string|max:255',
+            'devotees.*.age' => 'required|integer|min:1',
+            'devotees.*.gender' => 'required|string',
+            'devotees.*.email' => 'required|email',
+            'devotees.*.phone_number' => 'required|string|max:15',
+            'devotees.*.pincode' => 'required|string|max:6',
+            'devotees.*.city' => 'required|string',
+            'devotees.*.state' => 'required|string',
+            'devotees.*.address' => 'required|string',
+            'devotees.*.id_type' => 'required|string',
+            'devotees.*.id_number' => 'required|string',
+            'devotees.*.id_photo' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'darshan_slot_id' => ['required','string',
+                // Custom rule to validate both 'default-ID' and regular IDs
+                function ($attribute, $value, $fail) {
+                    if (str_starts_with($value, 'default-')) {
+                        $id = (int) str_replace('default-', '', $value);
+                        if (!DB::table('default_darshan_slots')->where('id', $id)->exists()) {
+                            $fail('The selected darshan slot is invalid.');
+                        }
+                    } else {
+                        if (!DB::table('darshan_slots')->where('id', $value)->exists()) {
+                            $fail('The selected darshan slot is invalid.');
+                        }
                     }
-                } else {
-                    if (!DB::table('darshan_slots')->where('id', $value)->exists()) {
-                        $fail('The selected darshan slot is invalid.');
-                    }
-                }
-            },
-        ],
-    ]);
+                },
+            ],
+        ]);
 
-    // 2. HANDLE FILE UPLOADS BEFORE SAVING TO SESSION
-    $processedDevotees = [];
-    foreach ($validatedData['devotees'] as $index => $devotee) {
-        if ($request->hasFile("devotees.{$index}.id_photo")) {
-            // Store the file in 'storage/app/public/id_proofs'
-            $path = $request->file("devotees.{$index}.id_photo")->store('id_proofs', 'public');
-            $devotee['id_photo_path'] = $path; // Add the path to the array
-            unset($devotee['id_photo']); // Remove the file object
+        // 2. HANDLE FILE UPLOADS BEFORE SAVING TO SESSION
+        $processedDevotees = [];
+        foreach ($validatedData['devotees'] as $index => $devotee) {
+            if ($request->hasFile("devotees.{$index}.id_photo")) {
+                // Store the file in 'storage/app/public/id_proofs'
+                $path = $request->file("devotees.{$index}.id_photo")->store('id_proofs', 'public');
+                $devotee['id_photo_path'] = $path;
+                unset($devotee['id_photo']);
+            }
+            $processedDevotees[] = $devotee;
         }
-        $processedDevotees[] = $devotee;
+        $validatedData['devotees'] = $processedDevotees;
+
+        // 3. ADD TO CART LOGIC (Now using processed data)
+        $temple = Temple::findOrFail($validatedData['temple_id']);
+        $totalCharge = $temple->darshan_charge * $validatedData['number_of_people'];
+        $cart = session()->get('cart', []);
+        $cartItemId = 'darshan_' . $validatedData['temple_id'] . '_' . time();
+
+        $cart[$cartItemId] = [
+            'id'       => $cartItemId,
+            'type'     => 'darshan',
+            'name'     => 'Darshan at ' . $temple->name,
+            'price'    => $totalCharge,
+            'quantity' => 1,
+            'details'  => $validatedData
+        ];
+
+        session()->put('cart', $cart);
+
+        return redirect()->route('cart.view')->with('success', 'Darshan booking added to your cart!');
     }
-    $validatedData['devotees'] = $processedDevotees;
-
-    // 3. ADD TO CART LOGIC (Now using processed data)
-    $temple = Temple::findOrFail($validatedData['temple_id']);
-    $totalCharge = $temple->darshan_charge * $validatedData['number_of_people'];
-    $cart = session()->get('cart', []);
-    $cartItemId = 'darshan_' . $validatedData['temple_id'] . '_' . time();
-
-    $cart[$cartItemId] = [
-        'id'       => $cartItemId,
-        'type'     => 'darshan',
-        'name'     => 'Darshan at ' . $temple->name,
-        'price'    => $totalCharge,
-        'quantity' => 1, // Darshan is a single package
-        'details'  => $validatedData // This is now safe to store in the session
-    ];
-
-    session()->put('cart', $cart);
-
-    return redirect()->route('cart.view')->with('success', 'Darshan booking added to your cart!');
-}
     public function addStay(Request $request)
     {
         $validated = $request->validate([
@@ -373,7 +371,7 @@ class CartController extends Controller
             });
 
             if ($finalOrder) {
-                $user->notify(new \App\Notifications\OrderConfirmation($finalOrder));
+                 Mail::to($user->email)->send(new OrderConfirmation($finalOrder));
             }
 
             session()->forget('cart');

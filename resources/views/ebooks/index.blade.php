@@ -31,7 +31,7 @@
             </p>
         @else
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {{-- Replace your existing loop with this one --}}
+
                 @foreach ($ebooks as $ebook)
                     <div class="card bg-white shadow-lg rounded-lg overflow-hidden flex flex-col">
                         <div class="relative">
@@ -48,9 +48,7 @@
                             @if ($ebook->author)
                                 <p class="text-gray-600 text-sm mb-4">By: {{ $ebook->author }}</p>
                             @endif
-                            {{-- Spacer to push the button to the bottom --}}
                             <div class="flex-grow"></div>
-                            {{-- Price and Button --}}
                             <div class="mt-4">
                                 @if ($ebook->type == 'paid')
                                     <p class="text-xl font-bold text-blue-700 mb-2">₹{{ $ebook->price }}</p>
@@ -72,7 +70,6 @@
                     </div>
                 @endforeach
             </div>
-
             <div class="mt-8">
                 {{ $ebooks->links() }}
             </div>
