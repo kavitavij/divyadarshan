@@ -19,14 +19,30 @@
         [x-cloak] { display: none !important; }
         body { font-family: 'Poppins', sans-serif; }
         .hero-section {
-            height: 50vh; width: 100%;
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://www.shutterstock.com/image-photo/grand-illustrated-indian-temple-background-260nw-2604158189.jpg');
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            display: flex; align-items: center; justify-content: center;
-            color: white; text-align: center;
+        height: 50vh;
+        width: 100%;
+        background: linear-gradient(
+            rgba(13, 13, 13, 0.7),
+            rgba(13, 13, 13, 0.7)
+            ),
+            url('https://www.shutterstock.com/image-photo/grand-illustrated-indian-temple-background-260nw-2604158189.jpg');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #facc15; /* Matches yellow-400 */
+        text-align: center;
         }
-        .hero-section h1 { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
-        .hero-section p { font-size: 1.5rem; font-weight: 400; max-width: 800px; margin: 0 auto; }
+        .hero-section h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #facc15;
+        }
+        .hero-section p {
+        font-size: 1.25rem;
+        color: #fefefe;
+        }
     </style>
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
@@ -153,7 +169,7 @@
                 <p class="mt-4 text-slate-600 text-lg">
                     Born from a desire to make divine experiences accessible to all, DivyaDarshan was founded on the principles of authenticity, devotion, and service. We saw that distance should never be a barrier to faith. Our journey is to meticulously recreate the temple experience for you, no matter where you are, ensuring every ritual is performed with the sanctity it deserves.
                 </p>
-                <a href="{{ route('reviews.index') }}" class="mt-6 inline-block bg-yellow-500 text-slate-900 font-bold px-6 py-3 rounded-lg hover:bg-yellow-400 transition-colors duration-300">
+                <a href="{{ route('reviews.index') }}" class="mt-6 inline-block bg-yellow-500 text-slate-900 font-bold px-6 py-3 rounded-lg hover:bg-yellow-400 transition">
                     See Devotee Stories
                 </a>
             </div>
@@ -411,7 +427,6 @@
             <div>
                 <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Quick Links</h3>
                 <ul style="list-style:none; padding:0; margin:0;">
-                    <li><a href="/services" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Services</a></li>
                     <li><a href="/reviews" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Reviews</a></li>
                     <li><a href="{{ route('guidelines') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Guidelines</a></li>
                     <li><a href="{{ route('complaint.form') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Complaint</a></li>
@@ -456,7 +471,7 @@
     </footer>
 
      {{-- General Info Modal --}}
-    <div x-show="infoModalOpen" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[999] p-4">
+    <!-- <div x-show="infoModalOpen" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[999] p-4">
         <div @click.away="infoModalOpen = false" class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[80vh] flex flex-col">
             <div class="flex justify-between items-center p-4 border-b">
                 <h2 class="text-2xl font-bold text-slate-800" x-text="modalTitle"></h2>
@@ -466,6 +481,22 @@
                 {{-- Content will be injected here by Alpine.js --}}
             </div>
         </div>
+    </div> -->
+        <div x-show="infoModalOpen" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div 
+        @click.away="infoModalOpen = false"
+        class="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[80vh] flex flex-col overflow-hidden border border-gray-200">
+        <div class="flex justify-between items-center bg-yellow-500 text-[#0d0d0d] px-6 py-4">
+            <h2 class="text-2xl font-bold" x-text="modalTitle"></h2>
+            <button @click="infoModalOpen = false" class="text-3xl font-bold hover:text-red-600">&times;</button>
+        </div>
+        <div class="p-6 overflow-y-auto text-slate-700" x-html="modalContent"></div>
+        <div class="flex justify-end bg-gray-50 px-6 py-4 border-t">
+        <button @click="infoModalOpen = false" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-semibold rounded hover:bg-yellow-400">
+            Close
+        </button>
+        </div>
+    </div>
     </div>
 
 {{-- EXACT LOGIN/REGISTER/FORGOT MODAL FROM YOUR LAYOUT FILE --}}
