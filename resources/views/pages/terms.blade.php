@@ -5,14 +5,14 @@
 @section('content')
 <style>
 :root{
-  --primary:#facc15;      /* yellow brand */
-  --primary-soft:#fef9c3;   /* light yellow bg */
-  --secondary:#0d0d0d;      /* dark header bg */
-  --ink:#333;               /* default text */
+  --primary:#facc15;
+  --primary-soft:#fef9c3;
+  --secondary:#0d0d0d;
+  --ink:#333;
   --muted:#6b7280;
-  --ok:#22c55e;              /* green */
-  --warn:#ef4444;             /* red */
-  --bg:#f8f8f8;               /* page bg */
+  --ok:#22c55e;
+  --warn:#ef4444;
+  --bg:#f8f8f8;
 }
 body{background:var(--bg);color:var(--ink);line-height:1.6;}
 .wrap{

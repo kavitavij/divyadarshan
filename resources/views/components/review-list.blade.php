@@ -9,7 +9,7 @@
         <!-- Review Submission Form -->
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-10">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Leave a Review</h2>
-            <form method="POST" action="{{ route('reviews.store') }}">
+            <form action="{{ route('reviews.store.general') }}" method="POST">
                 @csrf
 
                 <div class="mb-4">

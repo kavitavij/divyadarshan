@@ -59,7 +59,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(Hotel::class, 'manager_id');
     }
-
     public function temple()
     {
         return $this->hasOne(Temple::class, 'manager_id');

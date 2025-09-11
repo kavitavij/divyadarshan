@@ -14,7 +14,7 @@
         .half-screen-slider {
             position: relative;
             width: 100%;
-            height: 50vh;
+            height: 55vh;
             overflow: hidden;
             border-radius: 30px;
         }
@@ -26,21 +26,37 @@
             background-size: cover;
             background-position: center;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: flex-start;
             position: relative;
         }
+        .swiper-slide::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            pointer-events: none;
+        }
         .slide-content {
-            margin-left: 60px;
+            position: relative;
+            z-index: 2;
+            padding: 40px 60px;
             color: white;
+            max-width: 600px;
         }
         .slide-content h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-size: 2.25rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
         }
         .slide-content p {
-            font-size: 1rem;
-            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
         }
         .slide-content button {
             padding: 0.7rem 1.5rem;
@@ -54,18 +70,15 @@
         }
         .slide-content button:hover {
             background-color: #eab308;
+            transform: scale(1.05);
         }
-        .slider-curved-side {
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 150px;
-            height: 100%;
-            background: linear-gradient(to left, rgba(13,13,13,0.9), transparent);
-            border-top-left-radius: 80% 50%;
-            border-bottom-left-radius: 80% 50%;
-            pointer-events: none;
+
+        /* ✅ FIX: Forcefully hide navigation buttons */
+        .swiper-button-next,
+        .swiper-button-prev {
+            display: none !important;
         }
+
     </style>
 </head>
 
@@ -181,13 +194,13 @@
     <div class="half-screen-slider">
         <div class="swiper mySwiper">
             <div class="swiper-wrapper">
-                <div class="swiper-slide" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1lg1oxA8smD7QIE6GIe5FpnnPPgZdL4_WTg&s');">
+                <div class="swiper-slide" style="background-image: url('https://4kwallpapers.com/images/walls/thumbs_3t/266.jpg">
                     <div class="slide-content">
                         <h1>“सर्वे भवन्तु सुखिनः, सर्वे सन्तु निरामयाः।”</h1>
                         <p>May all be happy, may all be free from illness.</p>
                     </div>
                 </div>
-                <div class="swiper-slide" style="background-image: url('https://www.shutterstock.com/image-photo/ganesh-illustration-colorful-hindu-lord-600nw-2344967115.jpg');">
+                <div class="swiper-slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/0052523_Kacheri_group_of_temples%2C_Dwarahat_Uttarakhand_251.jpg/2560px-0052523_Kacheri_group_of_temples%2C_Dwarahat_Uttarakhand_251.jpg">
                     <div class="slide-content">
                         <h1>Experience the Power of Sacred Rituals</h1>
                         <p>Let the light guide your path to peace and purpose</p>
@@ -196,13 +209,23 @@
                         </a>
                     </div>
                 </div>
-                <div class="swiper-slide" style="background-image: url('https://www.shopperspointindia.com/cdn/shop/files/611b3hJzzKL._SL1500.jpg?v=1725436797&width=1445');">
+                <div class="swiper-slide" style="background-image: url('https://getwallpapers.com/wallpaper/full/c/2/d/633460.jpg">
                     <div class="slide-content">
                         <h1>Join Thousands in a Soulful Journey</h1>
                         <p>Your devotion, our guidance</p>
                         <button @click="spiritualHelpModal = true">Get Spiritual Help</button>
                     </div>
                 </div>
+                <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1517840901100-8179e982acb7?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWwlMjBib29raW5nfGVufDB8fDB8fHww');">
+                <div class="slide-content">
+                    <h1>Stay Close to the Divine</h1>
+                    <p>Relax in our comfortable, well-appointed hotel rooms just steps from the temple.
+                    Enjoy warm hospitality, modern amenities, and a serene atmosphere to make your pilgrimage truly peaceful.</p>
+                    <a href="{{ route('stays.index') }}">
+                        <button>Explore Our Hotels</button>
+                    </a>
+                </div>
+            </div>
             </div>
             <div class="swiper-pagination"></div>
         </div>
@@ -233,6 +256,18 @@
         @yield('content')
     </main>
 
+     <div x-show="infoModalOpen" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999] p-4" x-transition>
+        <div @click.away="infoModalOpen = false" class="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[80vh] flex flex-col overflow-hidden">
+            <div class="flex justify-between items-center bg-yellow-500 text-[#0d0d0d] px-6 py-4">
+                <h2 class="text-2xl font-bold" x-text="modalTitle"></h2>
+                <button @click="infoModalOpen = false" class="text-3xl font-bold hover:text-red-600">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto text-slate-700 prose max-w-none" x-html="modalContent"></div>
+        </div>
+    </div>
+
+    {{-- Hidden Content Templates for Modals --}}
+
     <footer style="background:#0d0d0d; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
 
         <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">
@@ -251,7 +286,6 @@
             <div>
                 <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Quick Links</h3>
                 <ul style="list-style:none; padding:0; margin:0;">
-                    <li><a href="/services" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Services</a></li>
                     <li><a href="{{ route('reviews.index') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Reviews</a></li>
                     <li><a href="{{ route('guidelines') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px;">Guidelines</a></li>
                     <li><a href="{{ route('complaint.form') }}" style="color:#bbb; text-decoration:none; display:block; margin-bottom:10px;">Complaint</a></li>
@@ -262,7 +296,7 @@
             <div>
                 <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Contact Us</h3>
                 <p style="font-size:15px; color:#bbb; line-height:1.7;">
-                    📍 SOPL, Mohali, India <a href="{{ route('info.contact') }}" style="color:#93e018; text-decoration:none; display:block; margin-bottom:10px; transition:0.3s;">Contact</a>
+                    📍 SOPL, Mohali, India<br>
                     📞 +91 9876543210 <br>
                     ✉️ <a href="mailto:support@divyadarshan.com" style="color:#facc15; text-decoration:none;">support@divyadarshan.com</a>
                 </p>
@@ -471,7 +505,7 @@
                 </template>
             </div>
         </div>
-    <div x-show="spiritualHelpModal" @keydown.escape.window="spiritualHelpModal = false"
+    {{-- <div x-show="spiritualHelpModal" @keydown.escape.window="spiritualHelpModal = false"
         class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[999] p-4"
         x-cloak
         x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
@@ -582,9 +616,152 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
+<div x-show="spiritualHelpModal" @keydown.escape.window="spiritualHelpModal = false"
+    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[999] p-4"
+    x-cloak
+    x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
 
-    {{-- ✅ FIX: Swiper library is now loaded BEFORE the initialization script --}}
+    <div @click.away="spiritualHelpModal = false"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col transform transition-all border border-gray-200 dark:border-gray-700">
+
+        <div class="flex-shrink-0 flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-4">
+                <i class="fas fa-praying-hands text-yellow-500 text-3xl"></i>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 font-serif">Spiritual Guidance</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">We're here to help you on your journey.</p>
+                </div>
+            </div>
+            <button @click="spiritualHelpModal = false" class="text-gray-400 hover:text-gray-700 dark:hover:text-white transition rounded-full h-10 w-10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-8 overflow-y-auto custom-scrollbar">
+            <form action="{{ route('spiritual-help.submit') }}" method="POST" class="space-y-6">
+                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="name" class="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <input type="text" name="name" id="name" required placeholder="Your full name"
+                                class="pl-10 py-3 w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="contact_info" class="text-sm font-medium text-gray-700 dark:text-gray-300">Email or Phone</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                                <i class="fas fa-at"></i>
+                            </span>
+                            <input type="text" name="contact_info" id="contact_info" required placeholder="Your contact details"
+                                class="pl-10 py-3 w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="city" class="text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
+                         <div class="relative">
+                             <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                            <input type="text" name="city" id="city" required placeholder="e.g., Varanasi"
+                                class="pl-10 py-3 w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="query_type" class="text-sm font-medium text-gray-700 dark:text-gray-300">Query Type</label>
+                        <select name="query_type" id="query_type" required
+                            class="py-3 px-3 w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="Pooja Booking">Pooja Booking</option>
+                            <option value="Astrology">Astrology</option>
+                            <option value="Donation">Donation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2 flex flex-col space-y-2">
+                        <label for="temple_id" class="text-sm font-medium text-gray-700 dark:text-gray-300">Relevant Temple (Optional)</label>
+                        <select name="temple_id" id="temple_id"
+                            class="py-3 px-3 w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                            <option value="">Any Temple / General Question</option>
+                            @if(isset($allTemples))
+                                @foreach($allTemples as $temple)
+                                    <option value="{{ $temple->id }}">{{ $temple->name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2 flex flex-col space-y-2">
+                        <label for="preferred_time" class="text-sm font-medium text-gray-700 dark:text-gray-300">Preferred Time to Contact</label>
+                        <select name="preferred_time" id="preferred_time" required
+                            class="py-3 px-3 w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
+                            <option>Morning (9am - 12pm)</option>
+                            <option>Afternoon (12pm - 4pm)</option>
+                            <option>Evening (4pm - 8pm)</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2 flex flex-col space-y-2">
+                        <label for="message" class="text-sm font-medium text-gray-700 dark:text-gray-300">Your Message or Query</label>
+                        <textarea name="message" id="message" rows="5" required placeholder="Please describe your query in detail..."
+                            class="p-3 w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex-shrink-0 flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" @click="spiritualHelpModal = false"
+                        class="px-6 py-2.5 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-8 py-2.5 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-400 transition shadow-lg hover:shadow-yellow-500/20 transform hover:scale-105">
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('styles')
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9; /* slate-100 */
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-track {
+        background: #1e293b; /* slate-800 */
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #94a3b8; /* slate-400 */
+        border-radius: 4px;
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #475569; /* slate-600 */
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #64748b; /* slate-500 */
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #64748b; /* slate-500 */
+    }
+</style>
+@endpush
+    {{-- Swiper library --}}
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
       const swiper = new Swiper(".mySwiper", {
@@ -592,10 +769,6 @@
         pagination: {
           el: ".swiper-pagination",
           clickable: true,
-        },
-        navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
         },
         autoplay: {
           delay: 5000,
@@ -623,10 +796,21 @@
                     this.cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
                     this.updateTotal();
                 },
+                // ✅ ADDED: Logic for the info modal
+                infoModalOpen: @json(session('success_contact') || $errors->any()),
+                modalTitle: '',
+                modalContent: '',
+                showInfo(type) {
+                    const contentEl = document.querySelector(`#${type}-content`);
+                    if (contentEl) {
+                        this.modalTitle = contentEl.dataset.title;
+                        this.modalContent = contentEl.innerHTML;
+                        this.infoModalOpen = true;
+                    }
+                }
             }
         }
     </script>
-
     @stack('scripts')
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">

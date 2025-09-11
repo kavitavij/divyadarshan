@@ -47,7 +47,6 @@
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 <body id="top" class="bg-white text-slate-800 font-sans">
-
 {{--  Alpine.js logic to handle auto-opening the contact modal --}}
 <div x-data="{
     loginModal: false,
@@ -74,7 +73,6 @@
         }
     }
 }">
-
 {{-- Header --}}
 <header class="bg-[#0d0d0d] text-[#ccc] sticky top-0 z-50 font-poppins">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -153,7 +151,6 @@
         </div>
     </div>
 </header>
-
 <main>
     <section class="hero-section">
         <div>
@@ -161,7 +158,6 @@
             <p>DivyaDarshan is a sacred bridge, connecting devotees worldwide...</p>
         </div>
     </section>
-
     <section class="py-16 lg:py-24 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="animate-fadeInUp">
@@ -185,8 +181,7 @@
             </div>
         </div>
     </section>
-
-<section class="py-16 lg:py-24">
+    <section class="py-16 lg:py-24">
          <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12 animate-fadeInUp">
                 <h2 class="text-3xl font-bold text-slate-900 tracking-tight">The Path of Your Puja</h2>
@@ -221,55 +216,9 @@
             </div>
         </div>
     </section>
-        <section class="bg-slate-50 py-16 lg:py-24">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-12 animate-fadeInUp">
-                <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Words of Devotion</h2>
-                <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Hear from devotees who have completed their spiritual journey with us.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @forelse ($reviews->take(3) as $review)
-                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between transform hover:-translate-y-2 transition-transform duration-300 animate-fadeInUp">
-                        {{-- THIS IS THE RESTORED CODE BLOCK --}}
-                        <div class="flex-grow">
-                            <div class="text-5xl text-yellow-500">“</div>
-                            <p class="text-slate-600 mb-4 -mt-4 italic">"{{ $review->message }}"</p>
-                        </div>
-                        <div class="flex items-center justify-between mt-4">
-                             <div class="flex items-center">
-                                 <div class="flex-shrink-0">
-                                     <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
-                                         <span class="text-xl font-bold">{{ substr($review->name, 0, 1) }}</span>
-                                     </div>
-                                 </div>
-                                 <div class="ml-4">
-                                     <div class="text-md font-semibold text-slate-900">{{ $review->name }}</div>
-                                     <div class="flex items-center mt-1">
-                                         @for ($i = 0; $i < 5; $i++)
-                                             <svg class="w-4 h-4 {{ $i < $review->rating ? 'text-yellow-400' : 'text-slate-300' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                         @endfor
-                                     </div>
-                                 </div>
-                             </div>
-                            <div class="flex items-center text-sm text-slate-500">
-                                <button class="like-btn text-slate-400 hover:text-red-500 focus:outline-none focus:text-red-500 transition duration-150" data-review-id="{{ $review->id }}">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
-                                </button>
-                                <span class="like-count ml-1 font-medium">{{ $review->likes ?? 0 }}</span>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <p class="text-slate-600 md:col-span-3 text-center">No reviews have been left yet.</p>
-                @endforelse
-            </div>
-        </div>
-    </section>
-
     <!-- Who We Are Section -->
     <section class="py-16 lg:py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
         <!-- Left side: text -->
         <div class="animate-fadeInUp">
             <h2 class="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Who We Are</h2>
@@ -440,14 +389,13 @@
                     <li><a href="#" @click.prevent="showInfo('dress-code')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Dress Code</a></li>
                     <li><a href="#" @click.prevent="showInfo('privacy')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Privacy Policy</a></li>
                     <li><a href="#" @click.prevent="showInfo('cancellation')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Cancellation Policy</a></li>
-                    <a href="#" @click.prevent="showInfo('contact')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
                 </ul>
             </div>
             <div>
                 <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">Contact Us</h3>
                 <p style="font-size:15px; color:#bbb; line-height:1.7;">
-                    📍 SOPL, Mohali, India <a href="#" @click.prevent="showInfo('contact')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
-
+                    📍 SOPL, Mohali, India
+                    <br>
                     📞 +91 9876543210 <br>
                     ✉️ <a href="mailto:support@divyadarshan.com" style="color:#facc15; text-decoration:none;">support@divyadarshan.com</a>
                 </p>
@@ -483,7 +431,7 @@
         </div>
     </div> -->
         <div x-show="infoModalOpen" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div 
+    <div
         @click.away="infoModalOpen = false"
         class="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[80vh] flex flex-col overflow-hidden border border-gray-200">
         <div class="flex justify-between items-center bg-yellow-500 text-[#0d0d0d] px-6 py-4">
@@ -698,79 +646,7 @@
     <p>For more enquiry, contact <a href="mailto:info@divyadarshan.com" style="color: #b45309; text-decoration: underline;">info@divyadarshan.com</a></p>
     </template>
 
-    <template id="contact-content" data-title="Contact Us">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {{-- Left side: Get in Touch info --}}
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Get in Touch</h3>
-                    <p class="text-gray-600 mb-4">We are here to help you with any questions. Please feel free to reach out to us.</p>
-                    <div class="space-y-3">
-                        <p class="flex items-center text-gray-700">
-                             <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span>123 Sector 82 , Mohali, India</span>
-                        </p>
-                        <p class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                            <a href="mailto:support@divyadarshan.com" class="text-blue-600 hover:underline">support@divyadarshan.com</a>
-                        </p>
-                         <p class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                            <span>+91-1234567890</span>
-                        </p>
-                    </div>
-                </div>
 
-                {{-- Right side: The Form --}}
-                <div>
-                    @if (session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                            <span class="block sm:inline">{{ session('success') }}</span>
-                        </div>
-                    @endif
-                    @if ($errors->any())
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                            <strong class="font-bold">Please correct the errors below:</strong>
-                            <ul class="mt-3 list-disc list-inside text-sm">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('info.contact.submit') }}" method="POST" class="space-y-4">
-                        @csrf
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                            <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                            <input type="email" name="email" id="email" value="{{ old('email') }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-                        <div>
-                            <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
-                            <textarea name="message" id="message" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>{{ old('message') }}</textarea>
-                        </div>
-                        <div class="text-right">
-                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Send Message
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </template>
-
-    <template id="contact-content" data-title="Contact Us">
-         {{-- This content is still static as requested --}}
-         <p>For any inquiries or support, please reach out to us:</p>
-         <ul>
-             <li><strong>Email:</strong> <a href="mailto:support@divyadarshan.com">support@divyadarshan.com</a></li>
-             <li><strong>Phone:</strong> +91 9876543210</li>
-             <li><strong>Address:</strong> SOPL, Mohali, India</li>
-         </ul>
-    </template>
 </div>
 </body>
 </html>

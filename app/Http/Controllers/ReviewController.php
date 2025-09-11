@@ -57,5 +57,37 @@ class ReviewController extends Controller
         $review->increment('likes');
         return response()->json(['likes' => $review->likes]);
     }
+    public function storeGeneral(Request $request)
+{
+    // ✅ CORRECTED VALIDATION LOGIC
+
+    // First, define the rules that apply to everyone
+    $rules = [
+        'review_type' => 'required|string|in:general,darshan,seva,accommodation',
+        'rating'      => 'required|integer|min:1|max:5',
+        'message'     => 'required|string|max:5000',
+    ];
+
+    // Then, if the user is a guest (not logged in), add rules for name and email
+    if (!Auth::check()) {
+        $rules['name'] = 'required|string|max:255';
+        $rules['email'] = 'required|email|max:255';
+    }
+
+    // Now, validate the request with the correct set of rules
+    $validated = $request->validate($rules);
+
+    Review::create([
+        'user_id'     => Auth::id(), // This will be null for guest users
+        'name'        => Auth::check() ? Auth::user()->name : $validated['name'],
+        'email'       => Auth::check() ? Auth::user()->email : $validated['email'],
+        'review_type' => $validated['review_type'],
+        'rating'      => $validated['rating'],
+        'comment'     => $validated['message'], // Map form's 'message' to DB 'comment' field
+    ]);
+
+    return redirect()->route('reviews.index')->with('success', 'Thank you! Your review has been submitted successfully.');
+}
+
 }
 

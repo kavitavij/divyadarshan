@@ -9,6 +9,7 @@
         </div>
     @endif
 
+    {{-- Our Services Section --}}
     <section class="py-12 bg-gray-50 dark:bg-black">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-4">Our Services</h2>
@@ -40,36 +41,54 @@
         </div>
     </section>
 
+    {{-- Why Book With Us Section --}}
     <section class="py-12 bg-white dark:bg-gray-900">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-4">Why Book With DivyaDarshan</h2>
-            <p class="text-center text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto">Experience a seamless and authentic spiritual journey with our trusted platform, designed for the modern devotee.</p>
+            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-4">
+                Why Book With DivyaDarshan
+            </h2>
+            <p class="text-center text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
+                Experience a seamless and authentic spiritual journey with our trusted platform, designed for the modern devotee.
+            </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-                <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center">
-                    <div class="mx-auto mb-4 w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center transition-transform transform hover:scale-105 hover:shadow-xl hover:bg-indigo-50 dark:hover:bg-gray-700">
+                    <div class="mx-auto mb-4 w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition-colors duration-300 hover:bg-indigo-200 dark:hover:bg-indigo-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
                     </div>
                     <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-100">2L+ Devotees Served</h3>
                     <p class="text-gray-500 dark:text-gray-400 text-sm">Join a growing community of devotees who trust us for their spiritual needs.</p>
                 </div>
-                <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center">
-                    <div class="mx-auto mb-4 w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center transition-transform transform hover:scale-105 hover:shadow-xl hover:bg-indigo-50 dark:hover:bg-gray-700">
+                    <div class="mx-auto mb-4 w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition-colors duration-300 hover:bg-indigo-200 dark:hover:bg-indigo-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
                     </div>
                     <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-100">Verified & Trusted</h3>
                     <p class="text-gray-500 dark:text-gray-400 text-sm">We partner exclusively with renowned and authentic temples and hotels.</p>
                 </div>
-                <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center">
-                    <div class="mx-auto mb-4 w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center transition-transform transform hover:scale-105 hover:shadow-xl hover:bg-indigo-50 dark:hover:bg-gray-700">
+                    <div class="mx-auto mb-4 w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition-colors duration-300 hover:bg-indigo-200 dark:hover:bg-indigo-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
                     </div>
                     <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-100">Authentic Rituals</h3>
                     <p class="text-gray-500 dark:text-gray-400 text-sm">All services are performed by certified priests following Vedic traditions.</p>
                 </div>
-                <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center">
-                    <div class="mx-auto mb-4 w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center transition-transform transform hover:scale-105 hover:shadow-xl hover:bg-indigo-50 dark:hover:bg-gray-700">
+                    <div class="mx-auto mb-4 w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition-colors duration-300 hover:bg-indigo-200 dark:hover:bg-indigo-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m12 19-7-7 7-7"/>
+                            <path d="M19 12H5"/>
+                        </svg>
                     </div>
                     <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-100">Seamless Experience</h3>
                     <p class="text-gray-500 dark:text-gray-400 text-sm">A simple, secure, and hassle-free booking process from start to finish.</p>
@@ -77,9 +96,10 @@
             </div>
         </div>
     </section>
-
+    {{-- Featured Temples Section --}}
     <div class="py-12 temple-slider-container bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
         <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-8 text-center">Featured Temples</h2>
+
         @if ($temples->isNotEmpty())
             <div class="swiper temple-swiper">
                 <div class="swiper-wrapper">
@@ -112,6 +132,7 @@
         @endif
     </div>
 
+    {{-- How It Works Section --}}
     <section class="py-12 bg-gray-50 dark:bg-black">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-10">A Simple Path to Devotion</h2>
@@ -155,26 +176,39 @@
         </div>
     </section>
 
-    <section class="py-12 bg-white dark:bg-gray-900">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-8">Latest Updates</h2>
-            <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 updates-panel">
-                <div class="updates-scroll">
-                    @if (isset($latestUpdates) && $latestUpdates->isNotEmpty())
-                        @foreach ($latestUpdates as $update)
-                            <div class="notification-item"><span>🔔</span>{{ $update->message }}</div>
-                        @endforeach
-                         @foreach ($latestUpdates as $update)
-                            <div class="notification-item"><span>🔔</span>{{ $update->message }}</div>
-                        @endforeach
-                    @else
-                        <div class="notification-item"><span>🔔</span>No updates at the moment. Check back soon!</div>
-                    @endif
-                </div>
+    {{-- Latest Updates --}}
+    <section class="py-16 bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-slate-800">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-yellow-400 mb-10">
+            Latest Updates
+        </h2>
+        <div class="max-w-2xl mx-auto bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl shadow-2xl border border-slate-700 updates-panel min-h-[340px]">
+            <div class="updates-scroll space-y-4">
+                @if (isset($latestUpdates) && $latestUpdates->isNotEmpty())
+                    @foreach ($latestUpdates as $update)
+                        <div class="notification-item flex items-center gap-x-4 text-gray-200 p-3 rounded-lg bg-slate-700/50 border border-slate-600">
+                            <span class="text-yellow-400 text-xl"></span>
+                            <span class="flex-1">{{ $update->message }}</span>
+                        </div>
+                    @endforeach
+                    @foreach ($latestUpdates as $update)
+                        <div class="notification-item flex items-center gap-x-4 text-gray-200 p-3 rounded-lg bg-slate-700/50 border border-slate-600">
+                            <span class="text-yellow-400 text-xl"></span>
+                            <span class="flex-1">{{ $update->message }}</span>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="notification-item flex items-center gap-x-4 text-gray-200 p-3 rounded-lg bg-slate-700/50 border border-slate-600">
+                        <span class="text-yellow-400 text-xl">ℹ️</span>
+                        <span class="flex-1">No updates at the moment. Check back soon!</span>
+                    </div>
+                @endif
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
+    {{-- Spiritual Guidance Section --}}
     <section class="spiritual-guidance-section">
         <div class="guidance-overlay"></div>
         <div class="guidance-content">
@@ -182,84 +216,152 @@
             <p class="text-white mb-8 max-w-xl mx-auto">
                 Whether it’s for health, prosperity, or spiritual growth, our expert priests are here to guide you in selecting the perfect ritual for your divine journey.
             </p>
-            <a href="{{ route("info.contact") }}" class="guidance-button">
+            {{-- <a href="{{ route("info.contact") }}" class="guidance-button">
                 Get Divine Guidance
-            </a>
+            </a> --}}
+            <button @click="spiritualHelpModal = true" class="guidance-button">
+                    Get Divine Guidance
+                </button>
         </div>
     </section>
 @endsection
 
 @push('styles')
 <style>
-/* === TEMPLE SLIDER STYLES === */
+//* === TEMPLE SLIDER STYLES === */
 .temple-swiper {
-    width: 100%;
-    padding: 20px 0 60px;
+  width: 100%;
+  padding: 20px 0 60px;
 }
+
 .temple-swiper .swiper-slide {
-    width: 340px;
-    height: 450px;
-    transition: transform 0.4s ease, filter 0.4s ease;
-    filter: brightness(0.6) saturate(0.8);
-    border-radius: 16px;
+  width: 340px;
+  height: 450px;
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: brightness(0.6) saturate(0.8);
+  border-radius: 16px;
+  pointer-events: auto !important; /* keep slides clickable by default */
 }
+
 .temple-swiper .swiper-slide-active {
-    transform: scale(1.05);
-    filter: brightness(1) saturate(1);
-    z-index: 10;
+  transform: scale(1.05);
+  filter: brightness(1) saturate(1);
+  z-index: 10;
 }
+
 .temple-card {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border-radius: 16px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  pointer-events: auto;
 }
+
 .temple-card-bg-img {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    z-index: 1;
-    transition: transform 0.5s ease;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  transition: transform 0.5s ease;
 }
+
 .temple-card:hover .temple-card-bg-img {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
+
 .temple-card-overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0) 80%);
-    z-index: 2;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0) 80%);
+  z-index: 2;
+  pointer-events: none; /* prevent blocking clicks */
 }
+
 .temple-card-content {
-    position: relative;
-    z-index: 3;
-    padding: 1.5rem;
-    color: white;
-    text-align: left;
+  position: relative;
+  z-index: 5;
+  padding: 1.5rem;
+  color: white;
+  text-align: left;
+  pointer-events: auto;
 }
+
+.temple-card-content h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.temple-card-content p {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin-bottom: 1rem;
+}
+
 .view-details-button {
-    display: inline-flex;
-    align-items: center;
-    background-color: #facc15;
-    color: #1f2937;
-    padding: 10px 24px;
-    border-radius: 9999px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  background-color: #facc15;
+  color: #1f2937;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
 }
+
 .view-details-button:hover {
-    background-color: #f59e0b;
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
+  background-color: #f59e0b;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
 }
+
+/* Swiper navigation */
+.temple-nav-next,
+.temple-nav-prev {
+  color: #facc15;
+  font-size: 2rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  cursor: pointer;
+}
+
+.temple-nav-next {
+  right: 10px;
+}
+.temple-nav-prev {
+  left: 10px;
+}
+
+/* === FIXES FOR CLICK ISSUES === */
+.temple-swiper .swiper-slide {
+  pointer-events: none; /* disable clicks for all slides */
+}
+
+.temple-swiper .swiper-slide-active,
+.temple-swiper .swiper-slide-next,
+.temple-swiper .swiper-slide-prev {
+  pointer-events: auto; /* enable only visible slides */
+}
+
+.view-details-button {
+  position: relative;
+  z-index: 50; /* higher than cloned slides */
+  pointer-events: auto;
+}
+
 .temple-swiper .swiper-pagination-bullet-active { background-color: #facc15; }
 
 /* Navigation Buttons Position */
@@ -304,43 +406,27 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const templeSwiper = new Swiper('.temple-swiper', {
-        effect: 'coverflow',
-        grabCursor: true,
-        centeredSlides: true,
-        slidesPerView: 'auto',
-        loop: true,
-        autoplay: {
-            delay: 4000,
-            disableOnInteraction: false,
-        },
-        coverflowEffect: {
-            rotate: 20,       // Less aggressive rotation
-            stretch: 0,
-            depth: 150,       // More depth for 3D effect
-            modifier: 1.5,    // Softer effect multiplier
-            slideShadows: false, // Cleaner look without slide shadows
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.temple-nav-next',
-            prevEl: '.temple-nav-prev',
-        },
-         breakpoints: {
-            // when window width is >= 640px
-            640: {
-              slidesPerView: 2,
-              spaceBetween: 20
-            },
-            // when window width is >= 1024px
-            1024: {
-              slidesPerView: 3,
-              spaceBetween: 30
-            }
-        }
-    });
+    effect: 'coverflow',
+    grabCursor: true,
+    centeredSlides: true,
+    slidesPerView: 'auto',
+    loop: true,
+    autoplay: { delay: 4000, disableOnInteraction: false },
+    coverflowEffect: {
+        rotate: 20,
+        stretch: 0,
+        depth: 150,
+        modifier: 1.5,
+        slideShadows: false,
+    },
+    pagination: { el: '.swiper-pagination', clickable: true },
+    navigation: { nextEl: '.temple-nav-next', prevEl: '.temple-nav-prev' },
+    breakpoints: {
+        640: { slidesPerView: 2, spaceBetween: 20 },
+        1024: { slidesPerView: 3, spaceBetween: 30 },
+    }
+});
+
 });
 </script>
 @endpush

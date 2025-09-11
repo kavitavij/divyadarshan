@@ -10,7 +10,7 @@ use App\Models\SevaBooking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\File;
 class TempleController extends Controller
 {
     public function index()
@@ -78,45 +78,32 @@ class TempleController extends Controller
             'news_items' => 'nullable|array',
             'news_tickers' => 'nullable|array',
         ]);
+        // ✅ **THIS IS THE MAIN FIX**
+        // We will build the data array manually to ensure correctness.
+        $dataToUpdate = $request->except(['_token', '_method', 'image']);
 
-        // ✅ **THE FIX IS HERE**
-        // Ensure that if no checkboxes are checked, an empty array is saved,
-        // preventing old data from persisting.
-        $validatedData['offered_services'] = $request->input('offered_services', []);
-        $validatedData['offered_social_services'] = $request->input('offered_social_services', []);
-
-        // Rebuild the news array structure
-        $newsItemsInput = $request->input('news_items', []);
-        $newsTickersInput = $request->input('news_tickers', []);
-        $news = [];
-        foreach ($newsItemsInput as $index => $text) {
-            if ($text) {
-                $news[] = [
-                    'text' => $text,
-                    'show_on_ticker' => in_array($index, $newsTickersInput)
-                ];
-            }
-        }
-        $validatedData['news'] = $news;
-
-        // Handle image upload using Storage
+        // Handle image upload using the EXACT same logic as your store() method
         if ($request->hasFile('image')) {
-            if ($temple->image) {
-                Storage::disk('public')->delete($temple->image);
+            // 1. Delete the old image if it exists
+            if ($temple->image && File::exists(public_path($temple->image))) {
+                File::delete(public_path($temple->image));
             }
-            $path = $request->file('image')->store('temples', 'public');
-            $validatedData['image'] = $path;
+
+            // 2. Save the new image
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('images/temples'), $imageName);
+            $dataToUpdate['image'] = 'images/temples/' . $imageName;
         }
 
-        // The $validatedData array now contains everything correctly.
-        $temple->update($validatedData);
+        // The rest of your update logic for other fields...
+        $temple->update($dataToUpdate);
 
         return redirect()->route('admin.temples.index')->with('success', 'Temple updated successfully.');
     }
     public function destroy(Temple $temple)
     {
-        if ($temple->image && file_exists(public_path($temple->image))) {
-            unlink(public_path($temple->image));
+        if ($temple->image && File::exists(public_path($temple->image))) {
+            File::delete(public_path($temple->image));
         }
         $temple->delete();
         return redirect()->route('admin.temples.index')->with('success', 'Temple deleted successfully.');

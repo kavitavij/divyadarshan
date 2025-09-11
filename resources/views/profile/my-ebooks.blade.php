@@ -39,16 +39,17 @@
                     @foreach ($ebooks as $ebook)
                         <div
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                            <img src="{{ asset($ebook->cover_image) }}" class="w-full h-56 object-cover"
-                                alt="Cover of {{ $ebook->title }}">
+                            <img src="{{ $ebook->cover_image_path ? Storage::url($ebook->cover_image_path) : 'https://via.placeholder.com/400x300.png/EBF4FF/7F9CF5?text=No+Cover' }}"
+                                alt="{{ $ebook->title }} Cover" class="w-full h-48 object-cover">
+
                             <div class="p-6">
                                 <h2 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">{{ $ebook->title }}</h2>
                                 <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 h-20">
                                     {{ Str::limit($ebook->description, 100) }}</p>
-                                <a href="{{ route('ebooks.download', $ebook) }}"
-                                    class="block w-full text-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
-                                    Download
-                                </a>
+                                <a href="{{ asset('storage/' . $ebook->ebook_file_path) }}" target="_blank"
+   class="block w-full text-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+    Read PDF
+</a>
                             </div>
                         </div>
                     @endforeach

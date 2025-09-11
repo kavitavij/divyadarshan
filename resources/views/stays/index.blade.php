@@ -12,7 +12,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-            {{-- 1. FILTER SIDEBAR (LEFT) --}}           
+            {{-- 1. FILTER SIDEBAR (LEFT) --}}
             <aside class="lg:col-span-1">
                 <form action="{{ route('stays.index') }}" method="GET" class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg space-y-6">
 
@@ -36,23 +36,39 @@
                     </div>
 
                     {{-- Facilities Filter (Now Functional) --}}
-<div>
-    <h4 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3 border-b dark:border-gray-700 pb-2">Facilities</h4>
-    <div class="space-y-2">
-        @foreach($amenities as $amenity)
-        <div class="flex items-center">
-            <input id="facility_{{ $amenity->id }}"
-                   name="facilities[]"
-                   value="{{ $amenity->name }}"
-                   type="checkbox"
-                   class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
-                   {{ is_array(request('facilities')) && in_array($amenity->name, request('facilities')) ? 'checked' : '' }}>
-            <label for="facility_{{ $amenity->id }}" class="ml-3 text-sm text-gray-600 dark:text-gray-300">{{ $amenity->name }}</label>
-        </div>
-        @endforeach
-    </div>
-</div>
+                    <div x-data="{ showAll: false }">
+                        <h4 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3 border-b dark:border-gray-700 pb-2">
+                            Facilities
+                        </h4>
 
+                        <div class="space-y-2">
+                            @foreach($amenities as $index => $amenity)
+                                <div
+                                    class="flex items-center"
+                                    x-show="{{ $index < 2 ? 'true' : 'showAll' }}"
+                                >
+                                    <input id="facility_{{ $amenity->id }}"
+                                        name="facilities[]"
+                                        value="{{ $amenity->name }}"
+                                        type="checkbox"
+                                        class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+                                        {{ is_array(request('facilities')) && in_array($amenity->name, request('facilities')) ? 'checked' : '' }}>
+                                    <label for="facility_{{ $amenity->id }}" class="ml-3 text-sm text-gray-600 dark:text-gray-300">
+                                        {{ $amenity->name }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- View More / View Less --}}
+                        @if(count($amenities) > 2)
+                            <button type="button"
+                                    class="mt-3 text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+                                    @click="showAll = !showAll">
+                                <span x-text="showAll ? 'View Less' : 'View More'"></span>
+                            </button>
+                        @endif
+                    </div>
                     <div class="pt-4">
                         <button type="submit" class="w-full justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-black bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                             Apply Filters
@@ -93,7 +109,7 @@
                                             <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $hotel->name }}</h3>
                                             <p class="text-sm text-yellow-500 font-semibold mb-2">{{ $hotel->location }}</p>
                                         </div>
-                                        {{-- TODO: Replace with dynamic review data --}}
+                                        {{-- review data --}}
                                         <div class="flex-shrink-0 ml-4 text-right">
                                             <div class="px-3 py-1 bg-blue-700 text-white text-lg font-bold rounded-md">4.5</div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">120 reviews</div>

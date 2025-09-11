@@ -18,7 +18,7 @@ class Review extends Model
         'email',
         'rating',
         'comment',
-        'message', // Added this from your old review system
+        'message',
         'review_type',
         'likes'
     ];
