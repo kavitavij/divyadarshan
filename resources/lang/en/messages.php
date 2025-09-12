@@ -12,7 +12,7 @@ return [
     'accommodation_booking' => 'Accommodation Booking',
     'ebooks' => 'Ebooks',
     'login' => 'Login',
-
+    {{!! message_app_name!!} !!};
     // User Dropdown
     'admin_dashboard' => 'Admin Dashboard',
     'profile' => 'Profile',
@@ -39,4 +39,9 @@ return [
     'guidelines' => 'Guidelines',
     'complaint' => 'Complaint',
     'reviews' => 'Reviews',
+    'lets_get_started' => "Let's get started",
+'welcome_text' => "Welcome to DivyaDarshan. <br>Your spiritual journey starts here.",
+'read_guidelines' => "Read the",
+'book_darshan' => "Book a",
+
 ];

@@ -8,9 +8,8 @@
             </div>
         </div>
     @endif
-
     {{-- Our Services Section --}}
-    <section class="py-12 bg-gray-50 dark:bg-black">
+     <section class="py-16 bg-gray-50 dark:bg-gradient-to-b dark:from-slate-900 dark:to-gray-900">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-4">Our Services</h2>
             <p class="text-center text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto">From sacred rituals to comfortable stays, we provide all the essential services for your spiritual journey, seamlessly connected in one place.</p>
@@ -97,43 +96,34 @@
         </div>
     </section>
     {{-- Featured Temples Section --}}
-    <div class="py-12 temple-slider-container bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-        <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-8 text-center">Featured Temples</h2>
+     <div class="py-12 bg-gray-50 dark:bg-gray-900">
+        <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-8">Featured Temples</h2>
 
-        @if ($temples->isNotEmpty())
-            <div class="swiper temple-swiper">
-                <div class="swiper-wrapper">
-                    @foreach ($temples as $temple)
-                        <div class="swiper-slide">
-                            <div class="temple-card">
-                                <img src="{{ asset($temple->image) }}" alt="{{ $temple->name }}" class="temple-card-bg-img">
-                                <div class="temple-card-overlay"></div>
-                                <div class="temple-card-content">
-                                    <div>
-                                        <h3 class="text-xl font-bold text-white">{{ $temple->name }}</h3>
-                                        <p class="text-sm text-gray-300 my-2">{{ $temple->location }}</p>
-                                    </div>
-                                    <div class="mt-4">
-                                        <a href="{{ route('temples.show', $temple->id) }}" class="view-details-button group">
-                                            View Details <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+        <div class="swiper temple-swiper">
+            <div class="swiper-wrapper">
+                @foreach($temples as $temple)
+                <div class="swiper-slide">
+                    <a href="{{ route('temples.show', $temple->id) }}" class="temple-card block rounded-xl overflow-hidden shadow hover:shadow-lg relative">
+                        <img src="{{ asset($temple->image) }}" alt="{{ $temple->name }}" class="w-full h-64 object-cover">
+                        <!-- Transparent overlay ensures image is fully clickable -->
+                        <span class="absolute inset-0 z-10"></span>
+                        <div class="p-4 bg-white dark:bg-gray-800 relative z-20">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 group-hover:text-yellow-500">
+                                {{ $temple->name }}
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $temple->location }}</p>
+                            {{-- <span class="inline-block mt-2 text-yellow-500 font-medium">View Details →</span> --}}
                         </div>
-                    @endforeach
+                    </a>
                 </div>
-                <div class="swiper-pagination"></div>
+                @endforeach
             </div>
-             <div class="swiper-button-next temple-nav-next"></div>
-            <div class="swiper-button-prev temple-nav-prev"></div>
-        @else
-            <p class="text-center text-gray-600 dark:text-gray-400">No temples found.</p>
-        @endif
-    </div>
+            <div class="swiper-pagination"></div>
 
+        </div>
+    </div>
     {{-- How It Works Section --}}
-    <section class="py-12 bg-gray-50 dark:bg-black">
+    <div class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-900 ...">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-10">A Simple Path to Devotion</h2>
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -216,9 +206,7 @@
             <p class="text-white mb-8 max-w-xl mx-auto">
                 Whether it’s for health, prosperity, or spiritual growth, our expert priests are here to guide you in selecting the perfect ritual for your divine journey.
             </p>
-            {{-- <a href="{{ route("info.contact") }}" class="guidance-button">
-                Get Divine Guidance
-            </a> --}}
+
             <button @click="spiritualHelpModal = true" class="guidance-button">
                     Get Divine Guidance
                 </button>
@@ -228,104 +216,31 @@
 
 @push('styles')
 <style>
-//* === TEMPLE SLIDER STYLES === */
-.temple-swiper {
-  width: 100%;
-  padding: 20px 0 60px;
+    /* Optional custom scrollbar styling */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #facc15;
+  border-radius: 4px;
 }
 
 .temple-swiper .swiper-slide {
-  width: 340px;
-  height: 450px;
-  transition: transform 0.4s ease, filter 0.4s ease;
-  filter: brightness(0.6) saturate(0.8);
-  border-radius: 16px;
-  pointer-events: auto !important; /* keep slides clickable by default */
+  width: 300px;
+  pointer-events: auto !important;
 }
-
-.temple-swiper .swiper-slide-active {
-  transform: scale(1.05);
-  filter: brightness(1) saturate(1);
-  z-index: 10;
+.temple-card img {
+  display: block;
 }
-
-.temple-card {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+.temple-card span.absolute {
   pointer-events: auto;
 }
-
-.temple-card-bg-img {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  z-index: 1;
-  transition: transform 0.5s ease;
+.temple-swiper .swiper-pagination-bullet-active {
+  background: #facc15;
 }
-
-.temple-card:hover .temple-card-bg-img {
-  transform: scale(1.1);
-}
-
-.temple-card-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0) 80%);
-  z-index: 2;
-  pointer-events: none; /* prevent blocking clicks */
-}
-
-.temple-card-content {
-  position: relative;
-  z-index: 5;
-  padding: 1.5rem;
-  color: white;
-  text-align: left;
-  pointer-events: auto;
-}
-
-.temple-card-content h3 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.temple-card-content p {
-  font-size: 0.95rem;
-  opacity: 0.85;
-  margin-bottom: 1rem;
-}
-
-.view-details-button {
-  display: inline-flex;
-  align-items: center;
-  background-color: #facc15;
-  color: #1f2937;
-  padding: 10px 24px;
-  border-radius: 9999px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-.view-details-button:hover {
-  background-color: #f59e0b;
-  transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
-}
-
 /* Swiper navigation */
 .temple-nav-next,
 .temple-nav-prev {

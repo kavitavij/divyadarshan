@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="google" content="notranslate">
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     <meta charset="UTF-8">
     <title>About DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,6 +55,34 @@
         font-size: 1.25rem;
         color: #fefefe;
         }
+    /* Container */
+    .translate-container {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    #google_translate_element .goog-logo-link,
+    #google_translate_element .goog-te-gadget span {
+        display: none !important;
+    }
+
+    #google_translate_element select {
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background-color: #0d0d0d;
+        color: #facc15;
+        font-weight: 500;
+        cursor: pointer;
+        outline: none;
+    }
+    #google_translate_element select:hover {
+        background-color: #1a1a1a;
+    }
+    .goog-te-gadget {
+        font-size: 0;
+    }
     </style>
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
@@ -74,7 +114,7 @@
     }
 }">
 {{-- Header --}}
-<header class="bg-[#0d0d0d] text-[#ccc] sticky top-0 z-50 font-poppins">
+    <header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <a href="/" class="text-2xl font-bold text-yellow-400 hover:text-yellow-500 transition">
             DivyaDarshan
@@ -105,21 +145,13 @@
                     <a href="{{ route('ebooks.index') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">E-Books</a>
                 </div>
             </div>
-             {{-- <div x-data="{ open: false }" class="relative">
-                <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
-                    General Info <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                <div x-show="open" @click.outside="open = false" x-transition class="absolute bg-[#1a1a1a] border border-[#333] rounded shadow mt-2 min-w-max z-20" style="display: none;">
-                      <a href="#" @click.prevent="showInfo('faq')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">FAQs</a>
-                      <a href="#" @click.prevent="showInfo('sevas')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
-                      <a href="#" @click.prevent="showInfo('dress-code')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Dress Code</a>
-                      <a href="#" @click.prevent="showInfo('privacy')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Privacy Policy</a>
-                      <a href="#" @click.prevent="showInfo('cancellation')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Cancellation Policy</a>
-                      <a href="#" @click.prevent="showInfo('contact')" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Contact Us</a>
-                </div>
-            </div> --}}
         </nav>
-        {{-- Auth buttons --}}
+        <div class="flex items-center gap-2">
+        <div class="translate-container flex items-center gap-2 ml-4">
+            <span class="globe-icon text-yellow-400 text-lg">Hi/En</span>
+            <div id="google_translate_element" class="inline-block"></div>
+        </div>
+
         <div>
             @guest
                     <button @click="loginModal = true" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
@@ -363,7 +395,7 @@
    ↑
 </a>
 
-<footer style="background:#0d0d0d; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
+<footer style="background:#910404fa; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
         <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">
 
             {{-- <div>

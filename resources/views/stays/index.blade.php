@@ -111,8 +111,26 @@
                                         </div>
                                         {{-- review data --}}
                                         <div class="flex-shrink-0 ml-4 text-right">
-                                            <div class="px-3 py-1 bg-blue-700 text-white text-lg font-bold rounded-md">4.5</div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">120 reviews</div>
+                                            @if($hotel->reviews->count() > 0)
+                                                @php
+                                                    $averageRating = $hotel->reviews->avg('rating');
+                                                @endphp
+                                                <div class="px-3 py-1 text-white text-lg font-bold rounded-md
+                                                    @if($averageRating >= 4) bg-green-600
+                                                    @elseif($averageRating >= 3) bg-yellow-500
+                                                    @else bg-red-600
+                                                    @endif">
+                                                    {{ number_format($averageRating, 1) }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    {{ $hotel->reviews->count() }} {{ Str::plural('review', $hotel->reviews->count()) }}
+                                                </div>
+                                            @else
+                                                <div class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-md">
+                                                    New
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">No reviews</div>
+                                            @endif
                                         </div>
                                     </div>
                                     <p class="text-gray-600 dark:text-gray-300 text-sm mt-2">

@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
+    <meta name="google" content="notranslate">
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+    }, 'google_translate_element');
+    }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <meta charset="UTF-8">
     <title>DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spotlight.js@0.7.8/dist/spotlight.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spotlight.js@0.7.8/dist/spotlight.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     @stack('styles')
@@ -73,12 +84,34 @@
             transform: scale(1.05);
         }
 
-        /* ✅ FIX: Forcefully hide navigation buttons */
-        .swiper-button-next,
-        .swiper-button-prev {
+        /* ✅ FIX: Removed the conflicting style that was hiding the buttons */
+
+        .translate-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        #google_translate_element .goog-logo-link,
+        #google_translate_element .goog-te-gadget span {
             display: none !important;
         }
 
+        #google_translate_element select {
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background-color: #0d0d0d;
+            color: #facc15;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+        }
+        #google_translate_element select:hover {
+            background-color: #1a1a1a;
+        }
+        .goog-te-gadget {
+            font-size: 0;
+        }
     </style>
 </head>
 
@@ -86,12 +119,11 @@
     :class="{ 'overflow-hidden': loginModal || cartOpen || isMobileMenuOpen }"
     class="bg-gray-100 font-sans text-gray-800 dark:bg-gray-900">
 
-    <header class="bg-[#0d0d0d] text-[#ccc] sticky top-0 z-50 font-poppins">
+    <header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
         <div class="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-4">
             <div class="flex-shrink-0">
                 <a href="/" class="text-yellow-400 font-bold text-2xl">DivyaDarshan</a>
             </div>
-
             <nav class="hidden md:flex flex-1 justify-center items-center gap-6">
                 <a href="/" class="hover:text-yellow-400 transition">Home</a>
                 <a href="/about" class="hover:text-yellow-400 transition">About</a>
@@ -123,21 +155,32 @@
                         <a href="{{ route('stays.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Accommodation Booking</a>
                         <a href="{{ route('donations.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Donations</a>
                         <a href="{{ route('ebooks.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Ebooks</a>
-
                     </div>
                 </div>
             </nav>
+                <div class="flex items-center gap-2">
+                <div class="translate-container flex items-center gap-2 ml-4">
+                    <span class="globe-icon text-yellow-400 text-lg">Hi/En</span>
+                    <div id="google_translate_element" class="inline-block"></div>
+                </div>
 
-            <div class="hidden md:flex items-center gap-4">
-                 <button @click="spiritualHelpModal = true" class="text-[#ccc] hover:text-yellow-400 transition font-medium">
-                    Spiritual Help
+                <div class="hidden md:flex items-center gap-4">
+                <button
+                    @click="spiritualHelpModal = true"
+                    class="px-5 py-2 bg-white text-red-600 rounded-full font-semibold shadow hover:bg-red-600 hover:text-white transition duration-300 ease-in-out border border-white">
+                    Get Spiritual help
                 </button>
+                </div>
 
-                @guest
-                    <button @click="loginModal = true" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
-                        Login
-                    </button>
-                @else
+                    @guest
+                        <a href="javascript:void(0)"
+                        @click="loginModal = true"
+                        class="flex items-center gap-2 hover:opacity-80 transition">
+                            <img src="{{ asset('storage/logo/login.png') }}"
+                                alt="Login"
+                                class="h-10 w-auto">
+                        </a>
+                    @else
                     <div x-data="{ open: false }" @click.away="open = false" class="relative">
                         <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
                             <span>{{ Auth::user()->name }}</span>
@@ -157,17 +200,58 @@
                                 @csrf
                                 <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-[#0d0d0d]">Log Out</button>
                             </form>
+
                         </div>
                     </div>
-                @endguest
+                 @auth
                 <a href="{{ route('cart.view') }}" class="relative text-[#ccc] hover:text-yellow-400 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    @if (session('cart') && count(session('cart')) > 0)
-                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ count(session('cart')) }}</span>
-                    @endif
-                </a>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0
+                             0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                @if (session('cart') && count(session('cart')) > 0)
+                    <span
+                        class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {{ count(session('cart')) }}
+                    </span>
+                @endif
+            </a>
+            @endauth
+        @endguest
+    </div>
+</div>
+
+{{-- ✅ Mobile version --}}
+<div class="md:hidden flex items-center gap-4">
+    <button @click="spiritualHelpModal = true" class="text-[#ccc] hover:text-yellow-400 transition">
+        <i class="fas fa-praying-hands"></i>
+    </button>
+
+    @auth
+    <a href="{{ route('cart.view') }}" class="relative text-[#ccc] hover:text-yellow-400 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0
+                     0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        @if (session('cart') && count(session('cart')) > 0)
+            <span
+                class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {{ count(session('cart')) }}
+            </span>
+        @endif
+    </a>
+    @endauth
+
+    <button @click="isMobileMenuOpen = true" class="text-[#ccc] hover:text-yellow-400 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+    </button>
+</div>
+
             </div>
 
             <div class="md:hidden flex items-center gap-4">
@@ -268,7 +352,7 @@
 
     {{-- Hidden Content Templates for Modals --}}
 
-    <footer style="background:#0d0d0d; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
+    <footer style="background:#910404fa; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
 
         <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">
 
@@ -505,118 +589,7 @@
                 </template>
             </div>
         </div>
-    {{-- <div x-show="spiritualHelpModal" @keydown.escape.window="spiritualHelpModal = false"
-        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[999] p-4"
-        x-cloak
-        x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
 
-        <div @click.away="spiritualHelpModal = false"
-            class="bg-[#1a1a1a] border border-yellow-500/20 text-gray-300 rounded-xl shadow-2xl shadow-yellow-500/5 w-full max-w-2xl max-h-[95vh] flex flex-col transform transition-all"
-            x-transition:enter="ease-out duration-300"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="ease-in duration-200"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95">
-
-            <div class="flex items-center justify-between p-5 border-b border-gray-800">
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-praying-hands text-yellow-400 text-3xl"></i>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-100 font-serif">Spiritual Guidance</h2>
-                        <p class="text-sm text-gray-500">We're here to help you on your journey.</p>
-                    </div>
-                </div>
-                <button @click="spiritualHelpModal = false" class="text-gray-500 hover:text-white transition rounded-full h-10 w-10 flex items-center justify-center hover:bg-gray-800">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-
-            <div class="p-6 md:p-8 overflow-y-auto">
-                <form action="{{ route('spiritual-help.submit') }}" method="POST">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-400 mb-1">Name</label>
-                            <div class="relative">
-                                <i class="fas fa-user absolute top-1/2 -translate-y-1/2 left-4 text-gray-500"></i>
-                                <input type="text" name="name" id="name" required placeholder="Your full name"
-                                    class="pl-11 w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="contact_info" class="block text-sm font-medium text-gray-400 mb-1">Email / Phone</label>
-                            <div class="relative">
-                            <i class="fas fa-at absolute top-1/2 -translate-y-1/2 left-4 text-gray-500"></i>
-                                <input type="text" name="contact_info" id="contact_info" required placeholder="Your contact details"
-                                    class="pl-11 w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="city" class="block text-sm font-medium text-gray-400 mb-1">City</label>
-                            <input type="text" name="city" id="city" required placeholder="e.g., Varanasi"
-                                class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
-                        </div>
-
-                        <div>
-                            <label for="query_type" class="block text-sm font-medium text-gray-400 mb-1">Query Type</label>
-                            <select name="query_type" id="query_type" required
-                                    class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
-                                <option value="General Inquiry">General Inquiry</option>
-                                <option value="Pooja Booking">Pooja Booking</option>
-                                <option value="Astrology">Astrology</option>
-                                <option value="Donation">Donation</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label for="temple_id" class="block text-sm font-medium text-gray-400 mb-1">For Which Temple (Optional)</label>
-                            <select name="temple_id" id="temple_id"
-                                    class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
-                                <option value="">Any Temple / General Question</option>
-                                @foreach($allTemples as $temple)
-                                    <option value="{{ $temple->id }}">{{ $temple->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label for="preferred_time" class="block text-sm font-medium text-gray-400 mb-1">Preferred Time to Contact</label>
-                            <select name="preferred_time" id="preferred_time" required
-                                    class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition">
-                                <option>Morning (9am - 12pm)</option>
-                                <option>Afternoon (12pm - 4pm)</option>
-                                <option>Evening (4pm - 8pm)</option>
-                            </select>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label for="message" class="block text-sm font-medium text-gray-400 mb-1">Your Message/Query</label>
-                            <textarea name="message" id="message" rows="5" required placeholder="Please describe your query in detail..."
-                                    class="w-full bg-[#0d0d0d] border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 pt-5 border-t border-gray-800 flex justify-end gap-4">
-                        <button type="button" @click="spiritualHelpModal = false"
-                                class="px-6 py-3 bg-gray-800 text-gray-300 font-semibold rounded-lg hover:bg-gray-700 transition">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                                class="px-8 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-400 transition shadow-lg shadow-yellow-500/10">
-                            Submit Request
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> --}}
 <div x-show="spiritualHelpModal" @keydown.escape.window="spiritualHelpModal = false"
     class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[999] p-4"
     x-cloak
@@ -796,8 +769,7 @@
                     this.cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
                     this.updateTotal();
                 },
-                // ✅ ADDED: Logic for the info modal
-                infoModalOpen: @json(session('success_contact') || $errors->any()),
+                infoModalOpen: @json(session('success_contact', false)),
                 modalTitle: '',
                 modalContent: '',
                 showInfo(type) {

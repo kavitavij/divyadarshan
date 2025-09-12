@@ -113,8 +113,10 @@ Route::get('/profile/my-stays', [ProfileController::class, 'myStays'])->name('pr
 
 // review page
 Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-Route::post('/reviews', [ReviewController::class, 'storeGeneral'])->name('reviews.store.general'); // For the general review form
-Route::post('/reviews/{review}/like', [ReviewController::class, 'like'])->name('reviews.like');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+Route::get('/about', [AboutController::class, 'about'])->name('about');
+Route::post('/reviews/general', [ReviewController::class, 'storeGeneral'])
+    ->name('reviews.store.general');
 // This is the new route to handle the like functionality
 Route::post('/reviews/{review}/like', [ReviewController::class, 'like'])->name('reviews.like');
 
@@ -129,6 +131,17 @@ Route::get('/clear-cart', function() {
     session()->forget('cart');
     return '<h1>Cart has been cleared! You can now go back and test.</h1>';
 });
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'hi'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
+// web.php
+// Route::get('/', function () {
+//     return view('welcome'); // don't dd here
+// });
 
 
 // CART ROUTES
@@ -174,7 +187,8 @@ Route::delete('/profile/my-stays/{booking}/cancel', [ProfileController::class, '
     Route::delete('/profile/my-bookings/{booking}/cancel', [ProfileController::class, 'cancelBooking'])->name('profile.my-bookings.cancel');
     // Ebook Purchase & Download
     Route::post('/ebooks/{ebook}/purchase', [EbookController::class, 'purchase'])->name('ebooks.purchase');
-    Route::get('/ebooks/{ebook}/read', [EbookController::class, 'read'])->name('ebooks.read')->middleware('auth');
+    Route::get('/ebooks/{ebook}/download', [EbookController::class, 'download'])->name('ebooks.download');
+
     // Darshan Booking Flow
     Route::prefix('darshan-booking')->name('booking.')->group(function () {
         Route::get('/', [DarshanBookingController::class, 'index'])->name('index');
@@ -203,9 +217,9 @@ Route::delete('/profile/my-stays/{booking}/cancel', [ProfileController::class, '
         Route::get('/{order}', [OrderController::class, 'show'])->name('show');
         Route::get('/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('download-invoice');
     });
-    Route::get('/donations/{donation}/receipt', [ProfileController::class, 'downloadDonationReceipt'])->name('donations.receipt.download');
-    Route::get('/stays/bookings/{stayBooking}/review', [ReviewController::class, 'create'])->name('reviews.create');
-    Route::post('/stays/bookings/{stayBooking}/review', [ReviewController::class, 'store'])->name('reviews.store');
+        Route::get('/donations/{donation}/receipt', [ProfileController::class, 'downloadDonationReceipt'])->name('donations.receipt.download');
+Route::get('/stays/bookings/{stayBooking}/review', [ReviewController::class, 'create'])->name('reviews.create');
+Route::post('/stays/bookings/{stayBooking}/review', [ReviewController::class, 'store'])->name('reviews.store');
     });
 
 

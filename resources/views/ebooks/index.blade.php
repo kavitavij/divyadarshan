@@ -50,29 +50,43 @@
                             @endif
                             <div class="flex-grow"></div>
                             <div class="mt-4">
+
                                 @if ($ebook->type == 'paid')
                                     <p class="text-xl font-bold text-blue-700 mb-2">₹{{ $ebook->price }}</p>
-                                    {{-- ADD TO CART --}}
+                                    @auth
                                     <form action="{{ route('cart.addEbook') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="ebook_id" value="{{ $ebook->id }}">
-                                    <button type="submit"
-                                        class="w-full text-white bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
-                                            font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
-                                            transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50">
+                                        @csrf
+                                        <input type="hidden" name="ebook_id" value="{{ $ebook->id }}">
+                                        <button type="submit"
+                                                class="w-full text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
+                                                       font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
+                                                       transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50">
+                                            Add to Cart
+                                        </button>
+                                    </form>
+                                    @endauth
+
+                                    @guest
+                                    <button type="button"
+                                            @click="loginModal = true"
+                                            class="w-full text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
+                                                   font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
+                                                   transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50">
                                         Add to Cart
                                     </button>
-                                </form>
+                                    @endguest
+
                                 @else
+                                    {{-- This is for FREE ebooks --}}
                                     <a href="{{ Storage::url($ebook->ebook_file_path) }}" target="_blank"
-                                    class="w-full text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700
-                                            font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
-                                            transform hover:-translate-y-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                                       class="w-full block text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700
+                                              font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
+                                              transform hover:-translate-y-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
                                         Read PDF
                                     </a>
                                 @endif
-                            </div>
 
+                            </div>
                         </div>
                     </div>
                 @endforeach

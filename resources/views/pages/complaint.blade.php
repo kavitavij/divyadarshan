@@ -14,8 +14,11 @@
   --bg:#f8f8f8;
 }
 body{background:var(--bg);color:var(--ink);}
-.wrap{max-width:1000px;margin:auto;padding:24px 18px;}
-.card{
+.wrap{
+    max-width:1200px;
+    margin:auto;
+    padding:24px 18px;
+}
   background:#fff;border-radius:14px;
   box-shadow:0 8px 24px rgba(0,0,0,.06);
   overflow:hidden;border:1px solid #e5e7eb;

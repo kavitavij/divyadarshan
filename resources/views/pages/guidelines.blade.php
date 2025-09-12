@@ -20,7 +20,7 @@ body{
     color:var(--ink);
     }
     .wrap{
-        max-width:1000px;
+        max-width:1200px;
         margin:auto;
         padding:24px 18px;
     }
@@ -93,7 +93,11 @@ body{
     }
     .cta a:hover{background:#fde68a;}
     footer{text-align:center;padding:16px;color:var(--muted);font-size:14px;border-top:1px solid #e5e7eb;}
-    footer .links a{color:var(--primary);text-decoration:none;font-weight:600;margin:0 6px;}
+    footer .links a
+    {color:var(--primary);
+    text-decoration:none;
+    font-weight:600;
+    margin:0 6px;}
     .muted{color:var(--muted);}
     .tag{
     display:inline-block;font-size:12px;

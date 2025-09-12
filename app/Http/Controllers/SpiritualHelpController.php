@@ -7,12 +7,13 @@ use App\Models\Temple;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SpiritualFormMail;
+use Illuminate\Support\Facades\Validator;
 
 class SpiritualHelpController extends Controller
 {
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'contact_info' => 'required|string|max:255',
             'city' => 'required|string|max:255',
@@ -22,7 +23,15 @@ class SpiritualHelpController extends Controller
             'message' => 'required|string',
         ]);
 
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('show_spiritual_help_modal', true);
+        }
+        $validated = $validator->validated();
         SpiritualHelpRequest::create($validated);
+
         $templeName = 'Not specified / General Inquiry';
         if (!empty($validated['temple_id'])) {
             $temple = Temple::find($validated['temple_id']);
@@ -42,9 +51,10 @@ class SpiritualHelpController extends Controller
             'Preferred Time' => $validated['preferred_time'],
             'Message' => $validated['message'],
         ];
+
         $adminEmail = 'truckares@gmail.com';
         Mail::to($adminEmail)->send(new SpiritualFormMail($orderedMailData));
-        return redirect()->back()->with('success', 'Your request has been submitted successfully! We will contact you soon.');
+
+        return redirect()->back()->with('status', 'Your request has been submitted successfully! We will contact you soon.');
     }
 }
-

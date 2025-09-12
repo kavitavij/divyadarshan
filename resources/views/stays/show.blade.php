@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- We add an init function to our Alpine component to initialize the room's photo slider --}}
 <div x-data="{
         lightBoxOpen: false,
         lightBoxImage: '',
@@ -29,16 +28,26 @@
 
     {{-- HEADER --}}
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div>
-            <h1 class="text-3xl font-bold mb-2 text-gray-800">{{ $hotel->name }}</h1>
-            <p class="text-gray-500 mb-6">{{ $hotel->location }}</p>
-        </div>
-        @if($hotel->reviews->count() > 0)
-        <div class="mt-3 md:mt-0 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold flex items-center">
-            <i class="fas fa-star mr-2 text-yellow-500"></i> {{ $averageRating }} / 5 ({{ $hotel->reviews->count() }} reviews)
-        </div>
-        @endif
+    <div>
+        <!-- Hotel Name -->
+        <h1 class="text-3xl font-bold mb-2 text-gray-700 dark:text-white">
+            {{ $hotel->name }}
+        </h1>
+
+        <!-- Hotel Location -->
+        <p class="text-gray-500 dark:text-white mb-6">
+            {{ $hotel->location }}
+        </p>
     </div>
+
+    @if($hotel->reviews->count() > 0)
+    <div class="mt-3 md:mt-0 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-4 py-2 rounded-full text-sm font-semibold flex items-center">
+        <i class="fas fa-star mr-2 text-yellow-500"></i>
+        {{ $averageRating }} / 5 ({{ $hotel->reviews->count() }} reviews)
+    </div>
+    @endif
+</div>
+
 
     {{-- IMAGE GALLERY --}}
     <div>
@@ -67,14 +76,10 @@
         {{-- Lightbox with Swiper --}}
         <div x-show="lightBoxOpen" x-transition @keydown.escape.window="lightBoxOpen = false"
              class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] p-4">
-            <div class="max-w-6xl w-full">
+            <div class="max-w-4xl w-full">
                 {{-- Main Swiper --}}
-                <div class="swiper main-swiper h-[500px] w-full rounded-xl shadow-lg">
+                <div class="swiper main-swiper h-[70vh] w-full rounded-xl shadow-lg">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <img src="{{ $hotel->image ? asset('storage/' . $hotel->image) : 'https://placehold.co/1200x800' }}"
-                                 class="w-full h-full object-contain" />
-                        </div>
                         @foreach($hotel->images as $image)
                             <div class="swiper-slide">
                                 <img src="{{ asset('storage/' . $image->path) }}"
@@ -85,14 +90,9 @@
                     <div class="swiper-button-next text-white"></div>
                     <div class="swiper-button-prev text-white"></div>
                 </div>
-
                 {{-- Thumbnails --}}
                 <div thumbsSlider="" class="swiper thumbnail-swiper h-24 w-full mt-3">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <img src="{{ $hotel->image ? asset('storage/' . $hotel->image) : 'https://placehold.co/150x100' }}"
-                                 class="w-full h-24 object-cover rounded-md cursor-pointer opacity-70 hover:opacity-100 transition" />
-                        </div>
                         @foreach($hotel->images as $image)
                             <div class="swiper-slide">
                                 <img src="{{ asset('storage/' . $image->path) }}"
@@ -102,8 +102,9 @@
                     </div>
                 </div>
             </div>
-            <button @click="lightBoxOpen = false" class="absolute top-4 right-4 text-white text-4xl">&times;</button>
+            <button @click="lightBoxOpen = false" class="absolute top-4 right-4 text-white text-4xl">×</button>
         </div>
+    </div>
     </div>
 
      <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
