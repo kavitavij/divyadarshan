@@ -37,4 +37,3 @@ class ComplaintController extends Controller
         ]);
     }
 }
-

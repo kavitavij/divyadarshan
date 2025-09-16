@@ -102,15 +102,15 @@
                     <div class="quick-icon">📊</div>
                     <h5 class="card-title">Reports</h5>
                     <p class="text-muted">View booking and revenue reports.</p>
-                    <a href="#" class="btn btn-dark">View Reports</a>
+                    <a href="{{ route('hotel-manager.revenue.index') }}" class="btn btn-dark">View Reports</a>
                 </div>
 
-                <div class="quick-card">
+                {{-- <div class="quick-card">
                     <div class="quick-icon">🛠️</div>
                     <h5 class="card-title">Support</h5>
                     <p class="text-muted">Get help and support.</p>
                     <a href="#" class="btn btn-warning">Get Help</a>
-                </div>
+                </div> --}}
             </div>
 
             {{-- Recent Bookings --}}

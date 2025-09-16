@@ -6,7 +6,10 @@ use App\Models\Temple;
 use App\Models\DarshanSlot;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SocialServiceInquiryMail;
+use Exception;
 class TempleController extends Controller
 {
     /**
@@ -114,21 +117,58 @@ class TempleController extends Controller
 
         return $calendars;
     }
+    public function details(Request $request)
+    {
+        // 1. Find the temple in the database using the ID from the form
+        $temple = Temple::findOrFail($request->input('temple_id'));
 
-public function details(Request $request)
-{
-    // 1. Find the temple in the database using the ID from the form
-    $temple = Temple::findOrFail($request->input('temple_id'));
+        $bookingData = [
+            'temple_id' => $request->input('temple_id'),
+            'selected_date' => $request->input('selected_date'),
+            'darshan_slot_id' => $request->input('darshan_slot_id'),
+            'number_of_people' => $request->input('number_of_people'),
+        ];
 
-    $bookingData = [
-        'temple_id' => $request->input('temple_id'),
-        'selected_date' => $request->input('selected_date'),
-        'darshan_slot_id' => $request->input('darshan_slot_id'),
-        'number_of_people' => $request->input('number_of_people'),
-    ];
+        // 2. Pass BOTH the $bookingData AND the $temple object to the view
+        return view('temples.details', compact('bookingData', 'temple'));
+    }
+    public function storeSocialServiceInquiry(Request $request)
+    {
+        $validated = $request->validate([
+            'service_type' => 'required|string|in:annadaan,health_camps,education_aid,environment_care,community_seva',
+            'temple_id' => 'required|exists:temples,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:15',
+            'message' => 'nullable|string|max:1000',
+        ]);
 
-    // 2. Pass BOTH the $bookingData AND the $temple object to the view
-    return view('temples.details', compact('bookingData', 'temple'));
-}
+        try {
+            $temple = Temple::findOrFail($validated['temple_id']);
+
+            $recipients = [];
+
+            if (env('ADMIN_EMAIL')) {
+                $recipients[] = env('ADMIN_EMAIL');
+            }
+
+            // 2. Add the temple manager's email, if it exists
+            if (!empty($temple->manager_email)) {
+                $recipients[] = $temple->manager_email;
+            }
+            $recipients = array_unique($recipients);
+
+            if (!empty($recipients)) {
+                // Send the email
+                Mail::to($recipients)->send(new SocialServiceInquiryMail($validated, $temple));
+            } else {
+                Log::warning('No recipients found for social service inquiry email.', ['temple_id' => $temple->id]);
+            }
+
+        } catch (Exception $e) {
+            Log::error('Failed to send social service inquiry email: ' . $e->getMessage());
+        }
+        return back()->with('success', 'Thank you for your interest! Our team will review your inquiry and contact you shortly.');
+    }
 }
 

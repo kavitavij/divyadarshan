@@ -2,11 +2,11 @@
 
 @push('styles')
     {{-- Stepper CSS (unchanged) --}}
-    <style>
+ <style>
         .stepper-wrapper {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 2.5rem; /* More space below */
+            margin-bottom: 2.5rem;
         }
         .stepper-item {
             position: relative;
@@ -15,24 +15,16 @@
             align-items: center;
             flex: 1;
         }
-        .stepper-item::before {
+        .stepper-item::before, .stepper-item::after {
             position: absolute;
             content: "";
-            border-bottom: 3px solid #e5e7eb; /* Gray line */
+            border-bottom: 3px solid #e5e7eb;
             width: 100%;
             top: 20px;
-            left: -50%;
             z-index: 2;
         }
-        .stepper-item::after {
-            position: absolute;
-            content: "";
-            border-bottom: 3px solid #e5e7eb; /* Gray line */
-            width: 100%;
-            top: 20px;
-            left: 50%;
-            z-index: 2;
-        }
+        .stepper-item::before { left: -50%; }
+        .stepper-item::after { left: 50%; }
         .stepper-item .step-counter {
             position: relative;
             z-index: 5;
@@ -41,30 +33,25 @@
             align-items: center;
             width: 40px;
             height: 40px;
-            border-radius: 9999px; /* Circle */
+            border-radius: 9999px;
             background: #ffffff;
             border: 3px solid #e5e7eb;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: #6b7280; /* Gray text */
+            color: #6b7280;
         }
         .stepper-item.active .step-counter {
-            border-color: #4f46e5; /* Primary purple */
+            border-color: #4f46e5;
             background-color: #4f46e5;
             color: #ffffff;
         }
         .stepper-item.completed .step-counter {
-            border-color: #16a34a; /* Green */
+            border-color: #16a34a;
             background-color: #16a34a;
             color: #ffffff;
         }
         .stepper-item.completed::after {
-            position: absolute;
-            content: "";
-            border-bottom: 3px solid #16a34a;
-            width: 100%;
-            top: 20px;
-            left: 50%;
+            border-bottom-color: #16a34a;
             z-index: 3;
         }
         .stepper-item:first-child::before { content: none; }
@@ -79,10 +66,6 @@
             font-weight: 700;
             color: #4f46e5;
         }
-    </style>
-
-    {{-- Slot Selection CSS (unchanged) --}}
-    <style>
         .slot-list { display: flex; flex-direction: column; gap: 0.75rem; }
         .slot-item { display: flex; align-items: center; border: 2px solid #e5e7eb; border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s ease-in-out; }
         .slot-item:hover { border-color: #6366f1; }
@@ -91,6 +74,20 @@
         .slot-time { font-weight: 600; color: #1f2937; flex-grow: 1; }
         .slot-item.selected .slot-time { color: #312e81; }
         .slot-availability { font-size: 0.9rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 9999px; background-color: #d1fae5; color: #065f46; }
+
+        /* Media Query for smaller screens */
+        @media (max-width: 640px) {
+            .step-name {
+                font-size: 0.75rem; /* Make step name smaller */
+            }
+            .stepper-item .step-counter {
+                width: 35px; /* Smaller circles */
+                height: 35px;
+            }
+            .stepper-item::before, .stepper-item::after {
+                top: 17px; /* Re-align the connector line */
+            }
+        }
     </style>
 @endpush
 

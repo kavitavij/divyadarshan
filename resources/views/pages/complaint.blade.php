@@ -5,76 +5,107 @@
 @push('styles')
 <style>
 :root {
-  --primary:#facc15;          /* brand yellow */
-  --primary-soft:#fef9c3;     /* light yellow */
-  --secondary:#0d0d0d;        /* dark */
-  --muted:#6b7280;
-  --ink:#333;
-  --warn:#ef4444;
-  --bg:#f8f8f8;
+  --primary: #facc15;
+  --primary-soft: #fef9c3;
+  --secondary: #0d0d0d;
+  --muted: #6b7280;
+  --ink: #333;
+  --warn: #ef4444;
+  --bg: #f8f8f8;
 }
-body{background:var(--bg);color:var(--ink);}
-.wrap{
-    max-width:1200px;
-    margin:auto;
-    padding:24px 18px;
+body { background: var(--bg); color: var(--ink); }
+.wrap {
+    max-width: 1200px;
+    margin: auto;
+    padding: 24px 18px;
 }
-  background:#fff;border-radius:14px;
-  box-shadow:0 8px 24px rgba(0,0,0,.06);
-  overflow:hidden;border:1px solid #e5e7eb;
+.card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
 }
-header.hero{
-  background:linear-gradient(135deg,var(--secondary)0%,#3f3f3f80 55%,#1a1a1a00 100%);
-  color:var(--primary);padding:28px 22px;
+header.hero {
+    background: linear-gradient(135deg,var(--secondary)0%,#3f3f3f80 55%,#1a1a1a00 100%);
+    color: var(--primary);
+    padding: 28px 22px;
 }
-.hero h1{margin:0;font-size:clamp(22px,2.4vw,34px);}
-.hero p{margin:8px 0 0;color:#fef9c3;}
-.content{padding:22px;}
-.lead{
-  background:var(--primary-soft);
-  border-left:5px solid var(--primary);
-  padding:14px;border-radius:10px;color:#4a4a1f;
-  margin-bottom:24px;
+.hero h1 { margin:0; font-size:clamp(22px, 2.4vw, 34px); }
+.hero p { margin:8px 0 0; color:#fef9c3; }
+.content { padding:22px; }
+.lead {
+    background: var(--primary-soft);
+    border-left: 5px solid var(--primary);
+    padding: 14px;
+    border-radius: 10px;
+    color: #4a4a1f;
+    margin-bottom: 24px;
 }
-.form-group{margin-bottom:18px;}
-label{font-weight:600;color:var(--ink);margin-bottom:6px;display:block;}
-input,textarea,select{
-  width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;
-  font-size:16px;background:#fdfdfd;
+.form-group { margin-bottom:18px; }
+label { font-weight:600; color:var(--ink); margin-bottom:6px; display:block; }
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+    background: #fdfdfd;
 }
-input:focus,textarea:focus,select:focus{
-  outline:none;border-color:var(--primary);
-  box-shadow:0 0 0 2px var(--primary-soft);
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-soft);
 }
-button[type="submit"]{
-  background:var(--primary);color:#0d0d0d;border:none;
-  padding:12px 25px;font-weight:600;font-size:16px;
-  border-radius:8px;cursor:pointer;transition:background .3s;
-  width:100%;max-width:250px;margin:10px auto 0;display:block;
+button[type="submit"] {
+    background: var(--primary);
+    color: #0d0d0d;
+    border: none;
+    padding: 12px 25px;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .3s;
+    width: 100%;
+    max-width: 250px;
+    margin: 10px auto 0;
+    display: block;
 }
-button[type="submit"]:hover{background:#eab308;}
-.alert-danger{
-  background:#fef2f2;border:1px solid var(--warn);
-  color:#7f1d1d;padding:14px;border-radius:8px;margin-bottom:18px;
+button[type="submit"]:hover { background:#eab308; }
+.alert-danger {
+    background: #fef2f2;
+    border: 1px solid var(--warn);
+    color: #7f1d1d;
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 18px;
 }
-.alert-danger ul{margin:0;padding-left:20px;}
-.modal-overlay{
-  display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.6);justify-content:center;align-items:center;
+.alert-danger ul { margin:0; padding-left:20px; }
+.modal-overlay {
+    display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); justify-content: center; align-items: center;
 }
-.modal-content{
-  background:#fff;padding:30px;border-radius:14px;text-align:center;
-  width:90%;max-width:400px;box-shadow:0 8px 24px rgba(0,0,0,.1);
-  animation:fadeIn .3s ease-in-out;
+.modal-content {
+    background: #fff; padding: 30px; border-radius: 14px; text-align: center;
+    width: 90%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,.1);
+    animation: fadeIn .3s ease-in-out;
 }
-@keyframes fadeIn{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
-.modal-content h2{margin-top:0;color:var(--ink);font-size:24px;}
-.modal-content p{color:var(--muted);margin-bottom:25px;font-size:16px;}
-.modal-content button{
-  background:var(--primary);color:#0d0d0d;padding:12px 25px;
-  border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:600;
+@keyframes fadeIn { from { opacity:0; transform:scale(.9); } to { opacity:1; transform:scale(1); } }
+.modal-content h2 { margin-top:0; color:var(--ink); font-size:24px; }
+.modal-content p { color:var(--muted); margin-bottom:25px; font-size:16px; }
+.modal-content button {
+    background: var(--primary); color: #0d0d0d; padding: 12px 25px;
+    border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;
 }
-.modal-content button:hover{background:#eab308;}
+.modal-content button:hover { background:#eab308; }
+
+/* ✅ OPTIONAL: Minor padding adjustment for small screens */
+@media (max-width: 640px) {
+    .wrap { padding: 16px 12px; }
+    .content { padding: 16px; }
+    header.hero { padding: 24px 16px; }
+}
 </style>
 @endpush
 
@@ -130,7 +161,6 @@ button[type="submit"]:hover{background:#eab308;}
   </div>
 </div>
 
-<!-- Success Modal -->
 <div id="successModal" class="modal-overlay">
   <div class="modal-content">
     <h2>Thank You!</h2>

@@ -88,6 +88,5 @@ class ReviewController extends Controller
 
     return redirect()->route('reviews.index')->with('success', 'Thank you! Your review has been submitted successfully.');
 }
-
 }
 

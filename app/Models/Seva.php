@@ -26,4 +26,5 @@ class Seva extends Model
     {
         return $this->belongsTo(Temple::class);
     }
+
 }

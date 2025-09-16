@@ -14,6 +14,15 @@
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm h-100 border-0">
                 <div class="card-body text-center">
+                    <h5 class="card-title">Revenue</h5>
+                    <p class="text-muted">View Revenue of website</p>
+                    <a href="{{ route('admin.revenue.index') }}" class="btn btn-primary">Website Revenue</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body text-center">
                     <h5 class="card-title">Page Content</h5>
                     <p class="text-muted">View and add page content.</p>
                     <a href="{{ route('admin.settings.edit') }}" class="btn btn-primary">Manage Page Contents</a>

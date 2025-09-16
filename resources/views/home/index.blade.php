@@ -129,7 +129,10 @@
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <div class="flex justify-center">
                     <div class="w-full md:w-4/5 aspect-video bg-gray-200 rounded-lg shadow-lg overflow-hidden">
-                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/wDchsz8nmbo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <video class="w-full h-full" controls>
+                            <source src="{{ asset('storage/font-video/DivyaDarshan - Google Chrome 2025-09-16 09-56-35 - Trim.mp4') }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                     </div>
                 </div>
                 <div class="relative flex flex-col items-start space-y-8">
@@ -196,7 +199,7 @@
             </div>
         </div>
     </div>
-</section>
+    </section>
 
     {{-- Spiritual Guidance Section --}}
     <section class="spiritual-guidance-section">
@@ -216,7 +219,6 @@
 
 @push('styles')
 <style>
-    /* Optional custom scrollbar styling */
 .scrollbar-thin::-webkit-scrollbar {
   height: 8px;
 }
@@ -295,17 +297,48 @@
     font-size: 20px;
     font-weight: bold;
 }
-
-/* How it works */
 .flow-step { display: flex; align-items: center; gap: 1.5rem; }
 .flow-icon { width: 48px; height: 48px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: #facc15; color: #1f2937; font-weight: bold; font-size: 1.25rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-/* Updates Panel */
-.updates-panel { height: 200px; overflow: hidden; position: relative; }
-.updates-scroll { display: flex; flex-direction: column; animation: scroll-up 20s linear infinite; }
-.notification-item { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; font-weight: 500; color: #374151; font-size: 1rem; text-align: left; }
-.dark .notification-item { color: #d1d5db; }
-@keyframes scroll-up { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+.updates-panel {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.updates-scroll {
+  display: flex;
+  flex-direction: column;
+  animation: scroll-up 20s linear infinite;
+  will-change: transform;
+  transition: animation-duration 0.3s ease;
+}
+
+.updates-panel:hover .updates-scroll {
+  animation-play-state: paused;
+}
+
+}
+*/
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  font-weight: 500;
+  color: #374151;
+  font-size: 1rem;
+  text-align: left;
+}
+.dark .notification-item {
+  color: #d1d5db;
+}
+
+@keyframes scroll-up {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
 
 /* Spiritual Guidance Section */
 .spiritual-guidance-section { position: relative; background: url('https://img1.hotstarext.com/image/upload/f_auto/sources/r1/cms/prod/9460/1379460-i-2b70cca05890') center/cover no-repeat; padding: 80px 15px; text-align: center; font-family: 'Poppins', sans-serif; }

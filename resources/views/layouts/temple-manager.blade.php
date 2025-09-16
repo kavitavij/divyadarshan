@@ -227,6 +227,7 @@
         <a href="{{ route('temple-manager.bookings.index') }}" class="{{ request()->routeIs('temple-manager.bookings*') ? 'active' : '' }}">📅 Bookings</a>
         <a href="{{ route('temple-manager.temple.edit') }}" class="{{ request()->routeIs('temple-manager.temples*') ? 'active' : '' }}">🏛️ Manage Temple</a>
         <a href="{{ route('temple-manager.gallery.index') }}"class="{{ request()->routeIs('temple-manager.gallery*') ? 'active' : '' }}">🖼️ Manage Gallery</a>
+        <a href="{{ route('temple-manager.revenue.index') }}"class="{{ request()->routeIs('temple-manager.revenue*') ? 'active' : '' }} ">Temple Revenue</a>
     </nav>
     {{-- Overlay for mobile --}}
     <div class="overlay" id="overlay" onclick="closeSidebar()" tabindex="-1" aria-hidden="true"></div>

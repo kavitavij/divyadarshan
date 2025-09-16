@@ -12,6 +12,7 @@ use App\Models\SevaBooking;
 use App\Models\StayBooking;
 use App\Models\StayBookingGuest;
 use App\Models\Donation;
+use App\Models\Payment;
 use App\Models\Devotee;
 use App\Models\Order;
 use Carbon\Carbon;
@@ -31,7 +32,7 @@ class CartController extends Controller
     {
         $seva = Seva::findOrFail($request->seva_id);
         $cart = session()->get('cart', []);
-        $cart['seva_' . $seva->id] = [ // Use a unique key
+        $cart['seva_' . $seva->id] = [
             'id' => $seva->id,
             'type' => 'seva',
             'name' => $seva->name,
@@ -41,12 +42,11 @@ class CartController extends Controller
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Seva added to cart!');
     }
-
     public function addEbook(Request $request)
     {
         $ebook = Ebook::findOrFail($request->ebook_id);
         $cart = session()->get('cart', []);
-        $cart['ebook_' . $ebook->id] = [ // Use a unique key
+        $cart['ebook_' . $ebook->id] = [
             'id' => $ebook->id,
             'type' => 'ebook',
             'name' => $ebook->title,
@@ -62,7 +62,6 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
         return view('cart.index', compact('cart'));
     }
-
     public function removeFromCart($index)
     {
         $cart = session()->get('cart', []);
@@ -83,19 +82,49 @@ class CartController extends Controller
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Cart updated!');
     }
-    public function checkout()
-    {
-        $cart = session()->get('cart', []);
-        if (empty($cart)) {
-            return redirect()->route('cart.view')->with('error', 'Your cart is empty.');
-        }
-
-        $totalAmount = collect($cart)->sum(function ($item) {
-            return ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
-        });
-
-        return view('cart.checkout', compact('cart', 'totalAmount'));
+    public function checkout(Request $request) // Renamed from pay() to checkout()
+{
+    $cart = session()->get('cart', []);
+    if (empty($cart)) {
+        return redirect()->route('cart.view')->with('error', 'Your cart is empty.');
     }
+
+    $totalAmount = collect($cart)->sum(function ($item) {
+        // Use the same logic as your cart view for accurate totals
+        if ($item['type'] === 'seva' || $item['type'] === 'ebook') {
+            return ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
+        }
+        return $item['price'] ?? 0;
+    });
+
+    if ($totalAmount <= 0) {
+        // Handle cases where the cart total is zero (e.g., free ebooks)
+        // For now, redirecting back. You might want to process this as a free order.
+        return redirect()->route('cart.view')->with('error', 'Nothing to pay.');
+    }
+
+    $amountInPaise = $totalAmount * 100;
+    $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+
+    try {
+        $order = $api->order->create([
+            'receipt'         => 'order_' . time() . '_' . Str::random(5),
+            'amount'          => $amountInPaise,
+            'currency'        => 'INR',
+            'payment_capture' => 1,
+        ]);
+    } catch (Exception $e) {
+        Log::error('Razorpay Order Creation Failed: ' . $e->getMessage());
+        return redirect()->route('cart.view')->with('error', 'Could not connect to payment gateway. Please try again.');
+    }
+
+    // Pass the Razorpay order details directly to the razorpay view
+    return view('cart.razorpay', [
+        'order'        => $order,
+        'amount'       => $totalAmount,
+        'razorpay_key' => config('services.razorpay.key')
+    ]);
+}
     public function addDarshan(Request $request)
     {
         $validatedData = $request->validate([
@@ -326,6 +355,7 @@ class CartController extends Controller
                             'user_id'          => $user->id,
                             'order_id'         => $order->id,
                             'room_id'          => $details['room_id'],
+                            'hotel_id'         => $room['hotel_id'],
                             'check_in_date'    => $details['check_in_date'],
                             'check_out_date'   => $details['check_out_date'],
                             'number_of_guests' => $details['number_of_guests'],
@@ -373,6 +403,19 @@ class CartController extends Controller
             if ($finalOrder) {
                  Mail::to($user->email)->send(new OrderConfirmation($finalOrder));
             }
+           Payment::create([
+            'user_id'      => $user->id,
+            'type'         => 'order',
+            'reference_id' => null,
+            'order_id'     => $validated['razorpay_order_id'],
+            'payment_id'   => $validated['razorpay_payment_id'],
+            'signature'    => $validated['razorpay_signature'],
+            'amount'       => $totalAmount,
+            'status'       => 'success',
+            'payload'      => json_encode($validated),
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ]);
 
             session()->forget('cart');
 

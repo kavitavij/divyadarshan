@@ -59,4 +59,9 @@ class StayBooking extends Model
 
         return $this->hasOne(Review::class);
     }
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class, 'hotel_id');
+    }
+
 }

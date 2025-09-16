@@ -16,7 +16,6 @@
 }
 body{background:var(--bg);color:var(--ink);line-height:1.6;}
 .wrap{
-    /* ✅ FIXED: Increased max-width to make the content wider */
     max-width:1200px;
     margin:auto;
     padding:24px 18px;

@@ -62,7 +62,6 @@ class TempleController extends Controller
 
     public function update(Request $request, Temple $temple)
     {
-        // --- This is the main edit form logic ---
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
@@ -75,27 +74,43 @@ class TempleController extends Controller
             'offered_services' => 'nullable|array',
             'offered_social_services' => 'nullable|array',
             'slot_data' => 'nullable|array',
-            'news_items' => 'nullable|array',
-            'news_tickers' => 'nullable|array',
+            'news_items' => 'nullable|array',    // Keep validation
+            'news_tickers' => 'nullable|array', // Keep validation
         ]);
-        // ✅ **THIS IS THE MAIN FIX**
-        // We will build the data array manually to ensure correctness.
-        $dataToUpdate = $request->except(['_token', '_method', 'image']);
 
-        // Handle image upload using the EXACT same logic as your store() method
+        $dataToUpdate = $request->except(['_token', '_method', 'image', 'news_items', 'news_tickers']);
+
+        // Handle image upload
         if ($request->hasFile('image')) {
-            // 1. Delete the old image if it exists
             if ($temple->image && File::exists(public_path($temple->image))) {
                 File::delete(public_path($temple->image));
             }
-
-            // 2. Save the new image
             $imageName = time() . '.' . $request->image->extension();
             $request->image->move(public_path('images/temples'), $imageName);
             $dataToUpdate['image'] = 'images/temples/' . $imageName;
         }
 
-        // The rest of your update logic for other fields...
+        // ✅ **START: NEWS PROCESSING LOGIC**
+        // This is the new code that processes and saves the news correctly.
+        $processedNews = [];
+        $newsItems = $request->input('news_items', []);
+        $newsTickers = $request->input('news_tickers', []); // This will be an array of indices, e.g., ['0', '2']
+
+        foreach ($newsItems as $index => $text) {
+            // Only add news items that have text
+            if (!empty(trim($text))) {
+                $processedNews[] = [
+                    'text' => $text,
+                    // Check if the current index is present in the array of ticker indices
+                    'show_on_ticker' => in_array((string)$index, $newsTickers, true)
+                ];
+            }
+        }
+
+        // Add the correctly formatted news array to our data for updating.
+        $dataToUpdate['news'] = $processedNews;
+        // ✅ **END: NEWS PROCESSING LOGIC**
+
         $temple->update($dataToUpdate);
 
         return redirect()->route('admin.temples.index')->with('success', 'Temple updated successfully.');

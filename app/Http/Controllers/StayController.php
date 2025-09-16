@@ -87,7 +87,7 @@ class StayController extends Controller
         if (!$room->is_visible) {
             abort(404);
         }
-        
+
         // The 'with()' efficiently loads the hotel information along with the room
         $room->load('hotel');
         return view('stays.details', compact('room'));
@@ -128,6 +128,7 @@ class StayController extends Controller
                 $booking = StayBooking::create([
                     'user_id' => auth()->id(),
                     'room_id' => $validatedData['room_id'],
+                    'hotel_id' => $room->hotel_id,
                     'check_in_date' => $validatedData['check_in_date'],
                     'check_out_date' => $validatedData['check_out_date'],
                     'number_of_guests' => $validatedData['number_of_guests'],

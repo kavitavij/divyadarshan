@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Models;
+use App\Notifications\CustomVerifyEmail;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
 
@@ -66,5 +68,13 @@ class User extends Authenticatable
     public function routeNotificationForTwilio()
     {
         return $this->phone_number; // Assuming you have a 'phone_number' column
+    }
+     public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
+    }
+    public function hotels()
+    {
+        return $this->hasMany(Hotel::class, 'manager_id');
     }
 }

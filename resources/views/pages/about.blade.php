@@ -83,6 +83,11 @@ function googleTranslateElementInit() {
     .goog-te-gadget {
         font-size: 0;
     }
+    @media (max-width: 768px) {
+            .hero-section { height: 40vh; }
+            .hero-section h1 { font-size: 2.25rem; }
+            .hero-section p { font-size: 1rem; }
+        }
     </style>
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
@@ -91,6 +96,7 @@ function googleTranslateElementInit() {
 <div x-data="{
     loginModal: false,
     modalView: 'login',
+    isMobileMenuOpen: false,
     infoModalOpen: @json($openFaqModal ?? $openContactModal ?? false),
     modalTitle: '',
     modalContent: '',
@@ -114,15 +120,13 @@ function googleTranslateElementInit() {
     }
 }">
 {{-- Header --}}
-    <header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
+<header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="text-2xl font-bold text-yellow-400 hover:text-yellow-500 transition">
-            DivyaDarshan
-        </a>
+        <a href="/" class="text-2xl font-bold text-yellow-400 hover:text-yellow-500 transition">DivyaDarshan</a>
+
         <nav class="hidden md:flex gap-6 text-sm font-medium text-[#ccc] items-center">
             <a href="/" class="hover:text-yellow-400 transition">Home</a>
-            <a href="/about" class="hover:text-yellow-400 transition">About</a>
-            {{-- Dropdowns --}}
+            <a href="/about" class="text-yellow-400 font-semibold border-b-2 border-yellow-400 pb-1">About</a>
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
                     Temples <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
@@ -134,10 +138,10 @@ function googleTranslateElementInit() {
                 </div>
             </div>
             <div x-data="{ open: false }" class="relative">
-                 <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
+                <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition focus:outline-none">
                     Online Services <svg class="w-4 h-4 mt-[1px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
                 </button>
-                 <div x-show="open" @click.outside="open = false" x-transition class="absolute bg-[#1a1a1a] border border-[#333] rounded shadow mt-2 min-w-max z-20" style="display: none;">
+                <div x-show="open" @click.outside="open = false" x-transition class="absolute bg-[#1a1a1a] border border-[#333] rounded shadow mt-2 min-w-max z-20" style="display: none;">
                     <a href="{{ route('booking.index') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Darshan Booking</a>
                     <a href="{{ route('sevas.booking.index') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
                     <a href="{{ route('stays.index') }}" class="block px-4 py-2 hover:bg-yellow-500 hover:text-[#0d0d0d]">Accommodation</a>
@@ -146,43 +150,124 @@ function googleTranslateElementInit() {
                 </div>
             </div>
         </nav>
-        <div class="flex items-center gap-2">
-        <div class="translate-container flex items-center gap-2 ml-4">
-            <span class="globe-icon text-yellow-400 text-lg">Hi/En</span>
-            <div id="google_translate_element" class="inline-block"></div>
+
+        <div class="hidden md:flex items-center gap-4">
+            <div class="translate-container flex items-center gap-2">
+                <span class="globe-icon text-yellow-400 text-lg">Hi/En</span>
+                <div id="google_translate_element" class="inline-block"></div>
+            </div>
+            @guest
+                <button @click="loginModal = true" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">Login</button>
+            @else
+                <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                    <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
+                        <span>{{ Auth::user()->name }}</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                        @if (Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Admin Dashboard</a>
+                        @endif
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Profile</a>
+                        <a href="{{ route('cart.view') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Cart</a>
+                        <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My ebooks</a>
+                        <a href="{{ route('profile.my-orders.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Orders</a>
+                        <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-[#0d0d0d]">Log Out</button></form>
+                    </div>
+                </div>
+            @endguest
         </div>
 
-        <div>
+        <div class="flex items-center gap-4 md:hidden">
             @guest
-                    <button @click="loginModal = true" class="px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
-                        Login
-                    </button>
-                @else
-                    <div x-data="{ open: false }" @click.away="open = false" class="relative">
-                        <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
-                            <span>{{ Auth::user()->name }}</span>
-                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
-                            @if (Auth::user()->role === 'admin')
-                                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Admin Dashboard</a>
-                            @endif
-                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Profile</a>
-                            <a href="{{ route('cart.view') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Cart</a>
-                            <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My ebooks</a>
-                            <a href="{{ route('profile.my-orders.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Orders</a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-[#0d0d0d]">Log Out</button>
-                            </form>
-                        </div>
-                    </div>
-                @endguest
+                <a href="javascript:void(0)" @click="loginModal = true">
+                    <img src="{{ asset('storage/logo/login.png') }}" alt="Login" class="h-8 w-auto">
+                </a>
+            @endguest
+            @auth
+                <a href="{{ route('cart.view') }}" class="relative text-[#ccc] hover:text-yellow-400 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    @if (session('cart') && count(session('cart')) > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ count(session('cart')) }}</span>
+                    @endif
+                </a>
+            @endauth
+            <button @click="isMobileMenuOpen = true" class="text-[#ccc] hover:text-yellow-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
         </div>
     </div>
 </header>
+{{-- MOBILE NAVIGATION MENU --}}
+<div x-show="isMobileMenuOpen" x-cloak class="fixed inset-0 z-[100] flex" x-transition>
+    <div @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black/60"></div>
+    <div class="relative w-full max-w-xs bg-[#1a1a1a] text-[#f1e8e8] flex flex-col">
+        <div class="p-4 flex items-center justify-between border-b border-gray-700">
+            <a href="/" class="text-yellow-400 font-bold text-xl">DivyaDarshan</a>
+            <button @click="isMobileMenuOpen = false" class="p-2"><i class="fas fa-times text-xl"></i></button>
+        </div>
+
+        {{-- ✅ UPDATED: Added full navigation --}}
+        <nav class="flex-grow p-4 space-y-2 text-lg overflow-y-auto">
+            <a href="/" class="block px-3 py-2 rounded-md hover:bg-gray-700">Home</a>
+            <a href="/about" class="block px-3 py-2 rounded-md bg-yellow-500 text-black font-semibold">About</a>
+
+            {{-- Temples Dropdown --}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="w-full flex justify-between items-center px-3 py-2 rounded-md hover:bg-gray-700">
+                    <span>Temples</span>
+                    <i class="fas fa-chevron-down text-sm transition-transform" :class="{ 'rotate-180': open }"></i>
+                </button>
+                <div x-show="open" x-collapse class="pl-4 mt-1 space-y-1">
+                    @foreach ($allTemples as $temple)
+                        <a href="{{ route('temples.show', $temple->id) }}" class="block px-3 py-2 text-sm rounded-md hover:bg-gray-600">{{ $temple->name }}</a>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Online Services Dropdown --}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="w-full flex justify-between items-center px-3 py-2 rounded-md hover:bg-gray-700">
+                    <span>Online Services</span>
+                    <i class="fas fa-chevron-down text-sm transition-transform" :class="{ 'rotate-180': open }"></i>
+                </button>
+                <div x-show="open" x-collapse class="pl-4 mt-1 space-y-1">
+                   <a href="{{ route('booking.index') }}" class="block px-3 py-2 text-sm rounded-md hover:bg-gray-600">Darshan Booking</a>
+                   <a href="{{ route('sevas.booking.index') }}" class="block px-3 py-2 text-sm rounded-md hover:bg-gray-600">Sevas</a>
+                   <a href="{{ route('stays.index') }}" class="block px-3 py-2 text-sm rounded-md hover:bg-gray-600">Accommodation</a>
+                   <a href="{{ route('donations.index') }}" class="block px-3 py-2 text-sm rounded-md hover:bg-gray-600">Donations</a>
+                   <a href="{{ route('ebooks.index') }}" class="block px-3 py-2 text-sm rounded-md hover:bg-gray-600">Ebooks</a>
+                </div>
+            </div>
+
+            {{-- User Account Links --}}
+            @auth
+                <hr class="border-gray-700 my-2">
+                <div class="px-3 py-2 text-sm font-semibold text-gray-400 uppercase">My Account</div>
+                <a href="{{ route('cart.view') }}" class="block px-3 py-2 rounded-md hover:bg-gray-700">My Cart</a>
+                <a href="{{ route('profile.ebooks') }}" class="block px-3 py-2 rounded-md hover:bg-gray-700">My Ebooks</a>
+                <a href="{{ route('profile.my-orders.index') }}" class="block px-3 py-2 rounded-md hover:bg-gray-700">My Orders</a>
+            @endauth
+        </nav>
+
+        <div class="p-4 border-t border-gray-700">
+            @guest
+                <button @click="loginModal = true; isMobileMenuOpen = false" class="w-full text-center px-4 py-3 bg-yellow-500 text-black font-bold rounded-md hover:bg-yellow-400">Login / Register</button>
+            @else
+                <a href="{{ route('profile.edit') }}" class="block text-center w-full px-4 py-3 bg-yellow-500 text-black font-bold rounded-md hover:bg-yellow-400">My Profile</a>
+                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                    @csrf
+                    <button type="submit" class="w-full text-center px-4 py-2 text-red-400 hover:bg-gray-700 rounded-md">Log Out</button>
+                </form>
+            @endguest
+        </div>
+    </div>
+</div>
+
 <main>
     <section class="hero-section">
         <div>
@@ -327,7 +412,7 @@ function googleTranslateElementInit() {
 </section>
 <!-- Our Co-Founders Section -->
 <section class="py-16 bg-white text-gray-800">
-  <div class="container mx-auto px-6 lg:px-16 text-center">
+  {{-- <div class="container mx-auto px-6 lg:px-16 text-center">
     <h2 class="text-4xl font-bold text-blue-700 mb-12">Our Co-Founders</h2>
 
     <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
@@ -364,7 +449,16 @@ function googleTranslateElementInit() {
         </p>
       </div>
     </div>
-  </div>
+  </div> --}}
+  <div class="container mx-auto px-6 lg:px-16 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-blue-700 mb-12">Our Co-Founders</h2>
+        {{-- ✅ GRID: Updated for mobile --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+            <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl shadow hover:shadow-lg transition"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuUOmlLIqMj57HpPqDvCuEmJyXwIlcN-mxtA&s" alt="Co-Founder 1" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"><h3 class="text-xl font-semibold text-gray-900">ABCS</h3><p class="text-sm text-gray-600 mb-3">Co-Founder & Visionary</p><p class="text-gray-700 text-sm">Passionate about blending technology with spirituality to help devotees connect with temples worldwide.</p></div>
+            <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl shadow hover:shadow-lg transition"><img src="/images/founder2.jpg" alt="Co-Founder 2" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"><h3 class="text-xl font-semibold text-gray-900">SOPL</h3><p class="text-sm text-gray-600 mb-3">Co-Founder & Strategist</p><p class="text-gray-700 text-sm">Focused on building meaningful cultural bridges and ensuring smooth spiritual experiences for users.</p></div>
+            <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl shadow hover:shadow-lg transition"><img src="/images/founder3.jpg" alt="Co-Founder 3" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"><h3 class="text-xl font-semibold text-gray-900">////</h3><p class="text-sm text-gray-600 mb-3">Tech & Operations</p><p class="text-gray-700 text-sm">Ensuring robust technology, security, and smooth operations to support millions of devotees.</p></div>
+        </div>
+      </div>
 </section>
 
 

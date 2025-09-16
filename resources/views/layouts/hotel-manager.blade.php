@@ -239,6 +239,10 @@
             class="{{ request()->routeIs('hotel-manager.gallery.index') ? 'active' : '' }}">
             <i class="fas fa-images"></i> Manage Gallery
         </a>
+        <a href="{{ route('hotel-manager.revenue.index') }}"
+            class="{{ request()->routeIs('hotel-manager.revenue.index') ? 'active' : '' }}">
+            <i class="fas fa-dollar-sign"></i> Hotel Revenue
+        </a>
     </div>
 
     <div class="content">

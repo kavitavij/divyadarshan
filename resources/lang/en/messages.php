@@ -11,8 +11,7 @@ return [
     'sevas' => 'Sevas',
     'accommodation_booking' => 'Accommodation Booking',
     'ebooks' => 'Ebooks',
-    'login' => 'Login',
-    {{!! message_app_name!!} !!};
+
     // User Dropdown
     'admin_dashboard' => 'Admin Dashboard',
     'profile' => 'Profile',

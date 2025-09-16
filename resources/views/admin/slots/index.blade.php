@@ -5,7 +5,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Manage All Darshan Slots</h1>
+        <h1 class="h3 mb-0 text-black-800">Manage All Darshan Slots</h1>
         <a href="{{ route('admin.slots.create') }}" class="btn btn-primary shadow-sm"><i class="fas fa-plus fa-sm text-white-50"></i> Create New Slot</a>
     </div>
 
@@ -58,7 +58,7 @@
                                 <td>{{ \Carbon\Carbon::parse($slot->start_time)->format('h:i A') }}</td>
                                 <td>{{ $slot->total_capacity }}</td>
                                 <td>{{ $slot->booked_capacity }}</td>
-                                <td><span class="badge badge-success">{{ $slot->total_capacity - $slot->booked_capacity }}</span></td>
+                                <td><span class="badge badge-dark text-black">{{ $slot->total_capacity - $slot->booked_capacity }}</span></td>
                                 <td>
                                     <a href="{{ route('admin.slots.edit', $slot) }}" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
                                     <form action="{{ route('admin.slots.destroy', $slot) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">

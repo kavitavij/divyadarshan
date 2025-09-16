@@ -81,4 +81,8 @@ class Hotel extends Model
     {
         return json_decode($value, true) ?? [];
     }
+    public function bookings()
+    {
+        return $this->hasMany(StayBooking::class, 'hotel_id');
+    }
 }

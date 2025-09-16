@@ -16,5 +16,8 @@ class SevaBooking extends Model
      * Define the relationship to the Seva model.
      * This is required for the controller query to work.
      */
-    public function seva() { return $this->belongsTo(Seva::class); }
+    public function seva()
+    {
+        return $this->belongsTo(Seva::class);
+    }
 }

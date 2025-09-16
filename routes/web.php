@@ -47,6 +47,7 @@ use App\Http\Controllers\Admin\SlotController as AdminSlotController;
 use App\Http\Controllers\Admin\SpiritualHelpController as AdminSpiritualHelpController;
 use App\Http\Controllers\Admin\AmenityController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\AdminRevenueController;
 
 // Hotel Manager Controllers
 use App\Http\Controllers\HotelManager\DashboardController as HotelManagerDashboardController;
@@ -55,6 +56,7 @@ use App\Http\Controllers\HotelManager\RoomController as HotelManagerRoomControll
 use App\Http\Controllers\HotelManager\GuestListController;
 use App\Http\Controllers\HotelManager\HotelImageController;
 use App\Http\Controllers\HotelManager\RoomController;
+use App\Http\Controllers\HotelManager\RevenueController;
 // Temple Manager Controllers
 use App\Http\Controllers\TempleManager\DashboardController as TempleManagerDashboardController;
 use App\Http\Controllers\TempleManager\TempleController as TempleManagerController;
@@ -64,6 +66,7 @@ use App\Http\Controllers\TempleManager\DarshanSlotController as TempleManagerDar
 use App\Http\Controllers\TempleManager\DashboardController;
 use App\Http\Controllers\TempleManager\SlotController;
 use App\Http\Controllers\TempleManager\GalleryController;
+use App\Http\Controllers\TempleManager\TempleRevenueController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -98,6 +101,7 @@ Route::post('/contact-submit', [ContactFormController::class, 'store'])->name('i
 Route::post('/faq-submit', [FaqController::class, 'store'])->name('info.faq.submit');
 Route::get('/spiritual-help', [SpiritualHelpController::class, 'create'])->name('spiritual-help.form');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.submit');
+Route::post('/social-service-inquiry', [TempleController::class, 'storeSocialServiceInquiry'])->name('social.service.inquiry.store');
 // The URL the QR code points to
 Route::get('/check-in/{token}', [CheckInController::class, 'show'])->name('check-in.show');
 
@@ -159,7 +163,7 @@ Route::prefix('cart')->name('cart.')->group(function () {
 });
 
 // ## AUTHENTICATED USER ROUTES ##
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Role-based Dashboard Redirect
     Route::get('/dashboard', function () {
         $user = Auth::user();
@@ -252,6 +256,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('amenities', AmenityController::class);
     Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue.index');
+    Route::get('/revenue/download', [AdminRevenueController::class, 'download'])->name('revenue.download');
 });
     // // Routes for Stay Refunds
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -272,8 +278,8 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::delete('/gallery/{image}', [HotelImageController::class, 'destroy'])->name('gallery.destroy');
     Route::delete('/rooms/photo/{photo}', [HotelManagerRoomController::class, 'deletePhoto'])->name('rooms.photo.delete');
     Route::patch('rooms/{room}/toggle-visibility', [RoomController::class, 'toggleVisibility'])->name('hotel-manager.rooms.toggleVisibility');
-
-Route::patch('rooms/{room}/toggle-visibility', [HotelManagerRoomController::class, 'toggleVisibility'])->name('rooms.toggleVisibility');
+    Route::patch('rooms/{room}/toggle-visibility', [HotelManagerRoomController::class, 'toggleVisibility'])->name('rooms.toggleVisibility');
+    Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
 });
 
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {
@@ -299,4 +305,5 @@ Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->na
     Route::get('gallery', [GalleryController::class, 'index'])->name('gallery.index');
     Route::post('gallery', [GalleryController::class, 'store'])->name('gallery.store');
     Route::delete('gallery/{image}', [GalleryController::class, 'destroy'])->name('gallery.destroy');
+    Route::get('/revenue', [TempleRevenueController::class, 'index'])->name('revenue.index');
 });

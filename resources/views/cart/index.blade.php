@@ -158,10 +158,10 @@
             <div class="mt-6 flex flex-col md:flex-row justify-between items-center">
                 <div class="text-2xl font-bold mb-4 md:mb-0">Total: ₹{{ number_format($totalAmount, 2) }}</div>
                 <form action="{{ route('cart.checkout') }}" method="GET">
-                    <button type="submit"
-                        class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold w-full md:w-auto">Proceed
-                        to
-                        Checkout</button>
+                <button type="submit"
+                    class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold w-full md:w-auto">
+                    Proceed to Pay
+                </button>
                 </form>
             </div>
         @else
