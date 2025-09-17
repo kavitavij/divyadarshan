@@ -298,7 +298,7 @@ function googleTranslateElementInit() {
             </div>
         </div>
     </section>
-    <section class="py-16 lg:py-24">
+    {{-- <section class="py-16 lg:py-24">
          <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12 animate-fadeInUp">
                 <h2 class="text-3xl font-bold text-slate-900 tracking-tight">The Path of Your Puja</h2>
@@ -332,7 +332,7 @@ function googleTranslateElementInit() {
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- Who We Are Section -->
     <section class="py-16 lg:py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

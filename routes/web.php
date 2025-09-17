@@ -99,7 +99,7 @@ Route::get('/profile/my-stays/{booking}/refund', [ProfileController::class, 'req
 Route::post('/profile/my-stays/{booking}/refund', [ProfileController::class, 'storeStayRefundRequest'])->name('profile.my-stays.refund.store');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.store');
 Route::get('/api/temples/{temple}/slots-for-date/{date}', [DarshanBookingController::class, 'getSlotsForDate'])->name('api.temples.slots_for_date');
-Route::post('/contact-submit', [ContactFormController::class, 'store'])->name('info.contact.submit');
+// Route::post('/contact-submit', [ContactFormController::class, 'store'])->name('info.contact.submit');
 Route::post('/faq-submit', [FaqController::class, 'store'])->name('info.faq.submit');
 Route::get('/spiritual-help', [SpiritualHelpController::class, 'create'])->name('spiritual-help.form');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.submit');
