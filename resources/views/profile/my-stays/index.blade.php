@@ -6,7 +6,30 @@
         <h1 class="text-3xl font-extrabold mb-8 text-gray-800 dark:text-gray-200 text-center">
             My Accommodation Bookings
         </h1>
+        <div class="mb-6">
+            <form method="GET" action="{{ route('profile.my-stays.index') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <select name="status" class="px-3 py-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200">
+                    <option value="">All Statuses</option>
+                    <option value="Confirmed" {{ request('status') === 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                    <option value="Completed" {{ request('status') === 'Completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+                <input
+                    type="search"
+                    name="q"
+                    placeholder="Search by hotel name..."
+                    value="{{ request('q') }}"
+                    class="px-3 py-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 w-full sm:w-64"/>
 
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+                    Search
+                </button>
+
+                <a href="{{ route('profile.my-stays.index') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+                    Reset
+                </a>
+            </form>
+        </div>
         @if ($bookings->isEmpty())
             <div class="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -64,9 +87,7 @@
                         </div>
                     </div>
 
-                    {{-- =================== CORRECTED ACTIONS SECTION =================== --}}
                     <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-
                         {{-- Left Side: Cancel Button --}}
                         <div>
                             @if (strtolower($booking->status) === 'confirmed' && now()->startOfDay()->isBefore($booking->check_in_date))
@@ -79,37 +100,31 @@
                                 </form>
                             @endif
                         </div>
-
                         {{-- Right Side: Awaiting/Review & Receipt Buttons --}}
                         <div class="flex items-center space-x-2">
                             @if($booking->review)
-                                {{-- If the booking HAS a review --}}
                                 <span class="px-4 py-2 text-sm font-medium bg-green-200 text-green-800 rounded-lg">
                                     Reviewed
                                 </span>
-                            @elseif(now()->isAfter($booking->check_out_date))
-                                {{-- If the stay is over AND it has NOT been reviewed --}}
+                            @elseif(now()->isAfter($booking->check_out_date) && strtolower($booking->status) !== 'cancelled')
                                 <a href="{{ route('reviews.create', ['stayBooking' => $booking->id]) }}" class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                                     Leave a Review
                                 </a>
-                            @else
-                                <span class="px-4 py-2 text-sm font-medium bg-gray-200 text-gray-800 rounded-lg">
+                            @elseif(strtolower($booking->status) === 'confirmed' && now()->isBefore($booking->check_out_date))
+                               <span class="px-4 py-2 text-sm font-medium bg-gray-200 text-gray-800 rounded-lg">
                                     Awaiting Stay
                                 </span>
                             @endif
-                            @if (strtolower($booking->status) === 'confirmed')
+                            @if (in_array(strtolower($booking->status), ['confirmed', 'completed']))
                                 <a href="{{ route('profile.my-stays.receipt', $booking) }}" class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
                                     📄 Download Receipt
                                 </a>
                             @endif
                         </div>
-
                     </div>
-                    {{-- ================= END OF CORRECTED SECTION ================= --}}
                 </div>
                 @endforeach
             </div>
-
             <div class="mt-8">
                 {{ $bookings->links() }}
             </div>

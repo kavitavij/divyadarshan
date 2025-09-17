@@ -207,31 +207,36 @@ public function storeStayRefundRequest(Request $request, StayBooking $booking): 
 
     return redirect()->route('profile.my-stays.index')->with('success', 'Refund request submitted successfully!');
 }
-    public function myStays()
+    public function myStays(Request $request) // <-- Make sure Request $request is here
     {
-        $bookings = StayBooking::with('room.hotel', 'user') // Eager load relationships
-                                ->where('user_id', auth()->id())
-                                ->orderBy('check_in_date', 'desc')
-                                ->paginate(10); // Or your preferred number
+        // Start the base query
+        $query = StayBooking::query()
+            ->where('user_id', auth()->id())
+            ->with('room.hotel', 'user'); // Eager load relationships
+
+        // Apply Status Filter if it's present in the URL
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Apply Hotel Name Search if it's present in the URL
+        if ($request->filled('q')) {
+            $searchTerm = $request->input('q');
+            // This searches through the related hotel's name
+            $query->whereHas('room.hotel', function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Order the results and paginate
+        $bookings = $query->orderBy('check_in_date', 'desc')
+                        ->paginate(10);
+
+        // IMPORTANT: This makes the filters work with the pagination links
+        $bookings->appends($request->query());
 
         return view('profile.my-stays.index', compact('bookings'));
-    }
-    public function cancelStayBooking(StayBooking $booking)
-    {
-        if (auth()->id() !== $booking->user_id) {
-            abort(403);
-        }
-        if (now()->startOfDay()->gt($booking->check_in_date)) {
-            return redirect()->back()->with('error', 'You can only cancel bookings with a future check-in date.');
-        }
-
-        $booking->status = 'Cancelled';
-        $booking->refund_status = 'pending';
-        $booking->save();
-
-        return redirect()->route('profile.my-stays.refund.request', $booking)
-                         ->with('success', 'Booking cancelled. Please provide your bank details to request a refund.');
-    }
+}
     public function requestStayRefund(StayBooking $booking): View
     {
         if (auth()->id() !== $booking->user_id) {
