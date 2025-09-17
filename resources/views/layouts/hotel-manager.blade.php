@@ -243,6 +243,10 @@
             class="{{ request()->routeIs('hotel-manager.revenue.index') ? 'active' : '' }}">
             <i class="fas fa-dollar-sign"></i> Hotel Revenue
         </a>
+        <a href="{{ route('hotel-manager.refund.index') }}"
+             class="{{ request()->routeIs('hotel-manager.refund.index') ? 'active' : '' }}">
+            <i class="fa-solid fa-money-check-dollar"></i>Refund
+        </a>
     </div>
 
     <div class="content">

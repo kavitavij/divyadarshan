@@ -226,10 +226,9 @@ public function storeStayRefundRequest(Request $request, StayBooking $booking): 
         }
 
         $booking->status = 'Cancelled';
+        $booking->refund_status = 'pending';
         $booking->save();
 
-        // ** THIS IS THE CHANGE **
-        // Redirect to the refund request form instead of the bookings list
         return redirect()->route('profile.my-stays.refund.request', $booking)
                          ->with('success', 'Booking cancelled. Please provide your bank details to request a refund.');
     }

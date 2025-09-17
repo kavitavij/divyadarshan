@@ -78,10 +78,6 @@ class TempleController extends Controller
 
         return view('temples.show', compact('temple', 'calendars', 'slots', 'selectedDate'));
     }
-
-    /**
-     * Generates calendar data for the public temple page.
-     */
     private function generateCalendarData(Temple $temple)
     {
         $calendars = [];

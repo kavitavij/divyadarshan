@@ -60,6 +60,7 @@
                     <th>Check-in</th>
                     <th>Check-out</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -80,6 +81,27 @@
                             <span class="badge bg-danger">Cancelled</span>
                         @else
                             <span class="badge bg-secondary">{{ $booking->status }}</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if(in_array($booking->status, ['Confirmed', 'pending']))
+
+                            <form action="{{ route('hotel-manager.bookings.cancel', $booking->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                @csrf
+                                <button type="submit" class="btn-cancel">Cancel</button>
+                            </form>
+                        @elseif($booking->status == 'Cancelled')
+                            @if($booking->refund_status == 'pending')
+                                <span class="badge bg-warning text-dark">Refund Pending</span>
+                            @elseif($booking->refund_status == 'approved')
+                                <span class="badge bg-success">Refunded</span>
+                            @elseif($booking->refund_status == 'rejected')
+                                <span class="badge bg-danger">Refund Rejected</span>
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif
+                        @else}
+                            <span class="text-muted">N/A</span>
                         @endif
                     </td>
                 </tr>

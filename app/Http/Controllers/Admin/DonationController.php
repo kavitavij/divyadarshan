@@ -45,11 +45,6 @@ class DonationController extends Controller
         // 4. Trigger the download
         return Excel::download(new DonationsExport($donationsToExport), $fileName);
     }
-
-    /**
-     * A private helper method to build the filtered query.
-     * This avoids code duplication between index() and export().
-     */
     private function getFilteredDonationsQuery(Request $request)
     {
         $query = Donation::with(['user', 'temple'])->latest();

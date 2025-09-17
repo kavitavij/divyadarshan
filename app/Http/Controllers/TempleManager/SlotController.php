@@ -3,20 +3,17 @@
 namespace App\Http\Controllers\TempleManager;
 
 use App\Http\Controllers\Controller;
-use App\Models\DarshanSlot; // Make sure to create this model
+use App\Models\DarshanSlot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\DefaultDarshanSlot; // <-- Add
+use App\Models\DefaultDarshanSlot;
 use App\Models\TempleDayStatus;
 class SlotController extends Controller
 {
-    // Helper to get the authenticated manager's temple
     private function getManagerTemple()
     {
-        // This assumes your User model has a 'temple' relationship. Adjust if needed.
         return Auth::user()->temple;
     }
-
     public function index()
     {
         $temple = Auth::user()->temple;
@@ -27,13 +24,10 @@ class SlotController extends Controller
                             ->paginate(15);
         return view('temple-manager.slots.index', compact('slots', 'temple'));
     }
-
     public function create()
     {
-        // You will need to create this view file
         return view('temple-manager.slots.create');
     }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -51,21 +45,18 @@ class SlotController extends Controller
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'total_capacity' => $request->total_capacity,
-            'booked_capacity' => 0, // Starts with zero bookings
+            'booked_capacity' => 0,
         ]);
 
         return redirect()->route('temple-manager.slots.index')->with('success', 'Darshan slot created successfully.');
     }
-
     public function edit(DarshanSlot $slot)
     {
         if ($slot->temple_id !== $this->getManagerTemple()->id) {
             abort(403, 'Unauthorized action.');
         }
-        // You will need to create this view file
         return view('temple-manager.slots.edit', compact('slot'));
     }
-
     public function update(Request $request, DarshanSlot $slot)
     {
         if ($slot->temple_id !== $this->getManagerTemple()->id) {
@@ -83,7 +74,6 @@ class SlotController extends Controller
 
         return redirect()->route('temple-manager.slots.index')->with('success', 'Slot updated successfully.');
     }
-
     public function destroy(DarshanSlot $slot)
     {
         if ($slot->temple_id !== $this->getManagerTemple()->id) {
@@ -104,39 +94,33 @@ class SlotController extends Controller
         ['start_time' => '17:00:00', 'end_time' => '19:00:00', 'label' => 'Evening (5 PM - 7 PM)'],
     ];
 
-    // ... your existing index(), create(), store() etc. methods are fine ...
     public function deleteDayStatus($id)
-{
-    $status = TempleDayStatus::where('id', $id)
-                ->where('temple_id', Auth::user()->temple->id)
-                ->firstOrFail();
+    {
+        $status = TempleDayStatus::where('id', $id)
+                    ->where('temple_id', Auth::user()->temple->id)
+                    ->firstOrFail();
 
-    $status->delete();
+        $status->delete();
 
-    return redirect()->back()->with('success', 'Day status entry deleted.');
-}
-
-
+        return redirect()->back()->with('success', 'Day status entry deleted.');
+    }
      public function settings()
-{
-    $temple = Auth::user()->temple;
+    {
+        $temple = Auth::user()->temple;
 
-    $defaultSlots = DefaultDarshanSlot::where('temple_id', $temple->id)
-                    ->orderBy('start_time')
-                    ->get();
+        $defaultSlots = DefaultDarshanSlot::where('temple_id', $temple->id)
+                        ->orderBy('start_time')
+                        ->get();
 
-    // ✅ Get day statuses for this temple
-    $dayStatuses = TempleDayStatus::where('temple_id', $temple->id)
-                    ->orderBy('date', 'desc')
-                    ->get();
+        $dayStatuses = TempleDayStatus::where('temple_id', $temple->id)
+                        ->orderBy('date', 'desc')
+                        ->get();
 
-    return view('temple-manager.slots.settings', compact('defaultSlots', 'temple', 'dayStatuses'));
-}
+        return view('temple-manager.slots.settings', compact('defaultSlots', 'temple', 'dayStatuses'));
+    }
 
-    /**
-     * Store the multiple default slots from the bulk create form.
-     * NEW METHOD
-     */
+    //Store the multiple default slots from the bulk create form.
+
     public function updateSettings(Request $request)
     {
         $request->validate([

@@ -82,49 +82,49 @@ class CartController extends Controller
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Cart updated!');
     }
-    public function checkout(Request $request) // Renamed from pay() to checkout()
-{
-    $cart = session()->get('cart', []);
-    if (empty($cart)) {
-        return redirect()->route('cart.view')->with('error', 'Your cart is empty.');
-    }
-
-    $totalAmount = collect($cart)->sum(function ($item) {
-        // Use the same logic as your cart view for accurate totals
-        if ($item['type'] === 'seva' || $item['type'] === 'ebook') {
-            return ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
+    public function checkout(Request $request)
+    {
+        $cart = session()->get('cart', []);
+        if (empty($cart)) {
+            return redirect()->route('cart.view')->with('error', 'Your cart is empty.');
         }
-        return $item['price'] ?? 0;
-    });
 
-    if ($totalAmount <= 0) {
-        // Handle cases where the cart total is zero (e.g., free ebooks)
-        // For now, redirecting back. You might want to process this as a free order.
-        return redirect()->route('cart.view')->with('error', 'Nothing to pay.');
-    }
+        $totalAmount = collect($cart)->sum(function ($item) {
+            // Use the same logic as your cart view for accurate totals
+            if ($item['type'] === 'seva' || $item['type'] === 'ebook') {
+                return ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
+            }
+            return $item['price'] ?? 0;
+        });
 
-    $amountInPaise = $totalAmount * 100;
-    $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+        if ($totalAmount <= 0) {
+            // Handle cases where the cart total is zero (e.g., free ebooks)
+            // For now, redirecting back. You might want to process this as a free order.
+            return redirect()->route('cart.view')->with('error', 'Nothing to pay.');
+        }
 
-    try {
-        $order = $api->order->create([
-            'receipt'         => 'order_' . time() . '_' . Str::random(5),
-            'amount'          => $amountInPaise,
-            'currency'        => 'INR',
-            'payment_capture' => 1,
+        $amountInPaise = $totalAmount * 100;
+        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+
+        try {
+            $order = $api->order->create([
+                'receipt'         => 'order_' . time() . '_' . Str::random(5),
+                'amount'          => $amountInPaise,
+                'currency'        => 'INR',
+                'payment_capture' => 1,
+            ]);
+        } catch (Exception $e) {
+            Log::error('Razorpay Order Creation Failed: ' . $e->getMessage());
+            return redirect()->route('cart.view')->with('error', 'Could not connect to payment gateway. Please try again.');
+        }
+
+        // Pass the Razorpay order details directly to the razorpay view
+        return view('cart.razorpay', [
+            'order'        => $order,
+            'amount'       => $totalAmount,
+            'razorpay_key' => config('services.razorpay.key')
         ]);
-    } catch (Exception $e) {
-        Log::error('Razorpay Order Creation Failed: ' . $e->getMessage());
-        return redirect()->route('cart.view')->with('error', 'Could not connect to payment gateway. Please try again.');
     }
-
-    // Pass the Razorpay order details directly to the razorpay view
-    return view('cart.razorpay', [
-        'order'        => $order,
-        'amount'       => $totalAmount,
-        'razorpay_key' => config('services.razorpay.key')
-    ]);
-}
     public function addDarshan(Request $request)
     {
         $validatedData = $request->validate([
@@ -351,11 +351,12 @@ class CartController extends Controller
                     }
                     else if ($item['type'] === 'stay') {
                         $details = $item['details'];
+                        $roomData = $item['room'];
                         $stayBooking = StayBooking::create([
                             'user_id'          => $user->id,
                             'order_id'         => $order->id,
-                            'room_id'          => $details['room_id'],
-                            'hotel_id'         => $room['hotel_id'],
+                            'room_id'           => $details['room_id'],
+                            'hotel_id'          => $roomData['hotel_id'],
                             'check_in_date'    => $details['check_in_date'],
                             'check_out_date'   => $details['check_out_date'],
                             'number_of_guests' => $details['number_of_guests'],

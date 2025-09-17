@@ -57,6 +57,8 @@ use App\Http\Controllers\HotelManager\GuestListController;
 use App\Http\Controllers\HotelManager\HotelImageController;
 use App\Http\Controllers\HotelManager\RoomController;
 use App\Http\Controllers\HotelManager\RevenueController;
+use App\Http\Controllers\HotelManager\RefundController;
+use App\Http\Controllers\HotelManager\HotelManagerBookingController;
 // Temple Manager Controllers
 use App\Http\Controllers\TempleManager\DashboardController as TempleManagerDashboardController;
 use App\Http\Controllers\TempleManager\TempleController as TempleManagerController;
@@ -280,6 +282,11 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::patch('rooms/{room}/toggle-visibility', [RoomController::class, 'toggleVisibility'])->name('hotel-manager.rooms.toggleVisibility');
     Route::patch('rooms/{room}/toggle-visibility', [HotelManagerRoomController::class, 'toggleVisibility'])->name('rooms.toggleVisibility');
     Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
+    Route::get('/refund', [RefundController::class, 'index'])->name('refund.index');
+    Route::get('/refund-requests', [RefundController::class, 'index'])->name('refund.index');
+    Route::get('/refund-requests/{booking}', [RefundController::class, 'show'])->name('refund.show');
+    Route::patch('/refund-requests/{booking}/status', [RefundController::class, 'updateStatus'])->name('refund.updateStatus');
+    Route::post('/bookings/{booking}/cancel', [HotelManagerBookingController::class, 'cancel'])->name('bookings.cancel');
 });
 
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {

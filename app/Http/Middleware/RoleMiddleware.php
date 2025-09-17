@@ -22,7 +22,6 @@ class RoleMiddleware
             return redirect('login');
         }
 
-        // Get the authenticated user.
         $user = Auth::user();
 
         foreach ($roles as $role) {

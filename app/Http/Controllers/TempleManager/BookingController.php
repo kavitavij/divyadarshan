@@ -73,10 +73,6 @@ class BookingController extends Controller
 
         return view('temple-manager.bookings.show', compact('booking', 'type'));
     }
-
-    /**
-     * Helper function to manually paginate a collection.
-     */
     private function paginate($items, $perPage = 15, $page = null, $options = [])
     {
         $page = $page ?: (LengthAwarePaginator::resolveCurrentPage() ?: 1);

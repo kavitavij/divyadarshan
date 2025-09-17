@@ -105,12 +105,12 @@
                     <a href="{{ route('hotel-manager.revenue.index') }}" class="btn btn-dark">View Reports</a>
                 </div>
 
-                {{-- <div class="quick-card">
+                <div class="quick-card">
                     <div class="quick-icon">🛠️</div>
-                    <h5 class="card-title">Support</h5>
-                    <p class="text-muted">Get help and support.</p>
-                    <a href="#" class="btn btn-warning">Get Help</a>
-                </div> --}}
+                    <h5 class="card-title">Refunds</h5>
+                    <p class="text-muted">View Refund and Cancellation</p>
+                    <a href="{{ route('hotel-manager.refund.index') }}" class="btn btn-warning">Refund</a>
+                </div>
             </div>
 
             {{-- Recent Bookings --}}
