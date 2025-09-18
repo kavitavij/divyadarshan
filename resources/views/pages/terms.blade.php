@@ -95,45 +95,45 @@ footer .links a{
       <section class="section">
         <h2>1. Account Registration <span class="badge">Your Identity</span></h2>
         <ul class="clean">
-          <li>You must provide accurate and complete information during registration, including your name and government ID details for verification.</li>
+          {{-- <li>You must provide accurate and complete information during registration, including your name and government ID details for verification.</li>
           <li>You are responsible for maintaining the confidentiality of your account password.</li>
           <li>Your account is for personal, non-commercial use only.</li>
-        </ul>
+        </ul> --}}
       </section>
 
       <section class="section">
         <h2>2. Darshan and Seva Bookings <span class="badge">Our Services</span></h2>
-        <ul class="clean">
+        {{-- <ul class="clean">
           <li>All Darshan and Seva bookings are subject to availability and confirmation by temple authorities. DivyaDarshan is a facilitation platform and does not guarantee slots.</li>
           <li>You must provide accurate details for all devotees in your booking. Mismatches with government IDs may result in denied entry.</li>
           <li>Payments for Sevas or any associated fees must be completed to confirm your booking. All transactions are final unless otherwise stated in a specific refund policy.</li>
-        </ul>
+        </ul> --}}
       </section>
 
       <section class="section">
         <h2>3. User Conduct <span class="badge">Expected Behaviour</span></h2>
-        <ul class="clean">
+        {{-- <ul class="clean">
           <li>You agree to use our platform lawfully and respectfully, without infringing on the rights of others.</li>
           <li>You must adhere to the specific rules and dress codes of each temple, as outlined on our "Dress Code" and "Guidelines" pages.</li>
           <li>Misuse of the platform, including fraudulent bookings or spam, will result in immediate account termination.</li>
-        </ul>
+        </ul> --}}
       </section>
 
       <section class="section">
         <h2>4. Limitation of Liability <span class="badge">Our Role</span></h2>
-        <ul class="clean">
+        {{-- <ul class="clean">
           <li>DivyaDarshan is not liable for any changes in temple schedules, cancellations, or other decisions made by temple management.</li>
           <li>We are not responsible for your personal safety, belongings, or travel arrangements to and from the temples.</li>
           <li>Our platform is provided "as is," and we do not guarantee it will be error-free or uninterrupted.</li>
-        </ul>
+        </ul> --}}
       </section>
 
       <section class="section">
         <h2>5. Intellectual Property <span class="badge">Our Content</span></h2>
-        <ul class="clean">
+        {{-- <ul class="clean">
           <li>All content on this website, including text, graphics, logos, and eBooks, is the property of DivyaDarshan and is protected by copyright law.</li>
           <li>Purchased eBooks are for your personal use only and may not be redistributed or resold.</li>
-        </ul>
+        </ul> --}}
       </section>
 
       <section class="cta">

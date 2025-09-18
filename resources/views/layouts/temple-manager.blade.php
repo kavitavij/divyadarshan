@@ -236,9 +236,7 @@
     <main class="main" role="main">
         @yield('content')
     </main>
-    <div class="footer">
-        &copy; {{ date('Y') }} <a href="/">DivyaDarshan</a>. All rights reserved.
-    </div>
+
     {{-- Scripts --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous" defer></script>
 

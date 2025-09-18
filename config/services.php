@@ -43,4 +43,7 @@ return [
         'password' => env('TWILIO_PASSWORD'),
         'from' => env('TWILIO_FROM'),
     ],
+    'google_maps' => [
+        'key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
 ];

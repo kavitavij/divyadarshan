@@ -2,50 +2,39 @@
 
 @section('content')
     <div class="container-fluid py-4">
+        <h1 class="h3 mb-4 text-gray-800">Manage Bookings for {{ $temple->name }}</h1>
 
         {{-- NEW: Summary Stat Cards --}}
-        <div class="row">
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card shadow-sm border-left-primary h-100">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Bookings</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalBookings ?? 'N/A' }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                            </div>
+        <div class="row g-4 mb-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="card summary-card-modern border-0 shadow h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="summary-icon bg-gradient-info text-white me-3"><i class="fas fa-eye fa-lg"></i></div>
+                        <div>
+                            <div class="fw-bold text-uppercase small text-info mb-1">Darshan Bookings</div>
+                            <div class="fs-3 fw-bold">{{ $darshanBookingsCount ?? 'N/A' }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card shadow-sm border-left-info h-100">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Darshan Bookings</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalDarshanBookings ?? 'N/A' }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-eye fa-2x text-gray-300"></i>
-                            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card summary-card-modern border-0 shadow h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="summary-icon bg-gradient-warning text-white me-3"><i class="fas fa-concierge-bell fa-lg"></i></div>
+                        <div>
+                            <div class="fw-bold text-uppercase small text-warning mb-1">Seva Bookings</div>
+                            <div class="fs-3 fw-bold">{{ $sevaBookingsCount ?? 'N/A' }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card shadow-sm border-left-warning h-100">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Seva Bookings</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalSevaBookings ?? 'N/A' }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-concierge-bell fa-2x text-gray-300"></i>
-                            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card summary-card-modern border-0 shadow h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="summary-icon bg-gradient-primary text-white me-3"><i class="fas fa-calendar fa-lg"></i></div>
+                        <div>
+                            <div class="fw-bold text-uppercase small text-primary mb-1">Total Bookings</div>
+                            <div class="fs-3 fw-bold">{{ $totalBookings ?? 'N/A' }}</div>
                         </div>
                     </div>
                 </div>
@@ -97,7 +86,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover table-modern">
                         <thead class="table-dark">
                             <tr>
                                 <th>Booking ID</th>
@@ -114,8 +103,8 @@
                                 <tr>
                                     <td>{{ $booking->id }}</td>
                                     <td>
-                                        <span class="badge {{ $booking->type === 'Darshan' ? 'bg-info' : 'bg-warning' }}">
-                                            {{ $booking->type }}
+                                        <span class="badge rounded-pill px-3 py-2 {{ $booking->type === 'Darshan' ? 'bg-info' : 'bg-warning text-dark' }}">
+                                            <i class="fas {{ $booking->type === 'Darshan' ? 'fa-eye' : 'fa-concierge-bell' }} me-1"></i> {{ $booking->type }}
                                         </span>
                                     </td>
                                     <td>{{ $booking->user->name ?? 'N/A' }}</td>
@@ -126,7 +115,7 @@
                                             Seva: {{ $booking->seva->name ?? 'N/A' }}
                                         @endif
                                     </td>
-                                    <td><span class="badge bg-success text-capitalize">{{ $booking->status }}</span></td>
+                                    <td><span class="badge bg-success text-capitalize px-3 py-2">{{ $booking->status }}</span></td>
                                     <td>{{ $booking->created_at->format('d M Y, h:i A') }}</td>
                                     <td>
                                         <a href="{{ route('temple-manager.bookings.show', ['type' => strtolower($booking->type), 'id' => $booking->id]) }}" class="btn btn-primary btn-sm">
@@ -152,10 +141,43 @@
 @endsection
 @push('styles')
 <style>
-    .card.border-left-primary { border-left: .25rem solid #4e73df !important; }
-    .card.border-left-info { border-left: .25rem solid #36b9cc !important; }
-    .card.border-left-warning { border-left: .25rem solid #f6c23e !important; }
-    .text-gray-300 { color: #dddfeb !important; }
-    .text-gray-800 { color: #5a5c69 !important; }
+    .summary-card-modern {
+        background: linear-gradient(135deg, #f8fafc 60%, #e3e9f7 100%);
+        border-radius: 1rem;
+        transition: box-shadow 0.2s;
+    }
+    .summary-card-modern:hover {
+        box-shadow: 0 0 0 0.2rem #b6c6e6;
+    }
+    .summary-icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 60%, #224abe 100%) !important;
+    }
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #36b9cc 60%, #1e7fa6 100%) !important;
+    }
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f6c23e 60%, #e5a100 100%) !important;
+    }
+    .table-modern th, .table-modern td {
+        vertical-align: middle;
+        font-size: 1rem;
+    }
+    .table-modern thead {
+        background: #e3e9f7;
+        color: #2d3a4b;
+    }
+    .table-modern tbody tr:hover {
+        background: #f8fafc;
+    }
 </style>
 @endpush

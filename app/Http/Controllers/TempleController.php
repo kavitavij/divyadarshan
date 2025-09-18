@@ -24,12 +24,10 @@ class TempleController extends Controller
         if ($request->has('selected_date')) {
             $selectedDate = Carbon::parse($request->selected_date);
 
-            // First, try to find real, custom slots created by the admin for this date.
             $slots = DarshanSlot::where('temple_id', $temple->id)
                 ->where('slot_date', $selectedDate->toDateString())
                 ->get();
 
-            // If NO custom slots were found, check the daily availability.
             if ($slots->isEmpty()) {
                 $dateString = $selectedDate->toDateString();
                 $slotData = $temple->slot_data ?? [];

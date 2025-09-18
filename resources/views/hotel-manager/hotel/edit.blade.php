@@ -105,19 +105,16 @@
                         </div>
 
                         <hr class="my-4">
-
-                        {{-- Map --}}<h5 class="text-primary fw-bold mb-3">
-    <i class="fas fa-map me-2"></i> Location Map
-</h5>
-<p class="small text-muted mb-2">Search for a location or drag the marker to set your hotel's exact position.</p>
-
-<input id="pac-input" class="form-control search-box mb-3" type="text" placeholder="🔍 Search location..."/>
-
-<div id="map" style="height: 300px; border-radius: 10px; border: 1px solid #ddd;" class="mb-4"></div>
-<input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $hotel->latitude) }}">
-<input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $hotel->longitude) }}">
+                        {{-- Map --}}
                         <h5 class="text-primary fw-bold mb-3">
-                            <i class="fas fa-map me-2"></i> Location Map
+                        <i class="fas fa-map me-2"></i> Location Map</h5>
+                        <p class="small text-muted mb-2">Search for a location or drag the marker to set your hotel's exact position.</p>
+                        <input id="pac-input" class="form-control search-box mb-3" type="text" placeholder="🔍 Search location..."/>
+                        <div id="map" style="height: 300px; border-radius: 10px; border: 1px solid #ddd;" class="mb-4"></div>
+                        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $hotel->latitude) }}">
+                        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $hotel->longitude) }}">
+                        <h5 class="text-primary fw-bold mb-3">
+                        <i class="fas fa-map me-2"></i> Location Map
                         </h5>
                         {{-- <p class="small text-muted mb-2">Drag the marker to set your hotel's exact location.</p>
                         <div id="map" style="height: 300px; border-radius: 10px; border: 1px solid #ddd;" class="mb-4"></div>

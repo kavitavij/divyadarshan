@@ -52,8 +52,8 @@ class SpiritualHelpController extends Controller
             'Message' => $validated['message'],
         ];
 
-        $adminEmail = 'truckares@gmail.com';
-        Mail::to($adminEmail)->send(new SpiritualFormMail($orderedMailData));
+    $adminEmail = env('ADMIN_EMAIL');
+    Mail::to($adminEmail)->send(new SpiritualFormMail($orderedMailData));
 
         return redirect()->back()->with('status', 'Your request has been submitted successfully! We will contact you soon.');
     }

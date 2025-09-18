@@ -235,6 +235,10 @@
             class="{{ request()->routeIs('hotel-manager.guest-list.index') ? 'active' : '' }}">
             <i class="fas fa-book"></i> View Bookings
         </a>
+        <a href="{{ route('hotel-manager.refund.index') }}"
+             class="{{ request()->routeIs('hotel-manager.refund.index') ? 'active' : '' }}">
+            <i class="fa-solid fa-money-check-dollar"></i>Refund
+        </a>
         <a href="{{ route('hotel-manager.gallery.index') }}"
             class="{{ request()->routeIs('hotel-manager.gallery.index') ? 'active' : '' }}">
             <i class="fas fa-images"></i> Manage Gallery
@@ -242,10 +246,6 @@
         <a href="{{ route('hotel-manager.revenue.index') }}"
             class="{{ request()->routeIs('hotel-manager.revenue.index') ? 'active' : '' }}">
             <i class="fas fa-dollar-sign"></i> Hotel Revenue
-        </a>
-        <a href="{{ route('hotel-manager.refund.index') }}"
-             class="{{ request()->routeIs('hotel-manager.refund.index') ? 'active' : '' }}">
-            <i class="fa-solid fa-money-check-dollar"></i>Refund
         </a>
     </div>
 
@@ -275,8 +275,7 @@
     </script>
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdR-7EGvRdTcL0NSvxG1pKan2bQu3nXuo&libraries=places&callback=initMap"
-        async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places&callback=initMap" async defer></script>
     @stack('scripts')
 
 </body>

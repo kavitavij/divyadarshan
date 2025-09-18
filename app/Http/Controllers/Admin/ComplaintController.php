@@ -18,7 +18,6 @@ class ComplaintController extends Controller
      */
     public function show(Complaint $complaint)
     {
-        // Eager load the user relationship to get the user's name and email
         $complaint->load('user');
         return view('admin.complaints.show', compact('complaint'));
     }

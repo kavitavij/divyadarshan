@@ -32,23 +32,26 @@ class SlotController extends Controller
     {
         $request->validate([
             'slot_date' => 'required|date|after_or_equal:today',
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
-            'total_capacity' => 'required|integer|min:1',
+            'slots' => 'required|array|min:1',
+            'slots.*.start_time' => 'required',
+            'slots.*.end_time' => 'required|after:slots.*.start_time',
+            'slots.*.capacity' => 'required|integer|min:1',
         ]);
 
         $temple = $this->getManagerTemple();
 
-        DarshanSlot::create([
-            'temple_id' => $temple->id,
-            'slot_date' => $request->slot_date,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'total_capacity' => $request->total_capacity,
-            'booked_capacity' => 0,
-        ]);
+        foreach ($request->slots as $slot) {
+            DarshanSlot::create([
+                'temple_id' => $temple->id,
+                'slot_date' => $request->slot_date,
+                'start_time' => $slot['start_time'],
+                'end_time' => $slot['end_time'],
+                'total_capacity' => $slot['capacity'],
+                'booked_capacity' => 0,
+            ]);
+        }
 
-        return redirect()->route('temple-manager.slots.index')->with('success', 'Darshan slot created successfully.');
+        return redirect()->route('temple-manager.slots.index')->with('success', 'Darshan slots created successfully.');
     }
     public function edit(DarshanSlot $slot)
     {
@@ -118,9 +121,6 @@ class SlotController extends Controller
 
         return view('temple-manager.slots.settings', compact('defaultSlots', 'temple', 'dayStatuses'));
     }
-
-    //Store the multiple default slots from the bulk create form.
-
     public function updateSettings(Request $request)
     {
         $request->validate([

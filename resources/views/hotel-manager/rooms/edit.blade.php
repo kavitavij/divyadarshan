@@ -115,32 +115,31 @@
                 </div>
             </div>
 
-            {{-- UPDATED DESCRIPTION BUILDER --}}
             {{-- Description --}}
-<div class="field">
-    <label for="description">Description</label>
-    <textarea name="description" id="description" class="control" rows="4">{{ old('description', $room->description) }}</textarea>
-    @error('description') <small class="text-danger">{{ $message }}</small> @enderror
-</div>
+            <div class="field">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" class="control" rows="4">{{ old('description', $room->description) }}</textarea>
+                @error('description') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
 
 
             {{-- Facilities --}}
             <div class="field">
                 <label>Facilities</label>
                 @php
-    $allFacilities = [
-        'Free toiletries', 'Toilet', 'Bath or shower', 'Hairdryer', 'Air conditioning',
-        'Safety deposit box', 'Desk', 'TV', 'Refrigerator', 'Ironing facilities',
-        'Tea/Coffee maker', 'Flat-screen TV', 'Minibar', 'Cable channels', 'Wake-up service',
-        'Alarm clock', 'Wardrobe or closet', 'Free Wifi'
-    ];
+                $allFacilities = [
+                    'Free toiletries', 'Toilet', 'Bath or shower', 'Hairdryer', 'Air conditioning',
+                    'Safety deposit box', 'Desk', 'TV', 'Refrigerator', 'Ironing facilities',
+                    'Tea/Coffee maker', 'Flat-screen TV', 'Minibar', 'Cable channels', 'Wake-up service',
+                    'Alarm clock', 'Wardrobe or closet', 'Free Wifi'
+                ];
 
-    // Ensure $roomFacilities is always an array
-    $roomFacilities = json_decode($room->facilities, true);
-    if (!is_array($roomFacilities)) {
-        $roomFacilities = [];
-    }
-@endphp
+                // Ensure $roomFacilities is always an array
+                $roomFacilities = json_decode($room->facilities, true);
+                if (!is_array($roomFacilities)) {
+                    $roomFacilities = [];
+                }
+            @endphp
 
                 <div class="facilities-grid">
                     @foreach ($allFacilities as $facility)

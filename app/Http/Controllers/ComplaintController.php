@@ -27,8 +27,8 @@ class ComplaintController extends Controller
 
         Complaint::create($validatedData);
 
-        $adminEmail = 'truckares@gmail.com';
-        Mail::to($adminEmail)->send(new ComplaintMail($validatedData));
+    $adminEmail = env('ADMIN_EMAIL');
+    Mail::to($adminEmail)->send(new ComplaintMail($validatedData));
 
         return response()->json([
             'success' => true,

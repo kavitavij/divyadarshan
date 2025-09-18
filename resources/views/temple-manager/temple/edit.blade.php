@@ -42,14 +42,14 @@
                         <label for="about" class="form-label">About Section</label>
                         <textarea class="form-control wysiwyg-editor" name="about">{{ old('about', $temple->about) }}</textarea>
                     </div>
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="online_services" class="form-label">Online Services Section</label>
                         <textarea class="form-control wysiwyg-editor" name="online_services">{{ old('online_services', $temple->online_services) }}</textarea>
                     </div>
                     <div class="mb-3">
                         <label for="social_services" class="form-label">Social Services Section</label>
                         <textarea class="form-control wysiwyg-editor" name="social_services">{{ old('social_services', $temple->social_services) }}</textarea>
-                    </div>
+                    </div> --}}
                 </div>
                     <button type="submit" class="btn btn-primary">Update Details</button>
                     <a href="{{ route('temple-manager.dashboard') }}" class="btn btn-secondary">Cancel</a>
@@ -58,3 +58,16 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.tiny.cloud/1/o5wfjvocpzdett1nnvnmeopwgl8i2gp5j1smdegnaukyamkf/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea.wysiwyg-editor',
+            plugins: 'lists link code',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | link | code',
+            menubar: false,
+            height: 300
+        });
+    </script>
+@endpush

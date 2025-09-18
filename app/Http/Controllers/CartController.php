@@ -11,6 +11,7 @@ use App\Models\Booking;
 use App\Models\SevaBooking;
 use App\Models\StayBooking;
 use App\Models\StayBookingGuest;
+use App\Models\User;
 use App\Models\Donation;
 use App\Models\Payment;
 use App\Models\Devotee;
@@ -98,8 +99,6 @@ class CartController extends Controller
         });
 
         if ($totalAmount <= 0) {
-            // Handle cases where the cart total is zero (e.g., free ebooks)
-            // For now, redirecting back. You might want to process this as a free order.
             return redirect()->route('cart.view')->with('error', 'Nothing to pay.');
         }
 

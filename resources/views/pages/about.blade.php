@@ -486,7 +486,7 @@ function googleTranslateElementInit() {
    x-show="show"
    x-init="window.addEventListener('scroll', () => show = window.scrollY > 300)"
    class="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition hidden md:block z-50">
-   ↑
+   ↑ Back to top
 </a>
 
 <footer style="background:#910404fa; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">

@@ -219,6 +219,10 @@
 
 @push('styles')
 <style>
+/* Remove dark overlay for temple slider only */
+.temple-swiper .swiper-slide::after {
+    background: none !important;
+}
 .scrollbar-thin::-webkit-scrollbar {
   height: 8px;
 }
@@ -272,7 +276,16 @@
 .temple-swiper .swiper-slide-prev {
   pointer-events: auto; /* enable only visible slides */
 }
-
+.swiper-slide::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    pointer-events: none;
+}
 .view-details-button {
   position: relative;
   z-index: 50; /* higher than cloned slides */

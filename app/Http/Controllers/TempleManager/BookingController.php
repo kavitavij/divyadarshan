@@ -13,36 +13,64 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class BookingController extends Controller
 {
-    /**
-     * Display a listing of all combined bookings for the manager's temple.
-     */
-    public function index()
+    public function index(Request $request)
     {
         $temple = Auth::user()->temple;
         if (!$temple) {
             return redirect()->route('temple-manager.dashboard')->with('error', 'You are not assigned to a temple.');
         }
 
-        // Get Darshan bookings, adding a 'type' attribute
-        $darshanBookings = Booking::where('temple_id', $temple->id)
-            ->with('user')
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $type = $request->input('type');
+
+        $darshanQuery = Booking::where('temple_id', $temple->id)->with('user');
+        if ($startDate) {
+            $darshanQuery->whereDate('booking_date', '>=', $startDate);
+        }
+        if ($endDate) {
+            $darshanQuery->whereDate('booking_date', '<=', $endDate);
+        }
+        $darshanBookings = $darshanQuery
             ->select('*', DB::raw("'Darshan' as type"))
             ->get();
 
-        // Get Seva bookings, adding a 'type' attribute
-        $sevaBookings = SevaBooking::whereHas('seva', function ($query) use ($temple) {
+        $sevaQuery = SevaBooking::whereHas('seva', function ($query) use ($temple) {
             $query->where('temple_id', $temple->id);
-        })->with('user', 'seva')
-          ->select('*', DB::raw("'Seva' as type"))
-          ->get();
+        })->with('user', 'seva');
+        if ($startDate) {
+            $sevaQuery->whereDate('booking_date', '>=', $startDate);
+        }
+        if ($endDate) {
+            $sevaQuery->whereDate('booking_date', '<=', $endDate);
+        }
+        $sevaBookings = $sevaQuery
+            ->select('*', DB::raw("'Seva' as type"))
+            ->get();
 
-        // Merge, sort, and paginate
-        $allBookings = $darshanBookings->concat($sevaBookings)->sortByDesc('created_at');
+        if ($type === 'darshan') {
+            $allBookings = $darshanBookings;
+        } elseif ($type === 'seva') {
+            $allBookings = $sevaBookings;
+        } else {
+            $allBookings = $darshanBookings->concat($sevaBookings);
+        }
+
+        $allBookings = $allBookings->sortByDesc('created_at');
         $bookings = $this->paginate($allBookings);
 
-        return view('temple-manager.bookings.index', compact('temple', 'bookings'));
-    }
+        $totalBookings = $darshanBookings->count() + $sevaBookings->count();
+        $darshanBookingsCount = $darshanBookings->count();
+        $sevaBookingsCount = $sevaBookings->count();
 
+        return view('temple-manager.bookings.index', compact(
+            'temple',
+            'bookings',
+            'totalBookings',
+            'darshanBookingsCount',
+            'sevaBookingsCount'
+        ));
+    }
     /**
      * Display the specified booking resource (Darshan or Seva).
      *

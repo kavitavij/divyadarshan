@@ -2,17 +2,7 @@
 <html lang="en" class="dark">
 <head>
     <meta name="google" content="notranslate">
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-        autoDisplay: false
-    }, 'google_translate_element');
-    }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <meta charset="UTF-8">
+    <style>[x-cloak]{display:none !important;}</style>
     <title>DivyaDarshan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -135,7 +125,6 @@
 <header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
     <div class="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-4">
 
-        {{-- LOGO --}}
         <div class="flex-shrink-0">
             <a href="/" class="text-yellow-400 font-bold text-2xl">DivyaDarshan</a>
         </div>
@@ -158,7 +147,6 @@
                     @endforeach
                 </div>
             </div>
-
             <div x-data="{ open: false }" @click.away="open = false" class="relative">
                 <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition">
                     Online Services
@@ -175,7 +163,6 @@
                 </div>
             </div>
         </nav>
-
         {{-- DESKTOP ACTION ICONS --}}
         <div class="hidden md:flex items-center gap-4">
             <div class="translate-container flex items-center gap-2 ml-4">
@@ -225,7 +212,6 @@
                 </a>
             @endauth
         </div>
-
         {{-- MOBILE ACTION ICONS --}}
         <div class="flex items-center gap-4 md:hidden">
             @guest
@@ -249,7 +235,6 @@
                 </svg>
             </button>
         </div>
-
     </div>
 </header>
     {{-- Mobile Responsive --}}
@@ -261,7 +246,7 @@
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0">
     <div @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black/60"></div>
-    <div class="relative w-full max-w-xs bg-[#1a1a1a] text-[#f1e8e8] flex flex-col"
+    <div class="relative w-full max-w-xs bg-[#1 a1a1a] text-[#f1e8e8] flex flex-col"
          x-show="isMobileMenuOpen"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="-translate-x-full"
@@ -269,14 +254,12 @@
          x-transition:leave="transition ease-in duration-300"
          x-transition:leave-start="translate-x-0"
          x-transition:leave-end="-translate-x-full">
-
         <div class="p-4 flex items-center justify-between border-b border-gray-700">
             <a href="/" class="text-yellow-400 font-bold text-xl">DivyaDarshan</a>
             <button @click="isMobileMenuOpen = false" class="p-2">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
-
         <nav class="flex-grow p-4 space-y-2 text-lg">
             <a href="/" class="block px-3 py-2 rounded-md hover:bg-gray-700">Home</a>
             <a href="/about" class="block px-3 py-2 rounded-md hover:bg-gray-700">About</a>
@@ -306,8 +289,7 @@
                    <a href="{{ route('ebooks.index') }}" class="block px-3 py-2 text-sm rounded-md hover:bg-gray-600">Ebooks</a>
                 </div>
             </div>
-
-            {{-- ✅ NEW: USER ACCOUNT LINKS --}}
+            {{--  USER ACCOUNT LINKS --}}
             @auth
                 <hr class="border-gray-700 my-2">
                 <div class="px-3 py-2 text-sm font-semibold text-gray-400 uppercase">My Account</div>
@@ -315,9 +297,7 @@
                 <a href="{{ route('profile.ebooks') }}" class="block px-3 py-2 rounded-md hover:bg-gray-700">My Ebooks</a>
                 <a href="{{ route('profile.my-orders.index') }}" class="block px-3 py-2 rounded-md hover:bg-gray-700">My Orders</a>
             @endauth
-
         </nav>
-
         <div class="p-4 border-t border-gray-700">
             @auth
                 <a href="{{ route('profile.edit') }}" class="block text-center w-full px-4 py-3 bg-yellow-500 text-black font-bold rounded-md hover:bg-yellow-400">My Profile</a>
@@ -371,7 +351,6 @@
         </div>
         <div class="slider-curved-side"></div>
     </div>
-
     <main class="py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             @if (session('status'))
@@ -391,11 +370,9 @@
                         </div>
                     </div>
                 @endif
-
         </div>
         @yield('content')
     </main>
-
      <div x-show="infoModalOpen" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999] p-4" x-transition>
         <div @click.away="infoModalOpen = false" class="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[80vh] flex flex-col overflow-hidden">
             <div class="flex justify-between items-center bg-yellow-500 text-[#0d0d0d] px-6 py-4">
@@ -405,13 +382,9 @@
             <div class="p-6 overflow-y-auto text-slate-700 prose max-w-none" x-html="modalContent"></div>
         </div>
     </div>
-
     {{-- Hidden Content Templates for Modals --}}
-
     <footer style="background:#910404fa; color:#ccc; font-family:'Poppins', sans-serif; padding:60px 20px 30px;">
-
         <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:40px;">
-
             <!-- About -->
             <div>
                 <h3 style="color:#facc15; font-size:20px; font-weight:700; margin-bottom:15px;">About DivyaDarshan</h3>
@@ -537,6 +510,19 @@
                 <template x-if="modalView === 'login'">
                     <div>
                         <h2 class="text-xl font-bold mb-4">Login</h2>
+                        @if ($errors->any())
+                            <div class="mb-4 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-md" role="alert">
+                                {{ $errors->first() }}
+                            </div>
+                        @elseif (session('error'))
+                            <div class="mb-4 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-md" role="alert">
+                                {{ session('error') }}
+                            </div>
+                        @elseif (session('status'))
+                            <div class="mb-4 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-md" role="alert">
+                                {{ session('status') }}
+                            </div>
+                        @endif
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
                             <div class="mb-4">
@@ -563,7 +549,6 @@
                                 @click.prevent="loginModal = false">
                                 Back to home
                             </a>
-
                             <div class="flex justify-end">
                                 <button type="submit"
                                     class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Log In</button>
@@ -684,7 +669,6 @@
                                 class="pl-10 py-3 w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition" />
                         </div>
                     </div>
-
                     <div class="flex flex-col space-y-2">
                         <label for="contact_info" class="text-sm font-medium text-gray-700 dark:text-gray-300">Email or Phone</label>
                         <div class="relative">
@@ -808,7 +792,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/spotlight.js@0.7.8/dist/spotlight.min.js" defer></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+
+     <script>
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+        }, 'google_translate_element');
+      }
+    </script>
+    <script async defer src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdR-7EGvRdTcL0NSvxG1pKan2bQu3nXuo&callback=initMap" async defer></script>
 
     {{-- Alpine JS State --}}
     <script>

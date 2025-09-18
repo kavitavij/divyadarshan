@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Donation;
 use App\Models\Booking;
+use App\Models\Ebook;
+use App\Models\Ebooks;
+use App\Models\User;
 use App\Models\StayBooking;
 use App\Models\DarshanSlot;
-
+use Illuminate\Support\Facades\DB;
 use App\Models\RefundRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 class ProfileController extends Controller

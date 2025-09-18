@@ -47,9 +47,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Temple::class, 'favorites');
     }
 
+
     public function ebooks()
     {
-        return $this->belongsToMany(Ebook::class);
+        return $this->belongsToMany(\App\Models\Ebook::class, 'ebook_user', 'user_id', 'ebook_id');
     }
 
     public function bookings()
@@ -77,4 +78,5 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Hotel::class, 'manager_id');
     }
+
 }

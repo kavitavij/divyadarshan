@@ -98,10 +98,10 @@
                                                             <div class="spinner-border spinner-border-sm text-secondary pincode-loader" id="pincode-loader-{{$i}}"></div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4"><label class="form-label">City</label><input type="text" id="city-autofill-{{$i}}" name="devotees[{{ $i }}][city]" class="form-control" readonly required></div>
+                                                    <div class="col-md-4"><label class="form-label">City</label><input type="text" id="city-autofill-{{$i}}" name="devotees[{{ $i }}][city]" class="form-control" required></div>
                                                     <div class="col-md-4">
                                                         <label class="form-label">State</label>
-                                                        <select id="state-autofill-{{$i}}" name="devotees[{{ $i }}][state]" class="form-select" disabled required>
+                                                        <select id="state-autofill-{{$i}}" name="devotees[{{ $i }}][state]" class="form-select" required>
                                                             <option value="">-- Pincode First --</option>
                                                             <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
                                                             <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -291,12 +291,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 pincodeInput.classList.add('is-invalid');
-                stateSelect.disabled = true;
+                // Allow manual entry if autofill fails
+                cityInput.readOnly = false;
+                stateSelect.disabled = false;
             }
         } catch (error) {
             console.error("Pincode fetch error:", error);
             pincodeInput.classList.add('is-invalid');
-            stateSelect.disabled = true;
+            // Allow manual entry if autofill fails
+            cityInput.readOnly = false;
+            stateSelect.disabled = false;
         } finally {
             loader.style.display = 'none';
         }
