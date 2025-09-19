@@ -110,7 +110,7 @@
         <div class="lg:col-span-2 space-y-8">
             <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-200 pb-2 text-gray-800">About this property</h2>
-                <p class="text-gray-600 leading-relaxed">{{ $hotel->description }}</p>
+                <div class="text-gray-600 leading-relaxed">{!! $hotel->description !!}</div>
             </div>
             @if($hotel->latitude && $hotel->longitude)
             <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
@@ -133,7 +133,8 @@
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-200 pb-2 text-gray-800">Policies</h2>
                 <ul class="list-disc pl-6 text-gray-600 space-y-2">
                     @foreach($hotel->policies as $policy)
-                        <li>{{ $policy }}</li>
+                        <!-- <li>{{ $policy }}</li> -->
+                        <div class="text-gray-600 leading-relaxed">{!!  $policy !!}</div>
                     @endforeach
                 </ul>
             </div>
@@ -144,7 +145,8 @@
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-200 pb-2 text-gray-800">Nearby Attractions</h2>
                 <ul class="list-disc pl-6 text-gray-600 space-y-2">
                     @foreach($hotel->nearby_attractions as $attraction)
-                        <li>{{ $attraction }}</li>
+                        <!-- <li>{{ $attraction }}</li> -->
+                        <div class="text-gray-600 leading-relaxed">{!!  $attraction !!}</div>
                     @endforeach
                 </ul>
             </div>

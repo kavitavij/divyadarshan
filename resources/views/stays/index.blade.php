@@ -121,8 +121,9 @@
                                         </div>
                                     </div>
                                     <p class="text-gray-600 dark:text-gray-300 text-sm mt-2">
-                                        {{ Str::limit($hotel->description, 150) }}
-                                    </p>
+                                        <!-- {{ Str::limit($hotel->description, 150) }} -->
+                                        <div class="text-gray-600 leading-relaxed">{!! Str::limit($hotel->description, 250) !!}</div>
+                                    </p>    
                                 </div>
                                 <div class="mt-6 flex justify-end items-center">
                                     <a href="{{ route('stays.show', $hotel) }}" class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 font-semibold transition-colors duration-300">

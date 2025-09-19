@@ -131,7 +131,7 @@
                     'Free toiletries', 'Toilet', 'Bath or shower', 'Hairdryer', 'Air conditioning',
                     'Safety deposit box', 'Desk', 'TV', 'Refrigerator', 'Ironing facilities',
                     'Tea/Coffee maker', 'Flat-screen TV', 'Minibar', 'Cable channels', 'Wake-up service',
-                    'Alarm clock', 'Wardrobe or closet', 'Free Wifi'
+                    'Alarm clock', 'Wardrobe or closet', 'Free Wifi','Balcony'
                 ];
 
                 // Ensure $roomFacilities is always an array

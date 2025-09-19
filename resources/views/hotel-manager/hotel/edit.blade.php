@@ -55,15 +55,13 @@
                         </div>
 
                         {{-- Description --}}
-<div class="mb-4">
-    <label class="form-label fw-semibold">📝 Description</label>
-    <textarea name="description"
-              class="form-control form-control-lg w-100"
-              rows="5"
-              placeholder="Describe your hotel in detail...">{{ old('description', $hotel->description) }}</textarea>
-</div>
-
-
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">📝 Description</label>
+                            <textarea name="description"
+                            class="form-control form-control-lg w-100 wysiwyg-editor"
+                            rows="5"
+                            placeholder="Describe your hotel in detail...">{{ old('description', $hotel->description) }}</textarea>
+                        </div>
                         <hr class="my-4">
 
                         {{-- Policies --}}
@@ -71,7 +69,9 @@
                             <i class="fas fa-clipboard-list me-2"></i> Policies
                         </h5>
                         <div class="mb-4">
-                            <textarea name="policies" class="form-control" rows="3" placeholder="Enter one policy per line">{{ old('policies', is_array($hotel->policies) ? implode("\n", $hotel->policies) : '') }}</textarea>
+                            <textarea name="policies" 
+                            class="form-control form-control-lg w-100 wysiwyg-editor" 
+                            placeholder="Enter one policy per line">{{ old('policies', is_array($hotel->policies) ? implode("\n", $hotel->policies) : '') }}</textarea>
                         </div>
 
                         {{-- Nearby Attractions --}}
@@ -79,7 +79,9 @@
                             <i class="fas fa-map-marked-alt me-2"></i> Nearby Attractions
                         </h5>
                         <div class="mb-4">
-                            <textarea name="nearby_attractions" class="form-control" rows="3" placeholder="Enter one attraction per line">{{ old('nearby_attractions', is_array($hotel->nearby_attractions) ? implode("\n", $hotel->nearby_attractions) : '') }}</textarea>
+                            <textarea name="nearby_attractions" 
+                            class="form-control form-control-lg w-100 wysiwyg-editor"
+                            placeholder="Enter one attraction per line">{{ old('nearby_attractions', is_array($hotel->nearby_attractions) ? implode("\n", $hotel->nearby_attractions) : '') }}</textarea>
                         </div>
 
                         <hr class="my-4">
@@ -116,12 +118,6 @@
                         <h5 class="text-primary fw-bold mb-3">
                         <i class="fas fa-map me-2"></i> Location Map
                         </h5>
-                        {{-- <p class="small text-muted mb-2">Drag the marker to set your hotel's exact location.</p>
-                        <div id="map" style="height: 300px; border-radius: 10px; border: 1px solid #ddd;" class="mb-4"></div>
-                        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $hotel->latitude) }}">
-                        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $hotel->longitude) }}">
-
-                        <hr class="my-4"> --}}
 
                         {{-- Image --}}
                         <h5 class="text-primary fw-bold mb-3">
@@ -156,7 +152,20 @@
 @endsection
 
 @push('scripts')
-@push('scripts')
+<!-- TinyMCE CDN -->
+<script src="https://cdn.tiny.cloud/1/o5wfjvocpzdett1nnvnmeopwgl8i2gp5j1smdegnaukyamkf/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+<script>
+    // Initialize TinyMCE for description box
+    tinymce.init({
+        selector: 'textarea.wysiwyg-editor',
+        plugins: 'lists link code',
+        toolbar: 'undo redo | bold italic underline | bullist numlist | link | code',
+        menubar: false,
+        height: 300
+    });
+</script>
+
 <script>
     let map;
     let marker;
@@ -180,48 +189,34 @@
             draggable: true,
         });
 
-        // --- NEW SEARCH BOX LOGIC ---
         const input = document.getElementById("pac-input");
         const searchBox = new google.maps.places.SearchBox(input);
 
-        // Bias the SearchBox results towards current map's viewport.
         map.addListener("bounds_changed", () => {
             searchBox.setBounds(map.getBounds());
         });
 
-        // Listen for the event fired when the user selects a prediction and retrieve more details for that place.
         searchBox.addListener("places_changed", () => {
             const places = searchBox.getPlaces();
 
-            if (places.length == 0) {
-                return;
-            }
+            if (places.length == 0) return;
 
             const place = places[0];
-            if (!place.geometry || !place.geometry.location) {
-                console.log("Returned place contains no geometry");
-                return;
-            }
+            if (!place.geometry || !place.geometry.location) return;
 
-            // Move the map and marker to the new location
             map.setCenter(place.geometry.location);
             marker.setPosition(place.geometry.location);
 
-            // Update the hidden input fields
             latInput.value = place.geometry.location.lat();
             lngInput.value = place.geometry.location.lng();
         });
-        // --- END OF NEW SEARCH BOX LOGIC ---
 
-
-        // Update hidden inputs when marker is dragged
         google.maps.event.addListener(marker, 'dragend', function(event) {
             latInput.value = event.latLng.lat();
             lngInput.value = event.latLng.lng();
         });
     }
-
     window.initMap = initMap;
 </script>
-@endpush
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places&callback=initMap" async defer></script>
 @endpush

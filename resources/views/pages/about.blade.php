@@ -122,7 +122,9 @@ function googleTranslateElementInit() {
 {{-- Header --}}
 <header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="text-2xl font-bold text-yellow-400 hover:text-yellow-500 transition">DivyaDarshan</a>
+        
+    
+    <a href="/" class="text-2xl font-bold text-yellow-400"hover:text-yellow-500 transition">DivyaDarshan</a>
 
         <nav class="hidden md:flex gap-6 text-sm font-medium text-[#ccc] items-center">
             <a href="/" class="hover:text-yellow-400 transition">Home</a>

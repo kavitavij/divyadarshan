@@ -1,31 +1,17 @@
-{{-- resources/views/layouts/temple-manager.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <title>Temple Manager Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    {{-- Favicon --}}
-    <link rel="icon" href="{{ asset('favicon.ico') }}" />
-
-    {{-- Bootstrap & Icons --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1"W/>
+    <link rel="icon" href="{{ asset('favicon.ico') }}"/>
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      crossorigin="anonymous"
-    />
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"/>
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-      rel="stylesheet"
-      crossorigin="anonymous"
-    />
-
-    {{-- Page-Specific Styles --}}
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
     @stack('styles')
 
     <style>
-        /* Reset margin/padding and set font */
         body {
             margin: 0;
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -41,7 +27,6 @@
             margin-top: 40px;
             transition: all 0.3s;
         }
-        /* Navbar */
         .navbar {
             height: 60px;
             background: #2c3e50;
@@ -55,7 +40,6 @@
             z-index: 1100;
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
-
         .navbar .menu-toggle {
             display: none;
             font-size: 24px;
@@ -75,7 +59,6 @@
             user-select: none;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 220px;
             background: #34495e;
@@ -107,7 +90,6 @@
             border-left-color: #16a085;
         }
 
-        /* Scrollbar for sidebar */
         .sidebar::-webkit-scrollbar {
             width: 6px;
         }
@@ -116,7 +98,6 @@
             border-radius: 3px;
         }
 
-        /* Main content */
         .main {
             margin-left: 220px;
             padding: 20px;
@@ -124,7 +105,6 @@
             min-height: calc(100vh - 60px);
         }
 
-        /* Widgets grid */
         .widgets {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -145,7 +125,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* Overlay for mobile */
         .overlay {
             display: none;
             position: fixed;
@@ -161,7 +140,6 @@
             display: block;
         }
 
-        /* Mobile responsiveness */
         @media (max-width: 768px) {
             .navbar .menu-toggle {
                 display: block;
@@ -182,7 +160,6 @@
 </head>
 
 <body>
-    {{-- Navbar --}}
     <nav class="navbar" role="navigation" aria-label="Main Navigation">
         <button
           class="menu-toggle"
@@ -190,8 +167,7 @@
           aria-expanded="false"
           aria-controls="sidebar"
           onclick="toggleSidebar(event)"
-          onkeydown="if(event.key==='Enter') toggleSidebar(event)"
-        >☰</button>
+          onkeydown="if(event.key==='Enter') toggleSidebar(event)">☰</button>
 
         <div class="logo" aria-label="Temple Manager Dashboard">Temple Manager</div>
 
@@ -220,15 +196,28 @@
 
     {{-- Sidebar --}}
     <nav class="sidebar" id="sidebar" aria-label="Sidebar menu">
-        <a href="{{ route('temple-manager.dashboard') }}" class="{{ request()->routeIs('temple-manager.dashboard') ? 'active' : '' }}">Dashboard</a>
-
-        <a href="{{ route('temple-manager.slots.index') }}" class="{{ request()->routeIs('temple-manager.slots*') ? 'active' : '' }}">🗓️ Manage Slots</a>
-        <a href="{{ route('temple-manager.sevas.index') }}" class="{{ request()->routeIs('temple-manager.sevas*') ? 'active' : '' }}">🙏 Manage Sevas</a>
-        <a href="{{ route('temple-manager.bookings.index') }}" class="{{ request()->routeIs('temple-manager.bookings*') ? 'active' : '' }}">📅 Bookings</a>
-        <a href="{{ route('temple-manager.temple.edit') }}" class="{{ request()->routeIs('temple-manager.temples*') ? 'active' : '' }}">🏛️ Manage Temple</a>
-        <a href="{{ route('temple-manager.gallery.index') }}"class="{{ request()->routeIs('temple-manager.gallery*') ? 'active' : '' }}">🖼️ Manage Gallery</a>
-        <a href="{{ route('temple-manager.revenue.index') }}"class="{{ request()->routeIs('temple-manager.revenue*') ? 'active' : '' }} ">Temple Revenue</a>
+        <a href="{{ route('temple-manager.dashboard') }}" 
+        class="{{ request()->routeIs('temple-manager.dashboard') ? 'active' : '' }}"> Dashboard</a>
+        <a href="{{ route('temple-manager.slots.index') }}" 
+        class="{{ request()->routeIs('temple-manager.slots*') ? 'active' : '' }}">
+        <i class="fas fa-calendar-alt"></i> Manage Slots</a>
+        <a href="{{ route('temple-manager.sevas.index') }}" 
+        class="{{ request()->routeIs('temple-manager.sevas*') ? 'active' : '' }}">
+        <i class="fas fa-hand-holding-heart"></i> Manage Sevas</a>
+        <a href="{{ route('temple-manager.bookings.index') }}" 
+        class="{{ request()->routeIs('temple-manager.bookings*') ? 'active' : '' }}">
+        <i class="fas fa-calendar-check"></i> Bookings</a>
+        <a href="{{ route('temple-manager.temple.edit') }}" 
+        class="{{ request()->routeIs('temple-manager.temples*') ? 'active' : '' }}">
+        <i class="fas fa-building"></i> Manage Temple</a>
+        <a href="{{ route('temple-manager.gallery.index') }}" 
+        class="{{ request()->routeIs('temple-manager.gallery*') ? 'active' : '' }}">
+        <i class="fas fa-images"></i> Manage Gallery</a>
+        <a href="{{ route('temple-manager.revenue.index') }}" 
+        class="{{ request()->routeIs('temple-manager.revenue*') ? 'active' : '' }}">
+        <i class="fas fa-dollar-sign"></i> Temple Revenue</a>
     </nav>
+
     {{-- Overlay for mobile --}}
     <div class="overlay" id="overlay" onclick="closeSidebar()" tabindex="-1" aria-hidden="true"></div>
 
@@ -266,7 +255,7 @@
 
     @stack('scripts')
 </body>
-    <div class="footer">
-            &copy; {{ date('Y') }} <a href="/">DivyaDarshan</a>. All rights reserved.
-        </div>
+<div class="footer">
+        &copy; {{ date('Y') }} <a href="/">DivyaDarshan</a>. All rights reserved.
+    </div>
 </html>

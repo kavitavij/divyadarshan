@@ -4,12 +4,12 @@
     <div class="container-fluid py-4">
         <h1 class="h3 mb-4 text-gray-800">Manage Bookings for {{ $temple->name }}</h1>
 
-        {{-- NEW: Summary Stat Cards --}}
+        {{-- Stat Cards --}}
         <div class="row g-4 mb-4">
             <div class="col-lg-4 col-md-6">
                 <div class="card summary-card-modern border-0 shadow h-100">
                     <div class="card-body d-flex align-items-center">
-                        <div class="summary-icon bg-gradient-info text-white me-3"><i class="fas fa-eye fa-lg"></i></div>
+                        <!-- <div class="summary-icon bg-gradient-info text-white me-3"><i class="fas fa-eye fa-lg"></i></div> -->
                         <div>
                             <div class="fw-bold text-uppercase small text-info mb-1">Darshan Bookings</div>
                             <div class="fs-3 fw-bold">{{ $darshanBookingsCount ?? 'N/A' }}</div>
@@ -20,7 +20,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="card summary-card-modern border-0 shadow h-100">
                     <div class="card-body d-flex align-items-center">
-                        <div class="summary-icon bg-gradient-warning text-white me-3"><i class="fas fa-concierge-bell fa-lg"></i></div>
+                        <!-- <div class="summary-icon bg-gradient-warning text-white me-3"><i class="fas fa-concierge-bell fa-lg"></i></div> -->
                         <div>
                             <div class="fw-bold text-uppercase small text-warning mb-1">Seva Bookings</div>
                             <div class="fs-3 fw-bold">{{ $sevaBookingsCount ?? 'N/A' }}</div>
@@ -31,7 +31,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="card summary-card-modern border-0 shadow h-100">
                     <div class="card-body d-flex align-items-center">
-                        <div class="summary-icon bg-gradient-primary text-white me-3"><i class="fas fa-calendar fa-lg"></i></div>
+                        <!-- <div class="summary-icon bg-gradient-primary text-white me-3"><i class="fas fa-calendar fa-lg"></i></div> -->
                         <div>
                             <div class="fw-bold text-uppercase small text-primary mb-1">Total Bookings</div>
                             <div class="fs-3 fw-bold">{{ $totalBookings ?? 'N/A' }}</div>
@@ -40,9 +40,8 @@
                 </div>
             </div>
         </div>
-        {{-- END NEW --}}
 
-        {{-- NEW: Filter Panel --}}
+        {{--  Filter Panel --}}
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light">
                 <h5 class="mb-0">
@@ -74,9 +73,7 @@
                 </form>
             </div>
         </div>
-        {{-- END NEW --}}
-
-
+        <!-- // Bookings Table -->
         <div class="card shadow-sm">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">All Bookings for {{ $temple->name }}</h4>

@@ -197,13 +197,19 @@
                             <input type="hidden" name="total_amount" id="total_amount_input" value="0">
                         </div>
 
-                        {{-- This is your existing phone number section --}}
-                        <div class="mt-4 mb-3">
-                            <label for="phone_number">Contact Phone Number</label>
-                            <input type="tel" name="phone_number" class="form-control"
-                                value="{{ old('phone_number') }}" required>
+                        {{-- Contact Details --}}
+                        <div class="row mt-4 mb-3">
+                            <!-- <div class="col-md-6 mb-3">
+                                <label for="email">Email Address</label>
+                                <input type="email" name="email" id="email" class="form-control"
+                                    value="{{ old('email') }}" required>
+                            </div> -->
+                            <div class="col-md-6 mb-3">
+                                <label for="phone_number">Phone Number</label>
+                                <input type="tel" name="phone_number" id="phone_number" class="form-control"
+                                    value="{{ old('phone_number') }}" required>
+                            </div>
                         </div>
-
                         <button type="submit" class="btn btn-proceed">Add to Cart</button>
                         </form>
                     </div>
@@ -299,7 +305,7 @@
 
         toggleGuestForms();
         validateDates();
-        calculateTotal(); 
+        calculateTotal();
     });
 </script>
 </body>

@@ -266,6 +266,166 @@ class CartController extends Controller
         ]);
     }
 
+    // public function paymentSuccess(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'razorpay_payment_id' => 'required|string',
+    //         'razorpay_order_id'   => 'required|string',
+    //         'razorpay_signature'  => 'required|string',
+    //     ]);
+
+    //     $cart = session()->get('cart', []);
+    //     $user = Auth::user();
+
+    //     if (empty($cart) || !$user) {
+    //         return redirect()->route('home')->with('error', 'Your session has expired or you are not logged in.');
+    //     }
+
+    //     $totalAmount = collect($cart)->sum(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 1));
+    //     $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+
+    //     try {
+    //         $api->utility->verifyPaymentSignature($validated);
+    //         Log::info('Razorpay signature verified for order: ' . $validated['razorpay_order_id']);
+
+    //         $finalOrder = null;
+
+    //         DB::transaction(function () use ($cart, $validated, $totalAmount, $user, &$finalOrder) {
+    //             $order = Order::create([
+    //                 'user_id'       => $user->id,
+    //                 'order_number'  => 'DD-' . strtoupper(Str::random(10)),
+    //                 'total_amount'  => $totalAmount,
+    //                 'status'        => 'Completed',
+    //                 'payment_id'    => $validated['razorpay_payment_id'],
+    //                 'order_details' => $cart,
+    //             ]);
+
+    //             foreach ($cart as $item) {
+    //                 if ($item['type'] === 'darshan') {
+    //                     $details = $item['details'];
+    //                     $slotIdString = $details['darshan_slot_id'];
+    //                     $isDefaultSlot = str_starts_with($slotIdString, 'default-');
+    //                     $slotId = $isDefaultSlot ? (int)str_replace('default-', '', $slotIdString) : (int)$slotIdString;
+
+    //                     $booking = Booking::create([
+    //                         'user_id' => $user->id,
+    //                         'order_id' => $order->id,
+    //                         'temple_id' => $details['temple_id'],
+    //                         'booking_date' => $details['selected_date'],
+    //                         'number_of_people' => $details['number_of_people'],
+    //                         'status' => 'Confirmed',
+    //                         'check_in_token' => Str::uuid(),
+    //                         'darshan_slot_id' => $isDefaultSlot ? null : $slotId,
+    //                         'default_darshan_slot_id' => $isDefaultSlot ? $slotId : null,
+    //                     ]);
+
+    //                     foreach ($details['devotees'] as $devoteeData) {
+    //                         Devotee::create([
+    //                             'booking_id'   => $booking->id,
+    //                             'full_name'    => $devoteeData['full_name'],
+    //                             'age'          => $devoteeData['age'],
+    //                             'gender'       => $devoteeData['gender'],
+    //                             'email'        => $devoteeData['email'],
+    //                             'phone_number' => $devoteeData['phone_number'],
+    //                             'pincode'      => $devoteeData['pincode'],
+    //                             'city'         => $devoteeData['city'],
+    //                             'state'        => $devoteeData['state'],
+    //                             'address'      => $devoteeData['address'],
+    //                             'id_type'      => $devoteeData['id_type'],
+    //                             'id_number'    => $devoteeData['id_number'],
+    //                             'id_photo_path' => $devoteeData['id_photo_path'] ?? null,
+    //                         ]);
+    //                     }
+
+    //                     $slot = $isDefaultSlot
+    //                         ? DefaultDarshanSlot::find($slotId)
+    //                         : DarshanSlot::find($slotId);
+
+    //                     if ($slot) {
+    //                         // *** THE FIX IS HERE ***
+    //                         // The column name is 'capacity', not 'available_slots'.
+    //                         $slot->decrement('capacity', $details['number_of_people']);
+    //                     }
+
+    //                 }
+    //                 else if ($item['type'] === 'stay') {
+    //                     $details = $item['details'];
+    //                     $roomData = $item['room'];
+    //                     $stayBooking = StayBooking::create([
+    //                         'user_id'          => $user->id,
+    //                         'order_id'         => $order->id,
+    //                         'room_id'           => $details['room_id'],
+    //                         'hotel_id'          => $roomData['hotel_id'],
+    //                         'check_in_date'    => $details['check_in_date'],
+    //                         'check_out_date'   => $details['check_out_date'],
+    //                         'number_of_guests' => $details['number_of_guests'],
+    //                         'phone_number'     => $details['phone_number'],
+    //                         'total_amount'     => $item['price'],
+    //                         'status'           => 'Confirmed',
+    //                     ]);
+
+    //                     foreach ($details['guests'] as $guestData) {
+    //                         $stayBooking->guests()->create($guestData);
+    //                     }
+    //                 }
+    //                 // --- HANDLE SEVA ---
+    //                 else if ($item['type'] === 'seva') {
+    //                     SevaBooking::create([
+    //                         'user_id'  => $user->id,
+    //                         'order_id' => $order->id,
+    //                         'seva_id'  => $item['id'],
+    //                         'amount'   => $item['price'],
+    //                         'quantity' => $item['quantity'],
+    //                         'status'   => 'Completed',
+    //                     ]);
+    //                 }
+    //                 // --- HANDLE EBOOK ---
+    //                 else if ($item['type'] === 'ebook') {
+    //                     $user->ebooks()->attach($item['id']);
+    //                 }
+    //                 // --- HANDLE DONATION ---
+    //                 else if ($item['type'] === 'donation') {
+    //                     Donation::create([
+    //                         'user_id'          => $user->id,
+    //                         'order_id'         => $order->id,
+    //                         'temple_id'        => $item['details']['temple_id'] ?? null,
+    //                         'amount'           => $item['price'],
+    //                         'status'           => 'Completed',
+    //                         'transaction_id'   => $validated['razorpay_payment_id'],
+    //                         'donation_purpose' => $item['details']['donation_purpose'] ?? 'General Donation',
+    //                     ]);
+    //                 }
+    //             }
+
+    //             $finalOrder = $order;
+    //         });
+
+    //         if ($finalOrder) {
+    //              Mail::to($user->email)->send(new OrderConfirmation($finalOrder));
+    //         }
+    //        Payment::create([
+    //         'user_id'      => $user->id,
+    //         'type'         => 'order',
+    //         'reference_id' => null,
+    //         'order_id'     => $validated['razorpay_order_id'],
+    //         'payment_id'   => $validated['razorpay_payment_id'],
+    //         'signature'    => $validated['razorpay_signature'],
+    //         'amount'       => $totalAmount,
+    //         'status'       => 'success',
+    //         'payload'      => json_encode($validated),
+    //         'created_at'   => now(),
+    //         'updated_at'   => now(),
+    //     ]);
+
+    //         session()->forget('cart');
+
+    //         return redirect()->route('profile.my-orders.index')->with('success', 'Payment successful! Your order has been placed.');
+
+    //     } catch (Exception $e) {
+    //         Log::error('Payment failed for order ' . $request->razorpay_order_id . ': ' . $e->getMessage());
+    //         return redirect()->route('cart.view')->with('error', $e->getMessage() ?: 'A problem occurred while processing your payment.');
+    //     }
+    // }
     public function paymentSuccess(Request $request)
     {
         $validated = $request->validate([
@@ -304,9 +464,12 @@ class CartController extends Controller
                     if ($item['type'] === 'darshan') {
                         $details = $item['details'];
                         $slotIdString = $details['darshan_slot_id'];
+
+                        // Check if it's a default or custom slot
                         $isDefaultSlot = str_starts_with($slotIdString, 'default-');
                         $slotId = $isDefaultSlot ? (int)str_replace('default-', '', $slotIdString) : (int)$slotIdString;
 
+                        // Create the booking
                         $booking = Booking::create([
                             'user_id' => $user->id,
                             'order_id' => $order->id,
@@ -320,31 +483,16 @@ class CartController extends Controller
                         ]);
 
                         foreach ($details['devotees'] as $devoteeData) {
-                            Devotee::create([
-                                'booking_id'   => $booking->id,
-                                'full_name'    => $devoteeData['full_name'],
-                                'age'          => $devoteeData['age'],
-                                'gender'       => $devoteeData['gender'],
-                                'email'        => $devoteeData['email'],
-                                'phone_number' => $devoteeData['phone_number'],
-                                'pincode'      => $devoteeData['pincode'],
-                                'city'         => $devoteeData['city'],
-                                'state'        => $devoteeData['state'],
-                                'address'      => $devoteeData['address'],
-                                'id_type'      => $devoteeData['id_type'],
-                                'id_number'    => $devoteeData['id_number'],
-                                'id_photo_path' => $devoteeData['id_photo_path'] ?? null,
-                            ]);
+                            $booking->devotees()->create($devoteeData);
                         }
 
-                        $slot = $isDefaultSlot
-                            ? DefaultDarshanSlot::find($slotId)
-                            : DarshanSlot::find($slotId);
-
-                        if ($slot) {
-                            // *** THE FIX IS HERE ***
-                            // The column name is 'capacity', not 'available_slots'.
-                            $slot->decrement('capacity', $details['number_of_people']);
+                        if (!$isDefaultSlot) {
+                            $slot = DarshanSlot::find($slotId);
+                            if ($slot) {
+                                $slot->increment('booked_capacity', $details['number_of_people']);
+                            }
+                        } else {
+                        //default slots are working fine
                         }
 
                     }
@@ -368,7 +516,7 @@ class CartController extends Controller
                             $stayBooking->guests()->create($guestData);
                         }
                     }
-                    // --- HANDLE SEVA ---
+                    // Handle Seva
                     else if ($item['type'] === 'seva') {
                         SevaBooking::create([
                             'user_id'  => $user->id,
@@ -379,11 +527,11 @@ class CartController extends Controller
                             'status'   => 'Completed',
                         ]);
                     }
-                    // --- HANDLE EBOOK ---
+                    // Handle eBook
                     else if ($item['type'] === 'ebook') {
                         $user->ebooks()->attach($item['id']);
                     }
-                    // --- HANDLE DONATION ---
+                    // Handle Donation
                     else if ($item['type'] === 'donation') {
                         Donation::create([
                             'user_id'          => $user->id,
@@ -401,21 +549,23 @@ class CartController extends Controller
             });
 
             if ($finalOrder) {
-                 Mail::to($user->email)->send(new OrderConfirmation($finalOrder));
+                Mail::to($user->email)->send(new OrderConfirmation($finalOrder));
             }
-           Payment::create([
-            'user_id'      => $user->id,
-            'type'         => 'order',
-            'reference_id' => null,
-            'order_id'     => $validated['razorpay_order_id'],
-            'payment_id'   => $validated['razorpay_payment_id'],
-            'signature'    => $validated['razorpay_signature'],
-            'amount'       => $totalAmount,
-            'status'       => 'success',
-            'payload'      => json_encode($validated),
-            'created_at'   => now(),
-            'updated_at'   => now(),
-        ]);
+
+            // Save payment details
+            Payment::create([
+                'user_id'      => $user->id,
+                'type'         => 'order',
+                'reference_id' => null,
+                'order_id'     => $validated['razorpay_order_id'],
+                'payment_id'   => $validated['razorpay_payment_id'],
+                'signature'    => $validated['razorpay_signature'],
+                'amount'       => $totalAmount,
+                'status'       => 'success',
+                'payload'      => json_encode($validated),
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
 
             session()->forget('cart');
 

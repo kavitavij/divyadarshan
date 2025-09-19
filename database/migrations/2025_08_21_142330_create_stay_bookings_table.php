@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('number_of_guests');
             $table->decimal('total_amount', 10, 2);
             $table->string('phone_number');
-            $table->string('status')->default('pending'); // e.g., pending, confirmed, cancelled
+            $table->string('status')->default('pending'); 
             $table->timestamps();
         });
     }

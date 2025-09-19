@@ -126,7 +126,13 @@
     <div class="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-4">
 
         <div class="flex-shrink-0">
-            <a href="/" class="text-yellow-400 font-bold text-2xl">DivyaDarshan</a>
+            <a href="/" class="flex items-center gap-2 text-yellow-400 font-bold text-2xl">
+                <a href="/" class="flex items-center gap-2 font-bold text-yellow-400">
+                <img src="{{ asset('images/logoo.png') }}"
+                    alt="DivyaDarshan Logo"
+                    class="h-14 w-14 object-contain">
+                <span class="text-2xl">DivyaDarshan</span>
+            </a>
         </div>
 
         {{-- DESKTOP NAVIGATION --}}

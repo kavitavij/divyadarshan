@@ -16,14 +16,10 @@
         .step-icon { width: 40px; height: 40px; border-radius: 50%; background-color: #fff; border: 2px solid #e0e0e0; display: flex; align-items: center; justify-content: center; color: #bdbdbd; font-weight: bold; margin: 0 auto 0.5rem; }
         .step-label { font-size: 0.85rem; color: #757575; }
 
-        /* ✅ Completed step (green) */
-        .step.completed .step-icon { background-color: #e8f5e9; border-color: #4caf50; color: #4caf50; }
-
-        /* ✅ Active step (purple) */
+        .step.completed .step-icon { ba
         .step.active .step-icon { background-color: #4f46e5; border-color: #4f46e5; color: #fff; }
         .step.active .step-label { font-weight: 600; color: #4f46e5; }
 
-        /* ✅ Card styling */
         .main-card { border: none; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border-radius: 12px; background-color: #fff; }
         .main-card-header { background-color: transparent; border-bottom: 1px solid #eee; padding: 1.25rem 1.5rem; font-size: 1.25rem; font-weight: 600; }
 
@@ -98,10 +94,10 @@
                                                             <div class="spinner-border spinner-border-sm text-secondary pincode-loader" id="pincode-loader-{{$i}}"></div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4"><label class="form-label">City</label><input type="text" id="city-autofill-{{$i}}" name="devotees[{{ $i }}][city]" class="form-control" required></div>
+                                                    <div class="col-md-4"><label class="form-label">City</label><input type="text" id="city-autofill-{{$i}}" name="devotees[{{ $i }}][city]" class="form-control" readonly required></div>
                                                     <div class="col-md-4">
                                                         <label class="form-label">State</label>
-                                                        <select id="state-autofill-{{$i}}" name="devotees[{{ $i }}][state]" class="form-select" required>
+                                                        <select id="state-autofill-{{$i}}" name="devotees[{{ $i }}][state]" class="form-select" disabled required>
                                                             <option value="">-- Pincode First --</option>
                                                             <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
                                                             <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -164,24 +160,22 @@
                         <h5>{{ $temple->name ?? 'N/A' }}</h5>
                         <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ $temple->city ?? 'N/A' }}, {{ $temple->state ?? 'N/A' }}</p>
                         <ul class="list-unstyled summary-list">
-    <li>
-        <span><i class="fas fa-calendar-alt text-muted me-2"></i>Darshan Date</span>
-        <strong>{{ \Carbon\Carbon::parse($bookingData['selected_date'])->format('d M, Y') }}</strong>
-    </li>
+                        <li>
+                            <span><i class="fas fa-calendar-alt text-muted me-2"></i>Darshan Date</span>
+                            <strong>{{ \Carbon\Carbon::parse($bookingData['selected_date'])->format('d M, Y') }}</strong>
+                        </li>
+                            <li>
+                                <span><i class="fas fa-clock text-muted me-2"></i>Time Slot</span>
+                                <strong>
+                                    {{ \Carbon\Carbon::parse($darshanSlot->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($darshanSlot->end_time)->format('h:i A') }}
+                                </strong>
+                            </li>
 
-    {{-- This is the corrected line for the Time Slot --}}
-    <li>
-        <span><i class="fas fa-clock text-muted me-2"></i>Time Slot</span>
-        <strong>
-            {{ \Carbon\Carbon::parse($darshanSlot->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($darshanSlot->end_time)->format('h:i A') }}
-        </strong>
-    </li>
-
-    <li>
-        <span><i class="fas fa-users text-muted me-2"></i>Devotees</span>
-        <strong>{{ $bookingData['number_of_people'] }}</strong>
-    </li>
-</ul>
+                            <li>
+                                <span><i class="fas fa-users text-muted me-2"></i>Devotees</span>
+                                <strong>{{ $bookingData['number_of_people'] }}</strong>
+                            </li>
+                        </ul>
                         <div id="devotee-summary-list" class="my-3"></div>
                         <hr>
                         <h6 class="mb-3">Price Details</h6>
@@ -197,7 +191,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -291,16 +284,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 pincodeInput.classList.add('is-invalid');
-                // Allow manual entry if autofill fails
-                cityInput.readOnly = false;
-                stateSelect.disabled = false;
+                stateSelect.disabled = true;
             }
         } catch (error) {
             console.error("Pincode fetch error:", error);
             pincodeInput.classList.add('is-invalid');
-            // Allow manual entry if autofill fails
-            cityInput.readOnly = false;
-            stateSelect.disabled = false;
+            stateSelect.disabled = true;
         } finally {
             loader.style.display = 'none';
         }

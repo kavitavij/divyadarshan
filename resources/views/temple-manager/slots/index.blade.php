@@ -1,5 +1,4 @@
 @extends('layouts.temple-manager')
- {{-- Or your temple manager layout file --}}
 
 @section('title', 'Manage Darshan Slots')
 
@@ -13,13 +12,13 @@
     </button>
     <div class="dropdown-menu" aria-labelledby="addSlotDropdown">
         <a class="dropdown-item" href="{{ route('temple-manager.slots.settings') }}">
-    <i class="fas fa-fw fa-cog"></i> Manage Settings & Days
-</a>
+            <i class="fas fa-fw fa-cog"></i> Manage Settings & Days
+        </a>
         <a class="dropdown-item" href="{{ route('temple-manager.slots.create') }}">
             <i class="fas fa-fw fa-clock"></i> Add Custom Slot
         </a>
     </div>
-</div>
+        </div>
     </div>
 
     @if (session('success'))
@@ -57,9 +56,8 @@
                                 <td>{{ $slot->booked_capacity }}</td>
                                 <td>
                                     <span class="badge badge-success" style="color: #000;">
-    {{ $slot->total_capacity - $slot->booked_capacity }}
-</span>
-
+                                        {{ $slot->total_capacity - $slot->booked_capacity }}
+                                    </span>
                                 </td>
                                 <td>
                                     <a href="{{ route('temple-manager.slots.edit', $slot) }}" class="btn btn-info btn-sm">
