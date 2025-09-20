@@ -85,4 +85,8 @@ class Hotel extends Model
     {
         return $this->hasMany(StayBooking::class, 'hotel_id');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
 }

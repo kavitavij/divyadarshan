@@ -7,7 +7,7 @@
             My Accommodation Bookings
         </h1>
         <div class="mb-6">
-            <form method="GET" action="{{ route('profile.my-stays.index') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <!-- <form method="GET" action="{{ route('profile.my-stays.index') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <select name="status" class="px-3 py-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200">
                     <option value="">All Statuses</option>
                     <option value="Confirmed" {{ request('status') === 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
@@ -29,7 +29,50 @@
                     Reset
                 </a>
             </form>
-        </div>
+        </div> -->
+        <form method="GET" action="{{ route('profile.my-stays.index') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-wrap">
+        {{-- Status filter --}}
+        <select name="status" class="px-3 py-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200">
+            <option value="">All Statuses</option>
+            <option value="Confirmed" {{ request('status') === 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
+            <option value="Completed" {{ request('status') === 'Completed' ? 'selected' : '' }}>Completed</option>
+            <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+        </select>
+
+        {{-- Date range filter --}}
+        <select name="date_range" class="px-3 py-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200">
+            <option value="">Any Time</option>
+            <option value="1" {{ request('date_range') === '1' ? 'selected' : '' }}>Last 1 Month</option>
+            <option value="3" {{ request('date_range') === '3' ? 'selected' : '' }}>Last 3 Months</option>
+            <option value="6" {{ request('date_range') === '6' ? 'selected' : '' }}>Last 6 Months</option>
+            <option value="this_year" {{ request('date_range') === 'this_year' ? 'selected' : '' }}>This Year</option>
+        </select>
+
+        {{-- Specific year filter --}}
+        <select name="year" class="px-3 py-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200">
+            <option value="">All Years</option>
+            @foreach (range(now()->year, now()->year - 5) as $year)
+                <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
+            @endforeach
+        </select>
+
+        {{-- Hotel name search --}}
+        <input
+            type="search"
+            name="q"
+            placeholder="Search by hotel name..."
+            value="{{ request('q') }}"
+            class="px-3 py-2 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 w-full sm:w-64"/>
+
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+            Search
+        </button>
+
+        <a href="{{ route('profile.my-stays.index') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+            Reset
+        </a>
+    </form>
+
         @if ($bookings->isEmpty())
             <div class="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -58,7 +101,13 @@
                                 $statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'; // Default
 
                                 if (strtolower($booking->status) === 'confirmed') {
-                                    $statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+                                    if ($booking->payment_method === 'pay_at_hotel') {
+                                        $statusText = 'Confirmed (Pay at Hotel)';
+                                        // Use a different color to make it stand out
+                                        $statusClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+                                    } else {
+                                        $statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+                                    }
                                 } elseif (strtolower($booking->status) === 'cancelled') {
                                     if ($booking->refund_status === 'Pending') {
                                         $statusText = 'Refund Pending';
@@ -79,26 +128,32 @@
 
                         {{-- Booking Details section --}}
                         <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4">
-                            <p><span class="font-semibold text-gray-500 dark:text-gray-400">Room:</span> {{ $booking->room->type }}</p>
-                            <p><span class="font-semibold text-gray-500 dark:text-gray-400">Check-in:</span> {{ \Carbon\Carbon::parse($booking->check_in_date)->format('F j, Y') }}</p>
-                            <p><span class="font-semibold text-gray-500 dark:text-gray-400">Check-out:</span> {{ \Carbon\Carbon::parse($booking->check_out_date)->format('F j, Y') }}</p>
-                            <p><span class="font-semibold text-gray-500 dark:text-gray-400">Guests:</span> {{ $booking->number_of_guests }}</p>
+                        <p><span class="font-semibold text-gray-500 dark:text-gray-400">Room:</span> {{ $booking->room->type }}</p>
+                        <p><span class="font-semibold text-gray-500 dark:text-gray-400">Check-in:</span> {{ \Carbon\Carbon::parse($booking->check_in_date)->format('F j, Y') }}</p>
+                        <p><span class="font-semibold text-gray-500 dark:text-gray-400">Check-out:</span> {{ \Carbon\Carbon::parse($booking->check_out_date)->format('F j, Y') }}</p>
+                        <p><span class="font-semibold text-gray-500 dark:text-gray-400">Guests:</span> {{ $booking->number_of_guests }}</p>
+
+                        {{-- Conditional Payment Info --}}
+                        @if ($booking->payment_method == 'pay_at_hotel')
+                            <p><span class="font-semibold text-gray-500 dark:text-gray-400">Amount Due at Hotel:</span> ₹{{ number_format($booking->total_amount, 2) }}</p>
+                        @else
                             <p><span class="font-semibold text-gray-500 dark:text-gray-400">Amount Paid:</span> ₹{{ number_format($booking->total_amount, 2) }}</p>
-                        </div>
+                        @endif
+                    </div>
                     </div>
 
                     <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
                         {{-- Left Side: Cancel Button --}}
                         <div>
-                            @if (strtolower($booking->status) === 'confirmed' && now()->startOfDay()->isBefore($booking->check_in_date))
-                                <form action="{{ route('profile.my-stays.cancel', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
-                                        ❌ Cancel Booking
-                                    </button>
-                                </form>
-                            @endif
+                        @if (strtolower($booking->status) === 'confirmed' && now()->startOfDay()->isBefore($booking->check_in_date))
+                        <form action="{{ route('profile.my-stays.cancel', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
+                                ❌ Cancel Booking
+                            </button>
+                        </form>
+                        @endif
                         </div>
                         {{-- Right Side: Awaiting/Review & Receipt Buttons --}}
                         <div class="flex items-center space-x-2">

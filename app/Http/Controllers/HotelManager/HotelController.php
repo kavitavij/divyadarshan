@@ -26,7 +26,7 @@ class HotelController extends Controller
     $hotelAmenities = $hotel->amenities->pluck('id')->toArray();
 
     // THE FIX IS HERE: You were missing this line to fetch the temples
-    $temples = \App\Models\Temple::orderBy('name')->get();
+    $temples = Temple::orderBy('name')->get();
 
     return view('hotel-manager.hotel.edit', compact('hotel', 'amenities', 'hotelAmenities', 'temples'));
 }

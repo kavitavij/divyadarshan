@@ -11,6 +11,9 @@ use App\Models\Booking;
 use App\Models\SevaBooking;
 use App\Models\StayBooking;
 use App\Models\StayBookingGuest;
+use App\Mail\StayBookingNotification;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Donation;
 use App\Models\Payment;
@@ -19,13 +22,11 @@ use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Razorpay\Api\Api;
 use Exception;
 use Illuminate\Support\Str;
 use App\Models\DefaultDarshanSlot;
 use App\Models\DarshanSlot;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderConfirmation;
 class CartController extends Controller
 {
@@ -199,6 +200,7 @@ class CartController extends Controller
             'check_in_date' => 'required|date|after_or_equal:today',
             'check_out_date' => 'required|date|after:check_in_date',
             'number_of_guests' => 'required|integer|min:1',
+            'email' => 'required|email|max:255',
             'phone_number' => 'required|string|min:10',
             'guests' => 'required|array',
             'guests.*.name' => 'required|string|max:255',
@@ -237,6 +239,83 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
         return redirect()->route('cart.view')->with('success', 'Item added to cart successfully!');
+    }
+    public function bookPayAtHotel(Request $request)
+    {
+        // 1. Validate the incoming data (same as adding to cart)
+        $validated = $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'check_in_date' => 'required|date|after_or_equal:today',
+            'check_out_date' => 'required|date|after:check_in_date',
+            'number_of_guests' => 'required|integer|min:1',
+            'email' => 'required|email|max:255',
+            'phone_number' => 'required|string|min:10',
+            'guests' => 'required|array',
+            'guests.*.name' => 'required|string|max:255',
+            'guests.*.id_type' => 'required|in:aadhar,pan,passport',
+            'guests.*.id_number' => 'required|string|max:50',
+        ]);
+
+        $user = Auth::user();
+        $room = \App\Models\Room::findOrFail($validated['room_id']);
+
+        // Calculate total amount
+        $checkIn = new \DateTime($validated['check_in_date']);
+        $checkOut = new \DateTime($validated['check_out_date']);
+        $nights = $checkOut->diff($checkIn)->days;
+        $totalAmount = $nights * $room->price_per_night;
+
+        $stayBooking = null; // Define variable to use outside the transaction
+
+        // 2. Use a Database Transaction to ensure data integrity
+        DB::transaction(function () use ($validated, $user, $room, $totalAmount, &$stayBooking) {
+            // Create a parent Order record
+            $order = Order::create([
+                'user_id'       => $user->id,
+                'order_number'  => 'DD-' . strtoupper(Str::random(10)),
+                'total_amount'  => $totalAmount,
+                'status'        => 'Payment Pending', // A new status for the main order
+                'payment_id'    => null,
+                'order_details' => [$validated], // Save details for reference
+            ]);
+
+            // 3. Create the StayBooking with the new payment status
+            $stayBooking = StayBooking::create([
+                'user_id'          => $user->id,
+                'order_id'         => $order->id,
+                'room_id'          => $validated['room_id'],
+                'hotel_id'         => $room->hotel_id,
+                'check_in_date'    => $validated['check_in_date'],
+                'check_out_date'   => $validated['check_out_date'],
+                'number_of_guests' => $validated['number_of_guests'],
+                'email'            => $validated['email'],
+                'phone_number'     => $validated['phone_number'],
+                'total_amount'     => $totalAmount,
+                'status'           => 'Confirmed', // The booking is confirmed
+                'payment_method'   => 'pay_at_hotel', // Our new value
+                'payment_status'   => 'unpaid',       // Our new value
+            ]);
+
+            // Save guest details
+            foreach ($validated['guests'] as $guestData) {
+                $stayBooking->guests()->create($guestData);
+            }
+        });
+
+        // 4. Send the notification email to the hotel manager
+        if ($stayBooking) {
+            try {
+                $bookingWithDetails = StayBooking::with('room.hotel.user')->find($stayBooking->id);
+                if ($bookingWithDetails && $bookingWithDetails->room->hotel->user) {
+                    Mail::to($bookingWithDetails->room->hotel->user->email)->send(new StayBookingNotification($bookingWithDetails));
+                }
+            } catch (\Exception $e) {
+                Log::error("Failed to send pay-at-hotel notification for booking ID {$stayBooking->id}: " . $e->getMessage());
+            }
+        }
+        
+        // 5. Redirect with a success message
+        return redirect()->route('profile.my-orders.index')->with('success', 'Your booking is confirmed! Please complete your payment at the hotel.');
     }
     public function pay(Request $request)
     {
@@ -427,155 +506,166 @@ class CartController extends Controller
     //     }
     // }
     public function paymentSuccess(Request $request)
-    {
-        $validated = $request->validate([
-            'razorpay_payment_id' => 'required|string',
-            'razorpay_order_id'   => 'required|string',
-            'razorpay_signature'  => 'required|string',
-        ]);
+{
+    $validated = $request->validate([
+        'razorpay_payment_id' => 'required|string',
+        'razorpay_order_id'  => 'required|string',
+        'razorpay_signature'  => 'required|string',
+    ]);
 
-        $cart = session()->get('cart', []);
-        $user = Auth::user();
+    $cart = session()->get('cart', []);
+    $user = Auth::user();
 
-        if (empty($cart) || !$user) {
-            return redirect()->route('home')->with('error', 'Your session has expired or you are not logged in.');
-        }
+    if (empty($cart) || !$user) {
+        return redirect()->route('home')->with('error', 'Your session has expired or you are not logged in.');
+    }
 
-        $totalAmount = collect($cart)->sum(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 1));
-        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+    $totalAmount = collect($cart)->sum(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 1));
+    $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
-        try {
-            $api->utility->verifyPaymentSignature($validated);
-            Log::info('Razorpay signature verified for order: ' . $validated['razorpay_order_id']);
+    try {
+        $api->utility->verifyPaymentSignature($validated);
+        Log::info('Razorpay signature verified for order: ' . $validated['razorpay_order_id']);
 
-            $finalOrder = null;
+        $finalOrder = null;
 
-            DB::transaction(function () use ($cart, $validated, $totalAmount, $user, &$finalOrder) {
-                $order = Order::create([
-                    'user_id'       => $user->id,
-                    'order_number'  => 'DD-' . strtoupper(Str::random(10)),
-                    'total_amount'  => $totalAmount,
-                    'status'        => 'Completed',
-                    'payment_id'    => $validated['razorpay_payment_id'],
-                    'order_details' => $cart,
-                ]);
-
-                foreach ($cart as $item) {
-                    if ($item['type'] === 'darshan') {
-                        $details = $item['details'];
-                        $slotIdString = $details['darshan_slot_id'];
-
-                        // Check if it's a default or custom slot
-                        $isDefaultSlot = str_starts_with($slotIdString, 'default-');
-                        $slotId = $isDefaultSlot ? (int)str_replace('default-', '', $slotIdString) : (int)$slotIdString;
-
-                        // Create the booking
-                        $booking = Booking::create([
-                            'user_id' => $user->id,
-                            'order_id' => $order->id,
-                            'temple_id' => $details['temple_id'],
-                            'booking_date' => $details['selected_date'],
-                            'number_of_people' => $details['number_of_people'],
-                            'status' => 'Confirmed',
-                            'check_in_token' => Str::uuid(),
-                            'darshan_slot_id' => $isDefaultSlot ? null : $slotId,
-                            'default_darshan_slot_id' => $isDefaultSlot ? $slotId : null,
-                        ]);
-
-                        foreach ($details['devotees'] as $devoteeData) {
-                            $booking->devotees()->create($devoteeData);
-                        }
-
-                        if (!$isDefaultSlot) {
-                            $slot = DarshanSlot::find($slotId);
-                            if ($slot) {
-                                $slot->increment('booked_capacity', $details['number_of_people']);
-                            }
-                        } else {
-                        //default slots are working fine
-                        }
-
-                    }
-                    else if ($item['type'] === 'stay') {
-                        $details = $item['details'];
-                        $roomData = $item['room'];
-                        $stayBooking = StayBooking::create([
-                            'user_id'          => $user->id,
-                            'order_id'         => $order->id,
-                            'room_id'           => $details['room_id'],
-                            'hotel_id'          => $roomData['hotel_id'],
-                            'check_in_date'    => $details['check_in_date'],
-                            'check_out_date'   => $details['check_out_date'],
-                            'number_of_guests' => $details['number_of_guests'],
-                            'phone_number'     => $details['phone_number'],
-                            'total_amount'     => $item['price'],
-                            'status'           => 'Confirmed',
-                        ]);
-
-                        foreach ($details['guests'] as $guestData) {
-                            $stayBooking->guests()->create($guestData);
-                        }
-                    }
-                    // Handle Seva
-                    else if ($item['type'] === 'seva') {
-                        SevaBooking::create([
-                            'user_id'  => $user->id,
-                            'order_id' => $order->id,
-                            'seva_id'  => $item['id'],
-                            'amount'   => $item['price'],
-                            'quantity' => $item['quantity'],
-                            'status'   => 'Completed',
-                        ]);
-                    }
-                    // Handle eBook
-                    else if ($item['type'] === 'ebook') {
-                        $user->ebooks()->attach($item['id']);
-                    }
-                    // Handle Donation
-                    else if ($item['type'] === 'donation') {
-                        Donation::create([
-                            'user_id'          => $user->id,
-                            'order_id'         => $order->id,
-                            'temple_id'        => $item['details']['temple_id'] ?? null,
-                            'amount'           => $item['price'],
-                            'status'           => 'Completed',
-                            'transaction_id'   => $validated['razorpay_payment_id'],
-                            'donation_purpose' => $item['details']['donation_purpose'] ?? 'General Donation',
-                        ]);
-                    }
-                }
-
-                $finalOrder = $order;
-            });
-
-            if ($finalOrder) {
-                Mail::to($user->email)->send(new OrderConfirmation($finalOrder));
-            }
-
-            // Save payment details
-            Payment::create([
-                'user_id'      => $user->id,
-                'type'         => 'order',
-                'reference_id' => null,
-                'order_id'     => $validated['razorpay_order_id'],
-                'payment_id'   => $validated['razorpay_payment_id'],
-                'signature'    => $validated['razorpay_signature'],
-                'amount'       => $totalAmount,
-                'status'       => 'success',
-                'payload'      => json_encode($validated),
-                'created_at'   => now(),
-                'updated_at'   => now(),
+        DB::transaction(function () use ($cart, $validated, $totalAmount, $user, &$finalOrder) {
+            $order = Order::create([
+                'user_id'       => $user->id,
+                'order_number'  => 'DD-' . strtoupper(Str::random(10)),
+                'total_amount'  => $totalAmount,
+                'status'        => 'Completed',
+                'payment_id'    => $validated['razorpay_payment_id'],
+                'order_details' => $cart,
             ]);
 
-            session()->forget('cart');
+            foreach ($cart as $item) {
+                if ($item['type'] === 'darshan') {
+                    $details = $item['details'];
+                    $slotIdString = $details['darshan_slot_id'];
+                    $isDefaultSlot = str_starts_with($slotIdString, 'default-');
+                    $slotId = $isDefaultSlot ? (int)str_replace('default-', '', $slotIdString) : (int)$slotIdString;
 
-            return redirect()->route('profile.my-orders.index')->with('success', 'Payment successful! Your order has been placed.');
+                    $booking = Booking::create([
+                        'user_id' => $user->id,
+                        'order_id' => $order->id,
+                        'temple_id' => $details['temple_id'],
+                        'booking_date' => $details['selected_date'],
+                        'number_of_people' => $details['number_of_people'],
+                        'status' => 'Confirmed',
+                        'check_in_token' => Str::uuid(),
+                        'darshan_slot_id' => $isDefaultSlot ? null : $slotId,
+                        'default_darshan_slot_id' => $isDefaultSlot ? $slotId : null,
+                    ]);
 
-        } catch (Exception $e) {
-            Log::error('Payment failed for order ' . $request->razorpay_order_id . ': ' . $e->getMessage());
-            return redirect()->route('cart.view')->with('error', $e->getMessage() ?: 'A problem occurred while processing your payment.');
+                    foreach ($details['devotees'] as $devoteeData) {
+                        $booking->devotees()->create($devoteeData);
+                    }
+
+                    if (!$isDefaultSlot) {
+                        $slot = DarshanSlot::find($slotId);
+                        if ($slot) {
+                            $slot->increment('booked_capacity', $details['number_of_people']);
+                        }
+                    }
+                }
+                else if ($item['type'] === 'stay') {
+                    $details = $item['details'];
+                    $roomData = $item['room'];
+                    
+                    // 1. Create the StayBooking
+                    $stayBooking = StayBooking::create([
+                        'user_id'          => $user->id,
+                        'order_id'         => $order->id,
+                        'room_id'          => $details['room_id'],
+                        'hotel_id'         => $roomData['hotel_id'],
+                        'check_in_date'    => $details['check_in_date'],
+                        'check_out_date'   => $details['check_out_date'],
+                        'number_of_guests' => $details['number_of_guests'],
+                        'email'            => $details['email'],
+                        'phone_number'     => $details['phone_number'],
+                        'total_amount'     => $item['price'],
+                        'status'           => 'Confirmed',
+                    ]);
+
+                    foreach ($details['guests'] as $guestData) {
+                        $stayBooking->guests()->create($guestData);
+                    }
+
+                    try {
+                        // Load the booking with all its relationships to get the manager's user info
+                        $bookingWithDetails = StayBooking::with('room.hotel.user')->find($stayBooking->id);
+                        
+                        // Check if the manager's user record exists
+                        if ($bookingWithDetails && $bookingWithDetails->room->hotel->user) {
+                            $managerEmail = $bookingWithDetails->room->hotel->user->email;
+                            Mail::to($managerEmail)->send(new StayBookingNotification($bookingWithDetails));
+                        } else {
+                            Log::error("Could not find manager email for stay booking ID: {$stayBooking->id}");
+                        }
+                    } catch (Exception $e) {
+                        // Log the error if mail fails, but don't crash the user's booking confirmation
+                        Log::error("Failed to send stay booking notification for booking ID {$stayBooking->id}: " . $e->getMessage());
+                    }
+                }
+                // Handle Seva
+                else if ($item['type'] === 'seva') {
+                    SevaBooking::create([
+                        'user_id'  => $user->id,
+                        'order_id' => $order->id,
+                        'seva_id'  => $item['id'],
+                        'amount'   => $item['price'],
+                        'quantity' => $item['quantity'],
+                        'status'   => 'Completed',
+                    ]);
+                }
+                // Handle eBook
+                else if ($item['type'] === 'ebook') {
+                    $user->ebooks()->attach($item['id']);
+                }
+                // Handle Donation
+                else if ($item['type'] === 'donation') {
+                    Donation::create([
+                        'user_id'          => $user->id,
+                        'order_id'         => $order->id,
+                        'temple_id'        => $item['details']['temple_id'] ?? null,
+                        'amount'           => $item['price'],
+                        'status'           => 'Completed',
+                        'transaction_id'   => $validated['razorpay_payment_id'],
+                        'donation_purpose' => $item['details']['donation_purpose'] ?? 'General Donation',
+                    ]);
+                }
+            }
+
+            $finalOrder = $order;
+        });
+
+        if ($finalOrder) {
+            // This sends the confirmation to the customer
+            Mail::to($user->email)->send(new OrderConfirmation($finalOrder));
         }
+
+        Payment::create([
+            'user_id'      => $user->id,
+            'type'         => 'order',
+            'reference_id' => null,
+            'order_id'     => $validated['razorpay_order_id'],
+            'payment_id'   => $validated['razorpay_payment_id'],
+            'signature'    => $validated['razorpay_signature'],
+            'amount'       => $totalAmount,
+            'status'       => 'success',
+            'payload'      => json_encode($validated),
+        ]);
+
+        session()->forget('cart');
+
+        return redirect()->route('profile.my-orders.index')->with('success', 'Payment successful! Your order has been placed.');
+
+    } catch (Exception $e) {
+        Log::error('Payment failed for order ' . $request->razorpay_order_id . ': ' . $e->getMessage());
+        return redirect()->route('cart.view')->with('error', $e->getMessage() ?: 'A problem occurred while processing your payment.');
     }
+}
     public function addDonation(Request $request)
     {
         $validated = $request->validate([

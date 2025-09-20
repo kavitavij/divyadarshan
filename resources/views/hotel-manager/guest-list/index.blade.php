@@ -17,7 +17,7 @@
     }
     .table {
         border-collapse: separate;
-        border-spacing: 0 12px; /* adds gaps between rows */
+        border-spacing: 0 12px;
         width: 100%;
     }
     .table thead th {
@@ -60,6 +60,7 @@
                     <th>Check-in</th>
                     <th>Check-out</th>
                     <th>Status</th>
+                    <th>Payment</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -84,8 +85,14 @@
                         @endif
                     </td>
                     <td>
+                        @if($booking->payment_method == 'pay_at_hotel')
+                        <span class="badge bg-warning text-dark">Pay at Hotel</span>
+                        @else
+                        <span class="badge bg-success">Paid Online</span>
+                        @endif
+                    </td>
+                    <td>
                         @if(in_array($booking->status, ['Confirmed', 'pending']))
-
                             <form action="{{ route('hotel-manager.bookings.cancel', $booking->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
                                 @csrf
                                 <button type="submit" class="btn-cancel">Cancel</button>

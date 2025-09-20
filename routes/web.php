@@ -86,7 +86,7 @@ Route::get('/guidelines', [GuidelineController::class, 'index'])->name('guidelin
 Route::get('/complaint', [ComplaintController::class, 'index'])->name('complaint.form');
 Route::post('/complaint', [ComplaintController::class, 'store'])->name('complaint.store');
 Route::get('/terms', [TermsController::class, 'index'])->name('terms');
-Route::get('/sevas', [SevaController::class, 'index'])->name('info.sevas');
+Route::get('/sevas', [SevaController::class, 'index'])->name('info.sevas'); 
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
 Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
 Route::get('/cart/pay', [CartController::class, 'pay'])->name('cart.pay');
@@ -95,11 +95,11 @@ Route::get('/donations', [DonationController::class, 'index'])->name('donations.
 Route::get('/about', [AboutController::class, 'about'])->name('about');
 Route::get('/privacy-policy', [AboutController::class, 'privacy'])->name('info.privacy');
 Route::get('/cancellation-policy', [AboutController::class, 'cancellation'])->name('info.cancellation');
-Route::get('/profile/my-stays/{booking}/refund', [ProfileController::class, 'requestStayRefund'])->name('profile.my-stays.refund.request');
+Route::get('/profile/my-stays/{booking}/refund', [ProfileController::class, 'requestStayRefund'])->name('profile.my-stays.request-refund');
 Route::post('/profile/my-stays/{booking}/refund', [ProfileController::class, 'storeStayRefundRequest'])->name('profile.my-stays.refund.store');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.store');
 Route::get('/api/temples/{temple}/slots-for-date/{date}', [DarshanBookingController::class, 'getSlotsForDate'])->name('api.temples.slots_for_date');
-// Route::post('/contact-submit', [ContactFormController::class, 'store'])->name('info.contact.submit');
+
 Route::post('/faq-submit', [FaqController::class, 'store'])->name('info.faq.submit');
 Route::get('/spiritual-help', [SpiritualHelpController::class, 'create'])->name('spiritual-help.form');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.submit');
@@ -116,6 +116,7 @@ Route::get('/profile/my-bookings/{booking}/refund', [ProfileController::class, '
 Route::post('/profile/my-bookings/{booking}/refund', [ProfileController::class, 'storeRefundRequest'])->name('profile.my-bookings.refund.store');
 // FOR ACCOMMODATION BOOKINGS
 Route::get('/profile/my-stays', [ProfileController::class, 'myStays'])->name('profile.my-stays.index');
+Route::post('/book-pay-at-hotel', [CartController::class, 'bookPayAtHotel'])->name('stays.bookPayAtHotel')->middleware('auth');
 
 // review page
 Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
@@ -266,6 +267,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/stay-refund-requests', [BookingCancelController::class, 'index'])->name('booking-cancel.index');
     Route::get('/stay-refund-requests/{refundRequest}', [BookingCancelController::class, 'showStayRefund'])->name('booking-cancel.stay.show');
     Route::patch('/stay-refund-requests/{refundRequest}/status', [BookingCancelController::class, 'updateRefundStatus'])->name('booking-cancel.updateStatus');
+    Route::get('/my-stays/{booking}/request-refund', [ProfileController::class, 'requestStayRefund'])->name('profile.my-stays.request-refund');
 });
 
 // ## HOTEL MANAGER ROUTES ##

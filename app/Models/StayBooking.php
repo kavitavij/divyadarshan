@@ -24,10 +24,13 @@ class StayBooking extends Model
         'check_in_date',
         'check_out_date',
         'number_of_guests',
+        'email',
         'phone_number',
         'total_amount',
         'status',
         'refund_status',
+        'payment_method',
+        'payment_status', 
     ];
      protected $casts = [
         'check_in_date' => 'date',

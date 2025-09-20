@@ -18,6 +18,7 @@ use App\Models\DarshanSlot;
 use Illuminate\Support\Facades\DB;
 use App\Models\RefundRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 class ProfileController extends Controller
 {
     /**
@@ -66,18 +67,14 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
-        public function myEbooks()
-        {
-            $user = Auth::user();
-            // Eager load the ebooks to get all their details
-            $ebooks = $user->ebooks()->get();
+    public function myEbooks()
+    {
+        $user = Auth::user();
+        // Eager load the ebooks to get all their details
+        $ebooks = $user->ebooks()->get();
 
-            return view('profile.my-ebooks', compact('ebooks'));
-        }
-        // In app/Http/Controllers/ProfileController.php
-
-// Make sure this is at the top of your file
-
+        return view('profile.my-ebooks', compact('ebooks'));
+    }
     public function myBookings()
     {
         // This is the cleanest way to get the user's bookings.
@@ -197,25 +194,43 @@ class ProfileController extends Controller
             ->where('user_id', auth()->id())
             ->with('room.hotel', 'user');
 
+        // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
 
+        // Filter by hotel name
         if ($request->filled('q')) {
             $searchTerm = $request->input('q');
-            // This searches through the related hotel's name
             $query->whereHas('room.hotel', function ($q) use ($searchTerm) {
                 $q->where('name', 'like', '%' . $searchTerm . '%');
             });
         }
 
-        $bookings = $query->orderBy('check_in_date', 'desc')
-                        ->paginate(10);
+        // Filter by date_range
+        if ($request->filled('date_range')) {
+            $range = $request->input('date_range');
+
+            if (in_array($range, ['1', '3', '6'])) {
+                $query->where('created_at', '>=', Carbon::now()->subMonths($range));
+            } elseif ($range === 'this_year') {
+                $query->whereYear('created_at', Carbon::now()->year);
+            }
+        }
+
+        // Filter by specific year
+        if ($request->filled('year')) {
+            $query->whereYear('created_at', $request->input('year'));
+        }
+
+        // Order by most recently created booking
+        $bookings = $query->orderBy('created_at', 'desc')->paginate(10);
 
         $bookings->appends($request->query());
 
         return view('profile.my-stays.index', compact('bookings'));
     }
+        
     public function requestStayRefund(StayBooking $booking): View
     {
         if (auth()->id() !== $booking->user_id) {
@@ -268,5 +283,39 @@ class ProfileController extends Controller
         $pdf = Pdf::loadView('receipts.stay', ['booking' => $booking]);
         return $pdf->download('receipt-stay-' . $booking->id . '.pdf');
     }
+    public function cancelStayBooking(StayBooking $booking): RedirectResponse
+{
+    // 1. Authorization: Ensure the logged-in user owns this booking
+    if (auth()->id() !== $booking->user_id) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // 2. Business Rule: Check if the booking is in a cancellable state
+    if (strtolower($booking->status) !== 'confirmed' || !now()->startOfDay()->isBefore($booking->check_in_date)) {
+        return back()->with('error', 'This booking can no longer be cancelled.');
+    }
+
+    // 3. Update the booking status to 'Cancelled'
+    $booking->status = 'Cancelled';
+
+    // 4. If the booking was paid online, mark it for a refund.
+    if ($booking->payment_method === 'online') {
+        $booking->refund_status = 'Pending';
+    }
+
+    // 5. Save the changes to the database
+    $booking->save();
+
+    // 6. Conditionally redirect based on payment method
+    if ($booking->payment_method === 'online') {
+        // If paid online, redirect to the refund request form
+        return redirect()->route('profile.my-stays.request-refund', $booking)
+                       ->with('success', 'Booking cancelled. Please provide your bank details to process the refund.');
+    } else {
+        // If 'Pay at Hotel', just redirect back to the list
+        return redirect()->route('profile.my-stays.index')
+                       ->with('success', 'Your booking has been successfully cancelled.');
+    }
+}
 }
 
