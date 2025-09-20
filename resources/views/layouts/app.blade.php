@@ -131,7 +131,7 @@
                 <img src="{{ asset('images/logoo.png') }}"
                     alt="DivyaDarshan Logo"
                     class="h-14 w-14 object-contain">
-                <span class="text-2xl">DivyaDarshan</span>
+                <span class="text-2xl">DivyaDarshan rohit</span>
             </a>
         </div>
 

@@ -293,17 +293,12 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
 
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Temple Management
     Route::get('/temple/edit', [TempleManagerController::class, 'edit'])->name('temple.edit');
     Route::put('/temple/update', [TempleManagerController::class, 'update'])->name('temple.update');
-
-    // Slot and Seva Management
     Route::resource('slots', SlotController::class)->except(['show']);
     Route::resource('sevas', TempleManagerSevaController::class)->except(['show']);
     Route::get('slots/bulk-create', [SlotController::class, 'bulkCreate'])->name('slots.bulk-create');
     Route::post('slots/bulk-store', [SlotController::class, 'bulkStore'])->name('slots.bulk-store');
-    // Booking Management Routes (Using the renamed BookingController)
     Route::get('bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('bookings/{type}/{id}', [BookingController::class, 'show'])->name('bookings.show');
     Route::patch('bookings/{type}/{id}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');

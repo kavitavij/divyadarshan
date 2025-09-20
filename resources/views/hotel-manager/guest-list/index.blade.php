@@ -141,7 +141,7 @@
                                 <span class="text-muted">N/A</span>
                             @endif
                         @else
-                            <span class="text-muted">N/A</span>
+                            <span class="text-muted">N/A </span>
                         @endif
                     </td>
                 </tr>

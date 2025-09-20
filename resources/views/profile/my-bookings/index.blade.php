@@ -62,16 +62,18 @@
         {{-- Actions with Cancel and Receipt buttons --}}
         <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <div>
-                @if ($booking->status === 'Confirmed' && \Carbon\Carbon::parse($booking->booking_date)->isFuture())
-                    <form action="{{ route('profile.my-bookings.cancel', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                            ❌ Cancel Booking
-                        </button>
-                    </form>
-                @endif
+            @if ($booking->status === 'Confirmed' && \Carbon\Carbon::parse($booking->booking_date)->endOfDay()->isFuture())
+                <form action="{{ route('profile.my-bookings.cancel', $booking) }}" method="POST"
+                    onsubmit="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        ❌ Cancel Booking
+                    </button>
+                </form>
+            @endif
+
             </div>
             <a href="{{ route('profile.my-bookings.receipt.download', $booking) }}"
                 class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
