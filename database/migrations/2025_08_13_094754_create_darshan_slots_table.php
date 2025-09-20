@@ -17,8 +17,8 @@ return new class extends Migration
             $table->date('slot_date');
             $table->time('start_time');
             $table->time('end_time');
-            $table->integer('total_capacity'); // Max people per slot
-            $table->integer('booked_capacity')->default(0); // People who have booked
+            $table->integer('total_capacity'); 
+            $table->integer('booked_capacity')->default(0); 
             $table->timestamps();
         });
     }

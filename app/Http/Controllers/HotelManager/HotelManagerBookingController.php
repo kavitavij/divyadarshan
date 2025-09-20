@@ -19,7 +19,6 @@ class HotelManagerBookingController extends Controller
         if ($booking->hotel_id !== $managerHotelId) {
             abort(403, 'Unauthorized action.');
         }
-
         // 2. Update Statuses: This is the core logic
         $booking->status = 'Cancelled';
         $booking->refund_status = 'pending'; 

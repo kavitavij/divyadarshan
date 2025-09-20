@@ -44,18 +44,13 @@ class HotelImageController extends Controller
      * Remove the specified image from storage.
      */
     public function destroy(HotelImage $image)
-{
-    // ✅ This single line replaces your old 'if' check.
-    // It automatically finds the HotelImagePolicy and runs the 'delete' method.
-    // If it returns false, a 403 error is thrown automatically.
-    $this->authorize('delete', $image);
+    {
+        $this->authorize('delete', $image);
 
-    // Delete the file from storage
-    Storage::disk('public')->delete($image->path);
+        Storage::disk('public')->delete($image->path);
 
-    // Delete the record from the database
-    $image->delete();
+        $image->delete();
 
-    return back()->with('success', 'Image deleted successfully.');
-}
+        return back()->with('success', 'Image deleted successfully.');
+    }
 }

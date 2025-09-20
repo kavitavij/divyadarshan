@@ -33,7 +33,7 @@ class ComplaintController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Thank you! Your complaint has been submitted successfully.',
-            'redirect_url' => route('home') // Provide the URL for the "Back to Home" button
+            'redirect_url' => route('home') 
         ]);
     }
 }
