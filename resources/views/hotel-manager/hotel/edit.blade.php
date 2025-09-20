@@ -19,6 +19,52 @@
         border-color: #0d6efd;
         box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
     }
+/* Base Button Styles */
+.btn {
+    border-radius: 30px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Cancel Button */
+.btn-outline-dark {
+    color: #333;
+    border: 2px solid #333;
+    background-color: transparent;
+}
+
+.btn-outline-dark:hover {
+    background-color: #f8f9fa;
+    color: #333;
+    border-color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Update Button */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Hover Effects */
+.hover-cancel:hover {
+    transform: translateY(-3px);
+}
+
+.hover-update:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+
 </style>
 @endpush
 
@@ -119,29 +165,42 @@
                         <i class="fas fa-map me-2"></i> Location Map
                         </h5>
 
-                        {{-- Image --}}
+                      {{-- Image Section --}}
                         <h5 class="text-primary fw-bold mb-3">
                             <i class="fas fa-image me-2"></i> Hotel Image
                         </h5>
-                        <div class="text-center mb-3">
+
+                        <div class="text-center mb-4">
+                            {{-- Check if the hotel has an image --}}
                             @if ($hotel->image)
                                 <img src="{{ asset('storage/' . $hotel->image) }}" class="rounded shadow-sm mb-3" style="max-height: 200px;" alt="{{ $hotel->name }}">
+                                <p class="text-muted fst-italic">Current image</p>
                             @else
                                 <p class="text-muted fst-italic">No image uploaded yet</p>
                             @endif
                         </div>
-                        <input type="file" name="image" class="form-control">
 
-                        {{-- Buttons --}}
-                        <div class="d-flex justify-content-between mt-5">
-                            <a href="{{ route('hotel-manager.dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">
-                                ⬅ Cancel
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-lg px-4">
-                                💾 Update Details
-                            </button>
+                        <div class="custom-file-upload mb-3">
+                            <label for="image" class="btn btn-outline-primary btn-lg w-100">
+                                <i class="fas fa-upload me-2"></i> Choose New Image
+                            </label>
+                            <input type="file" name="image" id="image" class="form-control d-none">
                         </div>
 
+                        {{-- Buttons --}}
+                        <div class="row mt-5">
+                            <div class="col-12 d-flex justify-content-end">
+                                <a href="{{ route('hotel-manager.dashboard') }}" 
+                                class="btn btn-outline-dark btn-lg px-5 py-3 me-3 text-uppercase fw-bold shadow-sm hover-cancel">
+                                    ⬅ Cancel
+                                </a>
+
+                                <button type="submit" 
+                                        class="btn btn-primary btn-lg px-5 py-3 text-uppercase fw-bold shadow-sm hover-update">
+                                    💾 Update Details
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>

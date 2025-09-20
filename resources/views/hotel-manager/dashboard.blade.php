@@ -113,7 +113,7 @@
                 </div>
             </div>
 
-            {{-- Recent Bookings --}}
+            <!-- {{-- Recent Bookings --}}
             <div class="card shadow-sm mt-4">
                 <div class="card-header">
                     <h5 class="mb-0">Recent Bookings</h5>
@@ -146,7 +146,7 @@
                         <p class="text-muted text-center">No recent bookings found.</p>
                     @endif
                 </div>
-            </div>
+            </div> -->
         @endif
     </div>
 @endsection

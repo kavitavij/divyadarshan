@@ -146,14 +146,12 @@
         </div>
         <div id="gallery" class="tab-content hidden">
 
-            {{-- 1. Prepare the list of image URLs for Alpine.js --}}
             @php
                 $galleryImagePaths = $temple->galleryImages->pluck('path')->map(function ($path) {
                     return asset('storage/' . $path);
                 })->all();
             @endphp
 
-            {{-- 2. Update Alpine.js component with image list, index, and navigation functions --}}
             <div x-data="{
                 lightboxOpen: false,
                 lightboxImage: '',
@@ -180,7 +178,6 @@
                 </h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     @forelse($temple->galleryImages as $index => $image)
-                        {{-- 3. Update thumbnail click to set the current index --}}
                         <div @click="openLightbox({{ $index }})">
                             <img class="h-auto max-w-full rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer"
                                 src="{{ asset('storage/' . $image->path) }}"
@@ -193,29 +190,23 @@
                     @endforelse
                 </div>
 
-                {{-- The Lightbox Modal (popup) itself --}}
                 <div x-show="lightboxOpen" x-cloak
                     @keydown.window.arrow-right.prevent="if (lightboxOpen) nextImage()"
                     @keydown.window.arrow-left.prevent="if (lightboxOpen) prevImage()"
                     x-transition
                     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
 
-                    {{-- Close button (top right) --}}
                     <button @click="lightboxOpen = false" class="absolute top-4 right-4 text-white text-3xl z-50 focus:outline-none">&times;</button>
 
-                    {{-- Main Image and Nav Buttons Container --}}
                     <div @click.away="lightboxOpen = false" class="relative w-full max-w-4xl max-h-full flex items-center justify-center">
 
-                        {{-- ✅ 4. Add Previous Button --}}
                         <button @click.stop="prevImage()" x-show="galleryImages.length > 1"
                                 class="absolute left-0 md:-left-12 p-2 text-white bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 focus:outline-none">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </button>
 
-                        {{-- Image --}}
                         <img :src="lightboxImage" alt="Full-size gallery image" class="rounded-lg shadow-lg object-contain max-h-[85vh]">
 
-                        {{-- ✅ 4. Add Next Button --}}
                         <button @click.stop="nextImage()" x-show="galleryImages.length > 1"
                                 class="absolute right-0 md:-right-12 p-2 text-white bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 focus:outline-none">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
