@@ -141,42 +141,43 @@
                         @endif
                     </div>
                     </div>
-
-                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                        {{-- Left Side: Cancel Button --}}
-                        <div>
-                        @if (strtolower($booking->status) === 'confirmed' && now()->startOfDay()->isBefore($booking->check_in_date))
-                        <form action="{{ route('profile.my-stays.cancel', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
-                                ❌ Cancel Booking
-                            </button>
-                        </form>
+                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        {{-- Left: Cancel Button --}}
+                        @if (strtolower(string: $booking->status) === 'confirmed' && now()->lessThanOrEqualTo(\Carbon\Carbon::parse($booking->check_in_date)->setTime(17, 0)))
+                            <form action="{{ route('profile.my-stays.cancel', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm bg-red-100 text-red-700 border border-red-300 rounded-md hover:bg-red-200 transition">
+                                    ❌ Cancel
+                                </button>
+                            </form>
                         @endif
-                        </div>
-                        {{-- Right Side: Awaiting/Review & Receipt Buttons --}}
-                        <div class="flex items-center space-x-2">
+
+                        {{-- Right: Dynamic Action Buttons --}}
+                        <div class="flex flex-wrap gap-2 justify-end">
                             @if($booking->review)
-                                <span class="px-4 py-2 text-sm font-medium bg-green-200 text-green-800 rounded-lg">
-                                    Reviewed
+                                <span class="inline-flex items-center px-3 py-1.5 text-sm bg-green-100 text-green-800 rounded-md">
+                                    ✅ Reviewed
                                 </span>
                             @elseif(now()->isAfter($booking->check_out_date) && strtolower($booking->status) !== 'cancelled')
-                                <a href="{{ route('reviews.create', ['stayBooking' => $booking->id]) }}" class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                    Leave a Review
+                                <a href="{{ route('reviews.create', ['stayBooking' => $booking->id]) }}" class="inline-flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                                    ✍️ Review
                                 </a>
                             @elseif(strtolower($booking->status) === 'confirmed' && now()->isBefore($booking->check_out_date))
-                               <span class="px-4 py-2 text-sm font-medium bg-gray-200 text-gray-800 rounded-lg">
-                                    Awaiting Stay
+                                <span class="inline-flex items-center px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-md">
+                                    ⏳ Awaiting
                                 </span>
                             @endif
+
                             @if (in_array(strtolower($booking->status), ['confirmed', 'completed']))
-                                <a href="{{ route('profile.my-stays.receipt', $booking) }}" class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
-                                    📄 Download Receipt
+                                <a href="{{ route('profile.my-stays.receipt', $booking) }}" class="inline-flex items-center px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                                    📄 Receipt
                                 </a>
                             @endif
                         </div>
                     </div>
+                </div>
                 </div>
                 @endforeach
             </div>

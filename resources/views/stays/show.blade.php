@@ -1,6 +1,73 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .lightbox-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        padding: 20px;
+    }
+
+    .lightbox-image-box {
+    width: 80vw;
+    height: 80vh;
+    position: relative;
+    display: flex;
+    /* ADD THIS LINE 👇 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .lightbox-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+        object-position: center; 
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: white;
+        font-size: 30px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 9999;
+    }
+    @media (max-width: 768px) {
+        .lightbox-image-box {
+            width: 90vw;
+            height: 70vh;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .lightbox-image-box {
+            width: 70vw;
+            height: 70vh;
+        }
+    }
+    .swiper-slide {
+    height: auto;
+}
+
+</style>
+
 <div x-data="{
         lightBoxOpen: false,
         lightBoxImage: '',
@@ -49,60 +116,73 @@
     @endif
 </div>
     {{-- IMAGE GALLERY --}}
-    <div>
-        <div class="grid grid-cols-3 gap-4 mb-6">
-            {{-- Main Large Photo --}}
+    <div class="mb-6">
+        {{-- Desktop Grid Gallery --}}
+        <div class="hidden lg:grid grid-cols-3 gap-4">
             <div class="col-span-2">
                 <img @click="lightBoxOpen = true; lightBoxImage = '{{ $hotel->image ? asset('storage/' . $hotel->image) : '' }}'"
                      src="{{ $hotel->image ? asset('storage/' . $hotel->image) : 'https://placehold.co/800x600/e2e8f0/475569?text=Main+Photo' }}"
-                     class="w-full h-[450px] object-cover rounded-xl shadow cursor-pointer" />
+                     class="w-full h-[450px] object-cover rounded-xl shadow-lg cursor-pointer hover:opacity-95 transition" />
             </div>
-
-            {{-- Two Small Photos --}}
-            <div class="flex flex-col gap-4">
+            <div class="space-y-4">
                 @foreach($hotel->images->take(2) as $image)
                     <img @click="lightBoxOpen = true; lightBoxImage = '{{ asset('storage/' . $image->path) }}'"
                          src="{{ asset('storage/' . $image->path) }}"
-                         class="w-full h-[215px] object-cover rounded-xl shadow cursor-pointer hover:opacity-90 transition" />
+                         class="w-full h-[217px] object-cover rounded-xl shadow-lg cursor-pointer hover:opacity-95 transition" />
                 @endforeach
-                @for($i = $hotel->images->count(); $i < 2; $i++)
-                    <img src="https://placehold.co/400x300/e2e8f0/475569?text=More+Photos"
-                         class="w-full h-[215px] object-cover rounded-xl shadow" />
-                @endfor
+            </div>
+        </div>
+        {{-- Mobile Swiper Slider --}}
+        <div class="lg:hidden">
+            <div class="swiper mobile-gallery-swiper rounded-xl shadow-lg">
+                <div class="swiper-wrapper">
+                    @if($hotel->image)
+                        <div class="swiper-slide">
+                            <img @click="lightBoxOpen = true; lightBoxImage = '{{ asset('storage/' . $hotel->image) }}'"
+                                 src="{{ asset('storage/' . $hotel->image) }}" class="w-full h-[300px] object-cover" />
+                        </div>
+                    @endif
+                    @foreach($hotel->images as $image)
+                        <div class="swiper-slide">
+                            <img @click="lightBoxOpen = true; lightBoxImage = '{{ asset('storage/' . $image->path) }}'"
+                                 src="{{ asset('storage/' . $image->path) }}" class="w-full h-[300px] object-cover" />
+                        </div>
+                    @endforeach
+                </div>
+                <div class="swiper-pagination"></div>
             </div>
         </div>
 
-        {{-- Lightbox with Swiper --}}
-        <div x-show="lightBoxOpen" x-transition @keydown.escape.window="lightBoxOpen = false"
-             class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] p-4">
-            <div class="max-w-4xl w-full">
-                {{-- Main Swiper --}}
-                <div class="swiper main-swiper h-[70vh] w-full rounded-xl shadow-lg">
-                    <div class="swiper-wrapper">
-                        @foreach($hotel->images as $image)
-                            <div class="swiper-slide">
-                                <img src="{{ asset('storage/' . $image->path) }}"
-                                     class="w-full h-full object-contain" />
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="swiper-button-next text-white"></div>
-                    <div class="swiper-button-prev text-white"></div>
+        {{-- Lightbox with a SIMPLIFIED Swiper for better UX --}}
+    <div x-show="lightBoxOpen" x-transition @keydown.escape.window="lightBoxOpen = false"
+        class="lightbox-container">
+
+        {{-- The container now simply centers the swiper --}}
+        <div class="lightbox-image-box" @click.away="lightBoxOpen = false">
+            <div class="swiper main-swiper w-full h-full">
+                <div class="swiper-wrapper">
+                    @if($hotel->image)
+                        <div class="swiper-slide">
+                            <img src="{{ asset('storage/' . $hotel->image) }}"
+                                class="w-full h-full object-contain" />
+                        </div>
+                    @endif
+                    @foreach($hotel->images as $image)
+                        <div class="swiper-slide">
+                            <img src="{{ asset('storage/' . $image->path) }}"
+                                class="w-full h-full object-contain" />
+                        </div>
+                    @endforeach
                 </div>
-                {{-- Thumbnails --}}
-                <div thumbsSlider="" class="swiper thumbnail-swiper h-24 w-full mt-3">
-                    <div class="swiper-wrapper">
-                        @foreach($hotel->images as $image)
-                            <div class="swiper-slide">
-                                <img src="{{ asset('storage/' . $image->path) }}"
-                                     class="w-full h-24 object-cover rounded-md cursor-pointer opacity-70 hover:opacity-100 transition" />
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+                {{-- Navigation buttons --}}
+                <div class="swiper-button-next text-white drop-shadow-lg"></div>
+                <div class="swiper-button-prev text-white drop-shadow-lg"></div>
             </div>
-            <button @click="lightBoxOpen = false" class="absolute top-4 right-4 text-white text-4xl">×</button>
         </div>
+
+        {{-- Close Button --}}
+        <button @click="lightBoxOpen = false" class="absolute top-4 right-4 text-white text-4xl z-[10001]">&times;</button>
+    </div>
     </div>
     </div>
 
@@ -151,7 +231,7 @@
                 </ul>
             </div>
             @endif
-            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <!-- <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-200 pb-2 text-gray-800">Guest Reviews</h2>
                 @forelse($hotel->reviews as $review)
                     <div class="border-b border-gray-200 py-4 last:border-b-0">
@@ -168,9 +248,43 @@
                 @empty
                     <p class="text-gray-500">This hotel has not been reviewed yet.</p>
                 @endforelse
-            </div>
-        </div>
+            </div> -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800">Guest Reviews</h2>
 
+            @if($hotel->reviews->isNotEmpty())
+                <div class="swiper review-swiper">
+                    <div class="swiper-wrapper">
+                        @foreach($hotel->reviews as $review)
+                            <div class="swiper-slide">
+                                <div class="h-full bg-white border border-gray-200 rounded-lg p-5 flex flex-col shadow-sm">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="text-md font-semibold text-gray-800">{{ $review->user->name ?? 'Anonymous' }}</h4>
+                                        <span class="text-xs text-gray-500">{{ $review->created_at->format('M d, Y') }}</span>
+                                    </div>
+                                    <div class="flex items-center text-yellow-500 mb-2">
+                                        @for ($i = 0; $i < $review->rating; $i++)
+                                            <i class="fas fa-star text-sm"></i>
+                                        @endfor
+                                        @for ($i = $review->rating; $i < 5; $i++)
+                                            <i class="far fa-star text-sm"></i>
+                                        @endfor
+                                    </div>
+                                    <p class="text-gray-600 text-sm flex-grow">"{{ $review->comment }}"</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <!-- Navigation -->
+                    <div class="swiper-button-next text-gray-600"></div>
+                    <div class="swiper-button-prev text-gray-600"></div>
+                    <div class="swiper-pagination mt-4"></div>
+                </div>
+            @else
+                <p class="text-gray-500">This hotel has not been reviewed yet.</p>
+            @endif
+        </div>
+        </div>
        <div class="lg:sticky top-24 h-fit space-y-6">
             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Available Rooms</h2>
@@ -262,11 +376,12 @@
                                     </div>
                                 </template>
                             </div>
+
                         </div>
                     </template>
                 </div>
 
-                {{-- Details Footer (Fixed) --}}
+                
                 <div class="p-6 mt-auto border-t border-gray-200 bg-white shrink-0">
                     <div class="flex justify-between items-center">
                          <p class="text-indigo-600 text-2xl font-semibold">
@@ -288,14 +403,14 @@
 {{-- Swiper JS for the gallery --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var thumbnailSwiper = new Swiper(".thumbnail-swiper", {
-        spaceBetween: 10, slidesPerView: 4, freeMode: true, watchSlidesProgress: true,
-        breakpoints: { 640: { slidesPerView: 6 }, 1024: { slidesPerView: 8 } }
-    });
     var mainSwiper = new Swiper(".main-swiper", {
-        spaceBetween: 10,
-        navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-        thumbs: { swiper: thumbnailSwiper },
+        loop: true, 
+        spaceBetween: 20,
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev"
+        },
+        grabCursor: true,
     });
 });
 </script>
@@ -334,6 +449,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     map.on('click', function() {
         window.open(`https://maps.google.com/?q=${lat},${lng}`, '_blank');
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    new Swiper('.review-swiper', {
+        slidesPerView: 1.1,
+        spaceBetween: 16,
+        loop: false,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        breakpoints: {
+            640: {
+                slidesPerView: 1.3,
+            },
+            768: {
+                slidesPerView: 2,
+            },
+            1024: {
+                slidesPerView: 3,
+            }
+        }
     });
 });
 </script>

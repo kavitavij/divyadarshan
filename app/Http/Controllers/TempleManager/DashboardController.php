@@ -14,7 +14,6 @@ class DashboardController extends Controller
         $temple = Auth::user()->temple;
 
         if (!$temple) {
-            // Pass empty collections to the view if no temple is assigned
             return view('temple-manager.dashboard', [
                 'temple' => null,
                 'bookings' => collect(),
@@ -45,4 +44,6 @@ class DashboardController extends Controller
         ]);
     }
 }
+
+
 

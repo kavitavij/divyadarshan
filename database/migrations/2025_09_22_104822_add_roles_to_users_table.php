@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -9,13 +10,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            // It adds a 'role' column (as a string) to your 'users' table.
-            $table->string('role')->default('user')->after('email');
-        });
+        if (!Schema::hasColumn('users', 'role')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->enum('role', ['user', 'admin', 'temple_manager', 'hotel_manager'])->default('user')->nullable()->after('email');
+            });
+        }
     }
+    
 
     /**
      * Reverse the migrations.

@@ -47,7 +47,10 @@
                             <form action="{{ route('cart.addSeva') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="seva_id" value="{{ $seva->id }}">
-                                <button type="submit" class="btn btn-success">Add to Cart</button>
+                                <button type="submit"
+                                    class="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-400 transition">
+                                    Add to Cart
+                                </button>
                             </form>
                         </div>
                     </div>

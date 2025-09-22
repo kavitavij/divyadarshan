@@ -132,6 +132,7 @@
             <li><a class="nav-link {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}" href="{{ route('admin.complaints.index') }}">
                 <i class="fa-solid fa-exclamation-circle"></i> <span>Complaints</span></a></li>
             {{-- Temple Management --}}
+            <h class="px-3" text-color >Temple Management</h>
             <li><a class="nav-link {{ request()->routeIs('admin.temples.*') ? 'active' : '' }}" href="{{ route('admin.temples.index') }}">
                 <i class="fa-solid fa-church"></i> <span>Temples</span></a></li>
 
@@ -150,6 +151,7 @@
             <li><a class="nav-link {{ request()->routeIs('admin.slots.*') ? 'active' : '' }}" href="{{ route('admin.slots.index') }}">
                 <i class="fas fa-clock"></i> <span>Manage Slots</span></a></li>
             {{-- Hotel Management --}}
+            <h class="px-3" >Hotel Management</h>
             <li><a class="nav-link {{ request()->routeIs('admin.hotels.*') ? 'active' : '' }}" href="{{ route('admin.hotels.index') }}">
                 <i class="fa-solid fa-hotel"></i> <span>Hotels</span></a></li>
 

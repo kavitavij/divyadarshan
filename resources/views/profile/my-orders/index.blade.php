@@ -30,7 +30,11 @@
                           bg-green-600 text-white hover:bg-green-700 transition">
                     View Donations
                 </a>
-
+                <a href="{{ route('profile.ebooks') }}"
+                   class="px-4 py-2 text-sm font-medium rounded-lg shadow-sm
+                          bg-green-600 text-white hover:bg-green-700 transition">
+                    Purchased E-books
+                </a>
             </div>
         </div>
 
