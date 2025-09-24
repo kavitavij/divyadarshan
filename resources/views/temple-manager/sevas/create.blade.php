@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.temple-manager')
 
 @section('content')
     <div class="container-fluid">

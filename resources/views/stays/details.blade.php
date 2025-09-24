@@ -240,7 +240,7 @@
                                         value="{{ old('phone_number') }}" required>
                                 </div>
                             </div>
-                            
+
             <!-- Action Buttons -->
             <div class="form-footer mt-4">
               <div class="row g-3">
@@ -252,7 +252,7 @@
                 </div>
                 <div class="col-md-4">
                   <button type="submit" class="btn btn-success w-100 p-3 fw-bold"
-                    formaction="{{ route('cart.addStay') }}">
+                       formaction="{{ route('stays.payNow') }}">
                     💳 Pay Now Online
                   </button>
                 </div>
@@ -277,7 +277,7 @@
       const maxGuests = {{ $room->capacity }};
       const checkInInput = document.getElementById("check_in_date");
       const checkOutInput = document.getElementById("check_out_date");
-      const pricePerNight = {{ $room->price_per_night }};
+      const pricePerNight = {{ $room->discounted_price }};
       const numNightsDisplay = document.getElementById("num-nights");
       const totalAmountDisplay = document.getElementById("total-amount");
       const totalAmountInput = document.getElementById("total_amount_input");

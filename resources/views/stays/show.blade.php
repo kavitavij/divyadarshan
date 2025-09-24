@@ -33,8 +33,8 @@
     .lightbox-image {
         width: 100%;
         height: 100%;
-        object-fit: cover; 
-        object-position: center; 
+        object-fit: cover;
+        object-position: center;
     }
 
     .lightbox-close {
@@ -285,10 +285,10 @@
             @endif
         </div>
         </div>
-       <div class="lg:sticky top-24 h-fit space-y-6">
+        <div class="lg:sticky top-24 h-fit space-y-6">
             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Available Rooms</h2>
-                <div class="grid gap-4">
+                <div class="grid gap-4 max-h-[65vh] overflow-y-auto pr-2">
                     @forelse($hotel->rooms as $room)
                         <div @click="
                                 roomModal = true;
@@ -298,10 +298,21 @@
                              class="border border-gray-200 rounded-lg p-4 hover:border-indigo-500 hover:shadow-md transition cursor-pointer">
                             <h3 class="font-bold text-lg text-gray-900">{{ $room->type }}</h3>
                             <p class="text-sm text-gray-500">Capacity: {{ $room->capacity }} guests</p>
-                            <p class="text-xl font-semibold text-indigo-600 mt-2">
-                                ₹{{ number_format($room->price_per_night, 2) }}
-                                <span class="text-sm text-gray-500 font-normal">/ night</span>
-                            </p>
+
+                            <div class="mt-2">
+                                @if($room->discount_percentage > 0)
+                                    <p class="text-xl font-semibold text-indigo-600">
+                                        ₹{{ number_format($room->discounted_price, 2) }}
+                                        <span class="text-sm text-gray-500 font-normal line-through ml-2">₹{{ number_format($room->price_per_night, 2) }}</span>
+                                    </p>
+                                    <span class="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">{{ $room->discount_percentage }}% OFF</span>
+                                @else
+                                    <p class="text-xl font-semibold text-indigo-600">
+                                        ₹{{ number_format($room->price_per_night, 2) }}
+                                        <span class="text-sm text-gray-500 font-normal">/ night</span>
+                                    </p>
+                                @endif
+                            </div>
                         </div>
                     @empty
                         <p class="text-gray-500 text-center py-4">No rooms have been listed for this hotel yet.</p>
@@ -309,7 +320,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
 
     {{-- RESTRUCTURED Room Details Modal --}}
     <div x-show="roomModal" x-cloak
@@ -380,31 +391,42 @@
                         </div>
                     </template>
                 </div>
-
-                
                 <div class="p-6 mt-auto border-t border-gray-200 bg-white shrink-0">
-                    <div class="flex justify-between items-center">
-                         <p class="text-indigo-600 text-2xl font-semibold">
-                            ₹<span x-text="Number(selectedRoom.price_per_night).toLocaleString()"></span>
-                            <span class="text-sm text-gray-500 font-normal">/ night</span>
-                        </p>
-                         <a :href="'/stays/room/' + selectedRoom.id" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition transform hover:scale-105">
-                            Book Now
-                        </a>
-                    </div>
+                        <div class="flex justify-between items-center">
+                             <div>
+                                <template x-if="selectedRoom.discount_percentage > 0">
+                                    <div>
+                                        <p class="text-indigo-600 text-2xl font-semibold">
+                                            ₹<span x-text="Number(selectedRoom.discounted_price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                                            <span class="text-sm text-gray-500 font-normal line-through ml-2">₹<span x-text="Number(selectedRoom.price_per_night).toLocaleString('en-IN')"></span></span>
+                                        </p>
+                                        {{-- BADGE ADDED HERE --}}
+                                        <span class="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full" x-text="selectedRoom.discount_percentage + '% OFF'"></span>
+                                    </div>
+                                </template>
+                                <template x-if="!selectedRoom.discount_percentage || selectedRoom.discount_percentage == 0">
+                                    <p class="text-indigo-600 text-2xl font-semibold">
+                                        ₹<span x-text="Number(selectedRoom.price_per_night).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                                        <span class="text-sm text-gray-500 font-normal">/ night</span>
+                                    </p>
+                                </template>
+                            </div>
+                            <a :href="'/stays/room/' + selectedRoom.id" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition transform hover:scale-105">
+                                Book Now
+                            </a>
+                        </div>
+                </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
-
 @push('scripts')
 {{-- Swiper JS for the gallery --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var mainSwiper = new Swiper(".main-swiper", {
-        loop: true, 
+        loop: true,
         spaceBetween: 20,
         navigation: {
             nextEl: ".swiper-button-next",

@@ -86,7 +86,7 @@ Route::get('/guidelines', [GuidelineController::class, 'index'])->name('guidelin
 Route::get('/complaint', [ComplaintController::class, 'index'])->name('complaint.form');
 Route::post('/complaint', [ComplaintController::class, 'store'])->name('complaint.store');
 Route::get('/terms', [TermsController::class, 'index'])->name('terms');
-Route::get('/sevas', [SevaController::class, 'index'])->name('info.sevas'); 
+Route::get('/sevas', [SevaController::class, 'index'])->name('info.sevas');
 Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
 Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
 Route::get('/cart/pay', [CartController::class, 'pay'])->name('cart.pay');
@@ -99,7 +99,7 @@ Route::get('/profile/my-stays/{booking}/refund', [ProfileController::class, 'req
 Route::post('/profile/my-stays/{booking}/refund', [ProfileController::class, 'storeStayRefundRequest'])->name('profile.my-stays.refund.store');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.store');
 Route::get('/api/temples/{temple}/slots-for-date/{date}', [DarshanBookingController::class, 'getSlotsForDate'])->name('api.temples.slots_for_date');
-
+Route::post('/stays/pay-now', [App\Http\Controllers\CartController::class, 'payNowStay'])->name('stays.payNow')->middleware('auth');
 Route::post('/faq-submit', [FaqController::class, 'store'])->name('info.faq.submit');
 Route::get('/spiritual-help', [SpiritualHelpController::class, 'create'])->name('spiritual-help.form');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.submit');

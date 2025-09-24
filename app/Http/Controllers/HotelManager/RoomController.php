@@ -44,6 +44,7 @@ class RoomController extends Controller
             'type' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1',
             'price_per_night' => 'required|numeric|min:0',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
             'total_rooms' => 'required|integer|min:1',
             'room_size' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
@@ -55,7 +56,7 @@ class RoomController extends Controller
 
         DB::beginTransaction();
         try {
-            $roomData = $request->only(['type', 'capacity', 'price_per_night', 'total_rooms', 'room_size', 'description']);
+            $roomData = $request->only(['type', 'capacity', 'price_per_night', 'discount_percentage', 'total_rooms', 'room_size', 'description']);
             $roomData['facilities'] = json_encode($request->input('facilities', []));
             $room = $hotel->rooms()->create($roomData);
 
@@ -93,6 +94,7 @@ class RoomController extends Controller
             'type' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1',
             'price_per_night' => 'required|numeric|min:0',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
             'total_rooms' => 'required|integer|min:1',
             'room_size' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
@@ -104,7 +106,7 @@ class RoomController extends Controller
 
         DB::beginTransaction();
         try {
-            $roomData = $request->only(['type', 'capacity', 'price_per_night', 'total_rooms', 'room_size', 'description']);
+            $roomData = $request->only(['type', 'capacity', 'price_per_night', 'discount_percentage', 'total_rooms', 'room_size', 'description']);
             $roomData['facilities'] = json_encode($request->input('facilities', []));
             $room->update($roomData);
 
@@ -170,7 +172,7 @@ class RoomController extends Controller
         $room->save();
 
         $status = $room->is_visible ? 'visible' : 'hidden';
-        
+
         return redirect()->back()->with('success', "Room '{$room->type}' is now {$status}.");
     }
 }

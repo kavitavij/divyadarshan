@@ -2,261 +2,87 @@
 
 @section('content')
 <style>
-    :root {
-        --primary-color: #4f46e5;
-        --secondary-color: #6b7280;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --light-bg: #f9fafb;
-        --border-color: #e5e7eb;
-    }
-
-    .rooms-container {
-        background-color: var(--light-bg);
-    }
-
-    .header-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 1.5rem;
-    }
-
-    .header-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .btn-add-room {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background-color: var(--primary-color);
-        color: white;
-        padding: 0.6rem 1.2rem;
-        border-radius: 8px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: background-color 0.2s;
-    }
-    .btn-add-room:hover {
-        background-color: #4338ca;
-    }
-
-    .room-card {
-        background-color: white;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        margin-bottom: 1.25rem;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        transition: box-shadow 0.2s, border-color 0.2s;
-    }
-    .room-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        border-color: var(--primary-color);
-    }
-    .room-card.is-hidden {
-        background-color: #f8f9fa;
-        opacity: 0.8;
-    }
-
-    .room-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
-    .room-type {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #1f2937;
-    }
-    .status-badge {
-        padding: 0.3rem 0.8rem;
-        border-radius: 9999px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .status-visible {
-        background-color: #dcfce7;
-        color: #166534;
-    }
-    .status-hidden {
-        background-color: #f3f4f6;
-        color: #4b5563;
-    }
-
-    .room-card-body {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1.5rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border-color);
-    }
-    .info-item {
-        font-size: 0.9rem;
-    }
-    .info-label {
-        color: var(--secondary-color);
-        margin-bottom: 0.25rem;
-        display: block;
-    }
-    .info-value {
-        font-weight: 600;
-        color: #111827;
-        font-size: 1rem;
-    }
-    .price {
-        color: var(--primary-color);
-    }
-
-    .room-card-actions {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 0.5rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border-color);
-    }
-
-    .btn-action {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-decoration: none !important;
-    }
-
-    .btn-edit { background-color: #e0e7ff; color: #4338ca; }
-    .btn-edit:hover { background-color: #c7d2fe; }
-
-    .btn-hide { background-color: #feefc3; color: #92400e; }
-    .btn-hide:hover { background-color: #fde68a; }
-
-    .btn-show { background-color: #d1fae5; color: #065f46; }
-    .btn-show:hover { background-color: #a7f3d0; }
-
-    .btn-delete { background-color: #fee2e2; color: #b91c1c; }
-    .btn-delete:hover { background-color: #fecaca; }
-
-    .alert-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1050;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 4rem 2rem;
-        background-color: white;
-        border: 2px dashed var(--border-color);
-        border-radius: 12px;
-    }
-    .empty-state h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #374151;
-    }
-    .empty-state p {
-        color: var(--secondary-color);
-        margin-top: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
+    .rooms-container { max-width: 1200px; margin: 20px auto; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .btn-add-room { background-color: #28a745; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; }
+    .room-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .room-card-photos { flex: 0 0 200px; }
+    .room-card-photos img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px 0 0 8px; }
+    .room-card-details { padding: 15px; flex-grow: 1; }
+    .room-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .room-card-title { font-size: 1.2rem; font-weight: bold; margin: 0; }
+    .room-card-price { text-align: right; }
+    .price-original { text-decoration: line-through; color: #999; font-size: 0.9em; }
+    .price-final { font-weight: bold; color: #e74c3c; font-size: 1.1em; }
+    .discount-badge { background: #e74c3c; color: white; padding: 2px 6px; font-size: 0.8em; border-radius: 4px; }
+    .room-card-info { margin-top: 10px; color: #555; }
+    .room-card-actions { margin-top: 15px; display: flex; gap: 10px; align-items:center; }
+    .btn { padding: 5px 10px; border-radius: 5px; text-decoration: none; border: 1px solid transparent; }
+    .btn-edit { background-color: #007bff; color: white; }
+    .btn-delete { background-color: #dc3545; color: white; border:none; cursor:pointer; font-family: inherit; font-size: inherit; }
+    /* Toggle Switch */
+    .switch{position:relative;display:inline-block;width:50px;height:24px}
+    .switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.4s;border-radius:24px}
+    .slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:white;transition:.4s;border-radius:50%}
+    input:checked+.slider{background-color:#28a745}
+    input:checked+.slider:before{transform:translateX(26px)}
 </style>
 
-<div class="container-fluid rooms-container p-4">
-    <div class="header-bar">
-        <h1 class="header-title">Manage Rooms for {{ $hotel->name }}</h1>
-        <a href="{{ route('hotel-manager.rooms.create') }}" class="btn-add-room">
-            <i class="fas fa-plus"></i> Add New Room
-        </a>
+<div class="rooms-container">
+    <div class="page-header">
+        <h1>Manage Rooms for {{ $hotel->name }}</h1>
+        <a href="{{ route('hotel-manager.rooms.create') }}" class="btn-add-room">Add New Room</a>
     </div>
 
-    @if(session('success'))
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
-             class="alert-container" x-transition>
-            <div class="alert alert-success shadow-lg">
-                {{ session('success') }}
+    @foreach ($rooms as $room)
+        <div class="room-card">
+            <div class="room-card-photos">
+                <img src="{{ $room->photos->first() ? asset('storage/' . $room->photos->first()->path) : 'https://via.placeholder.com/200' }}" alt="{{ $room->type }}">
+            </div>
+            <div class="room-card-details">
+                <div class="room-card-header">
+                    <div>
+                        <h2 class="room-card-title">{{ $room->type }}</h2>
+                        <small>Capacity: {{ $room->capacity }} People | Total Rooms: {{ $room->total_rooms }}</small>
+                    </div>
+                    <div class="room-card-price">
+                        @if($room->discount_percentage > 0)
+                            <span class="price-original">₹{{ number_format($room->price_per_night, 2) }}</span>
+                            <span class="price-final">₹{{ number_format($room->discounted_price, 2) }}</span>
+                            <span class="discount-badge">{{ $room->discount_percentage }}% OFF</span>
+                        @else
+                            <span class="price-final">₹{{ number_format($room->price_per_night, 2) }}</span>
+                        @endif
+                        <div>per night</div>
+                    </div>
+                </div>
+                <div class="room-card-info">
+                    {{ \Illuminate\Support\Str::limit($room->description, 150) }}
+                </div>
+                <div class="room-card-actions">
+                    <form action="{{ route('hotel-manager.rooms.toggleVisibility', $room) }}" method="POST" style="margin:0;">
+                        @csrf
+                        @method('PATCH')
+                        <label class="switch">
+                            <input type="checkbox" {{ $room->is_visible ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="slider"></span>
+                        </label>
+                    </form>
+                    <span>{{ $room->is_visible ? 'Visible' : 'Hidden' }}</span>
+                    <a href="{{ route('hotel-manager.rooms.edit', $room->id) }}" class="btn btn-edit">Edit</a>
+                    <form action="{{ route('hotel-manager.rooms.destroy', $room->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this room?');" style="margin:0;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-delete">Delete</button>
+                    </form>
+                </div>
             </div>
         </div>
-    @endif
+    @endforeach
 
-    <div>
-        @forelse ($rooms as $room)
-        <div class="room-card {{ !$room->is_visible ? 'is-hidden' : '' }}">
-            <div class="room-card-header">
-                <h2 class="room-type">{{ $room->type }}</h2>
-                @if ($room->is_visible)
-                    <span class="status-badge status-visible">Visible</span>
-                @else
-                    <span class="status-badge status-hidden">Hidden</span>
-                @endif
-            </div>
-
-            <div class="room-card-body">
-                <div class="info-item">
-                    <span class="info-label">Capacity</span>
-                    <span class="info-value">{{ $room->capacity }} People</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Price / Night</span>
-                    <span class="info-value price">₹{{ number_format($room->price_per_night, 2) }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Total Rooms</span>
-                    <span class="info-value">{{ $room->total_rooms }}</span>
-                </div>
-            </div>
-
-            <div class="room-card-actions">
-                <form action="{{ route('hotel-manager.rooms.toggleVisibility', $room->id) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('PATCH')
-                    @if ($room->is_visible)
-                        <button type="submit" class="btn-action btn-hide"><i class="fas fa-eye-slash"></i> Hide</button>
-                    @else
-                        <button type="submit" class="btn-action btn-show"><i class="fas fa-eye"></i> Show</button>
-                    @endif
-                </form>
-
-                <a href="{{ route('hotel-manager.rooms.edit', $room->id) }}" class="btn-action btn-edit">
-                    <i class="fas fa-pencil-alt"></i> Edit
-                </a>
-
-                <form action="{{ route('hotel-manager.rooms.destroy', $room->id) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to permanently delete this room type?')">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </button>
-                </form>
-            </div>
-        </div>
-        @empty
-        <div class="empty-state">
-            <h3>No Rooms Found</h3>
-            <p>You haven't added any room types yet. Get started by adding your first one.</p>
-            <a href="{{ route('hotel-manager.rooms.create') }}" class="btn-add-room">
-                + Add First Room
-            </a>
-        </div>
-        @endforelse
+    <div class="mt-4">
+        {{ $rooms->links() }}
     </div>
 </div>
 @endsection

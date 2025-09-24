@@ -2,6 +2,7 @@
 
 @section('content')
 <style>
+    /* STYLES (No changes needed) */
     .room-form-wrapper{max-width:760px;margin:28px auto;background:#fff;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.08)}
     .room-form-header{padding:22px 26px;border-bottom:1px solid #eee}
     .room-form-header h1{font-size:22px;margin:0;color:#2c3e50}
@@ -30,15 +31,6 @@
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
     .modal-content { background: #fff; padding: 25px; border-radius: 8px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     .btn-danger { background-color: #ef4444; color: white; }
-
-    /* Styles for the Description Builder */
-    .description-builder { border: 1px solid #cfd6de; border-radius: 8px; padding: 16px; }
-    .desc-section { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-    .desc-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .desc-section-title { font-weight: 600; color: #495057; font-size: 14px; }
-    .desc-section-actions .btn-sm { padding: 4px 8px; font-size: 12px; background: #dc3545; color: white; border-radius: 6px; }
-    .desc-section textarea { min-height: 100px; resize: vertical; }
-    .add-section-btns { display: flex; gap: 10px; margin-top: 12px; }
 </style>
 
 <div class="room-form-wrapper">
@@ -53,15 +45,14 @@
             </div>
         @endif
 
-        <form action="{{ route('hotel-manager.rooms.update', $room->id) }}" method="POST" enctype="multipart/form-data"
-              x-data="descriptionEditor()" @submit="prepareSubmission">
+        <form action="{{ route('hotel-manager.rooms.update', $room->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
-            {{-- Existing Photos --}}
+            {{-- Photos --}}
             <div class="field">
                 <label>Existing Photos</label>
-                <div class="existing-photos" id="existing-photos-container">
+                <div class="existing-photos">
                     @forelse($room->photos as $photo)
                         <div class="photo-wrapper" id="photo-wrapper-{{ $photo->id }}">
                             <img src="{{ asset('storage/'.$photo->path) }}" alt="Room Photo">
@@ -72,8 +63,6 @@
                     @endforelse
                 </div>
             </div>
-
-            {{-- Add New Photos --}}
             <div class="field">
                 <label for="photos">Add New Photos</label>
                 <div class="photo-uploader" onclick="document.getElementById('photos').click()">
@@ -81,7 +70,6 @@
                     <input type="file" name="photos[]" id="photos" class="control" multiple accept="image/*" style="display: none;">
                 </div>
                 <div class="photo-preview" id="photo-preview"></div>
-                @error('photos.*') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
             {{-- Room Type --}}
@@ -92,26 +80,43 @@
                         <option value="{{ $opt }}" {{ old('type', $room->type) === $opt ? 'selected' : '' }}>{{ $opt }}</option>
                     @endforeach
                 </select>
-                @error('type') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
-            {{-- Capacity / Price / Total / Room Size --}}
+            {{-- Price and Discount --}}
+            <div class="row-3">
+                <div class="field">
+                    <label for="price_per_night">Price per Night (₹)</label>
+                    {{-- FIX: Add the room data as a fallback --}}
+                    <input type="number" name="price_per_night" id="price_per_night" class="control" step="0.01" value="{{ old('price_per_night', $room->price_per_night) }}" required>
+                    @error('price_per_night') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="field">
+                    <label for="discount_percentage">Discount (Percentage)</label>
+                    {{-- FIX: Add the room data as a fallback --}}
+                    <input type="number" name="discount_percentage" id="discount_percentage" class="control" step="0.01" value="{{ old('discount_percentage', $room->discount_percentage) }}" min="0" max="100">
+                    @error('discount_percentage') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+            </div>
+
+            {{-- Capacity, Total Rooms, Size (These were missing in your last version) --}}
             <div class="row-3">
                 <div class="field">
                     <label for="capacity">Capacity (people)</label>
+                    {{-- FIX: Add the room data as a fallback --}}
                     <input type="number" name="capacity" id="capacity" class="control" value="{{ old('capacity', $room->capacity) }}" required>
-                </div>
-                <div class="field">
-                    <label for="price_per_night">Price per Night (₹)</label>
-                    <input type="number" name="price_per_night" id="price_per_night" class="control" step="0.01" value="{{ old('price_per_night', $room->price_per_night) }}" required>
+                    @error('capacity') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
                 <div class="field">
                     <label for="total_rooms">Total Rooms</label>
+                    {{-- FIX: Add the room data as a fallback --}}
                     <input type="number" name="total_rooms" id="total_rooms" class="control" value="{{ old('total_rooms', $room->total_rooms) }}" required>
+                    @error('total_rooms') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
                 <div class="field">
                     <label for="room_size">Room Size (sq. ft.)</label>
+                    {{-- FIX: Add the room data as a fallback --}}
                     <input type="number" name="room_size" id="room_size" class="control" value="{{ old('room_size', $room->room_size) }}">
+                    @error('room_size') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
             </div>
 
@@ -122,46 +127,22 @@
                 @error('description') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
-
             {{-- Facilities --}}
             <div class="field">
                 <label>Facilities</label>
                 @php
-                $allFacilities = [
-                    'Free toiletries', 'Toilet', 'Bath or shower', 'Hairdryer', 'Air conditioning',
-                    'Safety deposit box', 'Desk', 'TV', 'Refrigerator', 'Ironing facilities',
-                    'Tea/Coffee maker', 'Flat-screen TV', 'Minibar', 'Cable channels', 'Wake-up service',
-                    'Alarm clock', 'Wardrobe or closet', 'Free Wifi','Balcony'
-                ];
-
-                // Ensure $roomFacilities is always an array
-                $roomFacilities = json_decode($room->facilities, true);
-                if (!is_array($roomFacilities)) {
-                    $roomFacilities = [];
-                }
-            @endphp
-
+                    $allFacilities = ['Free toiletries', 'Toilet', 'Bath or shower', 'Hairdryer', 'Air conditioning', 'Safety deposit box', 'Desk', 'TV', 'Refrigerator', 'Ironing facilities', 'Tea/Coffee maker', 'Flat-screen TV', 'Minibar', 'Cable channels', 'Wake-up service', 'Alarm clock', 'Wardrobe or closet', 'Free Wifi','Balcony'];
+                    $roomFacilities = is_array($room->facilities) ? $room->facilities : json_decode($room->facilities, true) ?? [];
+                @endphp
                 <div class="facilities-grid">
                     @foreach ($allFacilities as $facility)
                     <div class="facility-item">
-                        <input type="checkbox" name="facilities[]" value="{{ $facility }}" id="facility_{{ \Illuminate\Support\Str::slug($facility) }}"
-                        {{ in_array($facility, old('facilities', $roomFacilities)) ? 'checked' : '' }}>
+                        <input type="checkbox" name="facilities[]" value="{{ $facility }}" id="facility_{{ \Illuminate\Support\Str::slug($facility) }}" {{ in_array($facility, old('facilities', $roomFacilities)) ? 'checked' : '' }}>
                         <label for="facility_{{ \Illuminate\Support\Str::slug($facility) }}">{{ $facility }}</label>
                     </div>
                     @endforeach
                 </div>
-                @error('facilities') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Update Room</button>
-                <a href="{{ route('hotel-manager.rooms.index') }}" class="btn btn-secondary">Cancel</a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Custom Confirmation Modal for photo deletion -->
 <div id="deleteConfirmationModal" class="modal-overlay">
     <div class="modal-content">
         <h2>Confirm Deletion</h2>
@@ -172,6 +153,15 @@
         </div>
     </div>
 </div>
+            {{-- Actions --}}
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Update Room</button>
+                <a href="{{ route('hotel-manager.rooms.index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 @push('scripts')
 <script>

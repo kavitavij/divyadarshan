@@ -7,13 +7,10 @@
     {{-- Date Filter --}}
     <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
         <form action="{{ route('hotel-manager.revenue.index') }}" method="GET" class="flex flex-wrap items-center gap-4">
-
                 <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
                 <input type="date" id="start_date" name="start_date" value="{{ $startDate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-
                 <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
                 <input type="date" id="end_date" name="end_date" value="{{ $endDate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Filter</button>
             </div>
         </form>

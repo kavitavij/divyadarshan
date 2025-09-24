@@ -78,18 +78,24 @@
                 </select>
                 @error('type') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-
             {{-- Capacity / Price / Total / Room Size --}}
             <div class="row-3">
-                <div class="field">
-                    <label for="capacity">Capacity (people)</label>
-                    <input type="number" name="capacity" id="capacity" class="control" value="{{ old('capacity') }}" required>
-                    @error('capacity') <small class="text-danger">{{ $message }}</small> @enderror
-                </div>
                 <div class="field">
                     <label for="price_per_night">Price per Night (₹)</label>
                     <input type="number" name="price_per_night" id="price_per_night" class="control" step="0.01" value="{{ old('price_per_night') }}" required>
                     @error('price_per_night') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="field">
+                    <label for="discount_percentage">Discount (Percentage)</label>
+                    <input type="number" name="discount_percentage" id="discount_percentage" class="control" step="0.01" value="{{ old('discount_percentage') }}" min="0" max="100">
+                    @error('discount_percentage') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+            </div>
+                <div class="row-3">
+                    <div class="field">
+                    <label for="capacity">Capacity (people)</label>
+                    <input type="number" name="capacity" id="capacity" class="control" value="{{ old('capacity') }}" required>
+                    @error('capacity') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
                 <div class="field">
                     <label for="total_rooms">Total Rooms</label>
@@ -102,7 +108,6 @@
                     @error('room_size') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
             </div>
-
             {{-- Description --}}
             <div class="field">
                 <label for="description">Description</label>

@@ -19,52 +19,6 @@
         border-color: #0d6efd;
         box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
     }
-/* Base Button Styles */
-.btn {
-    border-radius: 30px;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    font-weight: 600;
-    transition: all 0.3s ease-in-out;
-}
-
-/* Cancel Button */
-.btn-outline-dark {
-    color: #333;
-    border: 2px solid #333;
-    background-color: transparent;
-}
-
-.btn-outline-dark:hover {
-    background-color: #f8f9fa;
-    color: #333;
-    border-color: #333;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Update Button */
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #004085;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* Hover Effects */
-.hover-cancel:hover {
-    transform: translateY(-3px);
-}
-
-.hover-update:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-
 </style>
 @endpush
 
@@ -104,20 +58,17 @@
                         <div class="mb-4">
                             <label class="form-label fw-semibold">📝 Description</label>
                             <textarea name="description"
-                            class="form-control form-control-lg w-100 wysiwyg-editor"
-                            rows="5"
-                            placeholder="Describe your hotel in detail...">{{ old('description', $hotel->description) }}</textarea>
+                                    class="form-control form-control-lg w-100"
+                                    rows="5"
+                                    placeholder="Describe your hotel in detail...">{{ old('description', $hotel->description) }}</textarea>
                         </div>
                         <hr class="my-4">
-
                         {{-- Policies --}}
                         <h5 class="text-primary fw-bold mb-3">
                             <i class="fas fa-clipboard-list me-2"></i> Policies
                         </h5>
                         <div class="mb-4">
-                            <textarea name="policies" 
-                            class="form-control form-control-lg w-100 wysiwyg-editor" 
-                            placeholder="Enter one policy per line">{{ old('policies', is_array($hotel->policies) ? implode("\n", $hotel->policies) : '') }}</textarea>
+                            <textarea name="policies" class="form-control" rows="3" placeholder="Enter one policy per line">{{ old('policies', is_array($hotel->policies) ? implode("\n", $hotel->policies) : '') }}</textarea>
                         </div>
 
                         {{-- Nearby Attractions --}}
@@ -125,9 +76,7 @@
                             <i class="fas fa-map-marked-alt me-2"></i> Nearby Attractions
                         </h5>
                         <div class="mb-4">
-                            <textarea name="nearby_attractions" 
-                            class="form-control form-control-lg w-100 wysiwyg-editor"
-                            placeholder="Enter one attraction per line">{{ old('nearby_attractions', is_array($hotel->nearby_attractions) ? implode("\n", $hotel->nearby_attractions) : '') }}</textarea>
+                            <textarea name="nearby_attractions" class="form-control" rows="3" placeholder="Enter one attraction per line">{{ old('nearby_attractions', is_array($hotel->nearby_attractions) ? implode("\n", $hotel->nearby_attractions) : '') }}</textarea>
                         </div>
 
                         <hr class="my-4">
@@ -164,43 +113,36 @@
                         <h5 class="text-primary fw-bold mb-3">
                         <i class="fas fa-map me-2"></i> Location Map
                         </h5>
+                        {{-- <p class="small text-muted mb-2">Drag the marker to set your hotel's exact location.</p>
+                        <div id="map" style="height: 300px; border-radius: 10px; border: 1px solid #ddd;" class="mb-4"></div>
+                        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $hotel->latitude) }}">
+                        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $hotel->longitude) }}">
 
-                      {{-- Image Section --}}
+                        <hr class="my-4"> --}}
+
+                        {{-- Image --}}
                         <h5 class="text-primary fw-bold mb-3">
                             <i class="fas fa-image me-2"></i> Hotel Image
                         </h5>
-
-                        <div class="text-center mb-4">
-                            {{-- Check if the hotel has an image --}}
+                        <div class="text-center mb-3">
                             @if ($hotel->image)
                                 <img src="{{ asset('storage/' . $hotel->image) }}" class="rounded shadow-sm mb-3" style="max-height: 200px;" alt="{{ $hotel->name }}">
-                                <p class="text-muted fst-italic">Current image</p>
                             @else
                                 <p class="text-muted fst-italic">No image uploaded yet</p>
                             @endif
                         </div>
-
-                        <div class="custom-file-upload mb-3">
-                            <label for="image" class="btn btn-outline-primary btn-lg w-100">
-                                <i class="fas fa-upload me-2"></i> Choose New Image
-                            </label>
-                            <input type="file" name="image" id="image" class="form-control d-none">
-                        </div>
+                        <input type="file" name="image" class="form-control">
 
                         {{-- Buttons --}}
-                        <div class="row mt-5">
-                            <div class="col-12 d-flex justify-content-end">
-                                <a href="{{ route('hotel-manager.dashboard') }}" 
-                                class="btn btn-outline-dark btn-lg px-5 py-3 me-3 text-uppercase fw-bold shadow-sm hover-cancel">
-                                    ⬅ Cancel
-                                </a>
-
-                                <button type="submit" 
-                                        class="btn btn-primary btn-lg px-5 py-3 text-uppercase fw-bold shadow-sm hover-update">
-                                    💾 Update Details
-                                </button>
-                            </div>
+                        <div class="d-flex justify-content-between mt-5">
+                            <a href="{{ route('hotel-manager.dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">
+                                ⬅ Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                💾 Update Details
+                            </button>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -211,20 +153,7 @@
 @endsection
 
 @push('scripts')
-<!-- TinyMCE CDN -->
-<script src="https://cdn.tiny.cloud/1/o5wfjvocpzdett1nnvnmeopwgl8i2gp5j1smdegnaukyamkf/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-
-<script>
-    // Initialize TinyMCE for description box
-    tinymce.init({
-        selector: 'textarea.wysiwyg-editor',
-        plugins: 'lists link code',
-        toolbar: 'undo redo | bold italic underline | bullist numlist | link | code',
-        menubar: false,
-        height: 300
-    });
-</script>
-
+@push('scripts')
 <script>
     let map;
     let marker;
@@ -248,34 +177,48 @@
             draggable: true,
         });
 
+        // --- NEW SEARCH BOX LOGIC ---
         const input = document.getElementById("pac-input");
         const searchBox = new google.maps.places.SearchBox(input);
 
+        // Bias the SearchBox results towards current map's viewport.
         map.addListener("bounds_changed", () => {
             searchBox.setBounds(map.getBounds());
         });
 
+        // Listen for the event fired when the user selects a prediction and retrieve more details for that place.
         searchBox.addListener("places_changed", () => {
             const places = searchBox.getPlaces();
 
-            if (places.length == 0) return;
+            if (places.length == 0) {
+                return;
+            }
 
             const place = places[0];
-            if (!place.geometry || !place.geometry.location) return;
+            if (!place.geometry || !place.geometry.location) {
+                console.log("Returned place contains no geometry");
+                return;
+            }
 
+            // Move the map and marker to the new location
             map.setCenter(place.geometry.location);
             marker.setPosition(place.geometry.location);
 
+            // Update the hidden input fields
             latInput.value = place.geometry.location.lat();
             lngInput.value = place.geometry.location.lng();
         });
+        // --- END OF NEW SEARCH BOX LOGIC ---
 
+
+        // Update hidden inputs when marker is dragged
         google.maps.event.addListener(marker, 'dragend', function(event) {
             latInput.value = event.latLng.lat();
             lngInput.value = event.latLng.lng();
         });
     }
+
     window.initMap = initMap;
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places&callback=initMap" async defer></script>
+@endpush
 @endpush
