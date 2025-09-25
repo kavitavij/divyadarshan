@@ -32,6 +32,8 @@ class Hotel extends Model
         //map
         'latitude',
         'longitude',
+        'terms_and_conditions',
+        'manager_id',
     ];
     protected $casts = [
         'has_wifi' => 'boolean',
@@ -40,6 +42,7 @@ class Hotel extends Model
         'has_food' => 'boolean',
         'policies' => 'array',
         'nearby_attractions' => 'array',
+        
     ];
 
     /**

@@ -40,8 +40,6 @@
                 </div>
             </div>
         </div>
-
-        {{--  Filter Panel --}}
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light">
                 <h5 class="mb-0">
@@ -73,7 +71,6 @@
                 </form>
             </div>
         </div>
-        <!-- // Bookings Table -->
         <div class="card shadow-sm">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">All Bookings for {{ $temple->name }}</h4>
@@ -129,7 +126,6 @@
                     </table>
                 </div>
                 <div class="mt-3">
-                     {{-- Append query strings to pagination links --}}
                     {{ $bookings->appends(request()->query())->links() }}
                 </div>
             </div>

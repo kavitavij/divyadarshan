@@ -40,8 +40,6 @@
             </div>
         </div>
     </div>
-
-    {{-- Devotee Details will only show for Darshan Bookings --}}
     @if ($type === 'darshan' && $booking->devotees->isNotEmpty())
         <h4 class="mt-5 mb-3">Devotee Details</h4>
         @foreach ($booking->devotees as $devotee)
@@ -52,7 +50,6 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-8">
-                            {{-- Devotee details table (same as admin view) --}}
                             <table class="table table-sm table-borderless">
                                 <tr>
                                     <th style="width: 150px;">Full Name:</th>

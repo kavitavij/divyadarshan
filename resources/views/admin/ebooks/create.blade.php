@@ -35,9 +35,15 @@
                 <option value="paid">Paid</option>
             </select>
         </div>
-        <div class="mb-3" x-show="type === 'paid'">
-            <label for="price" class="form-label">Price (INR)</label>
-            <input type="text" name="price" class="form-control" id="price" value="{{ old('price') }}" placeholder="e.g., 99.00">
+        <div x-show="type === 'paid'" x-transition>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price (₹)</label>
+                <input type="number" name="price" class="form-control" id="price" value="{{ old('price') }}" placeholder="e.g., 99.00" step="0.01">
+            </div>
+            <div class="mb-3">
+                <label for="discount_percentage" class="form-label">Discount (%)</label>
+                <input type="number" name="discount_percentage" class="form-control" id="discount_percentage" value="{{ old('discount_percentage', 0) }}" placeholder="e.g., 10" step="0.01" min="0" max="100">
+            </div>
         </div>
         <div class="mb-3">
             <label for="cover_image" class="form-label">Cover Image</label>

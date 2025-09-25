@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\SevaBooking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\DefaultDarshanSlot; 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 class TempleController extends Controller

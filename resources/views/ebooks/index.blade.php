@@ -6,7 +6,6 @@
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800 dark:text-white">ePublications</h1>
 
-    {{-- ✅ Filter Menus now stack on mobile --}}
     <div class="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 mb-8 p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md">
         <div class="flex items-center gap-2 flex-wrap justify-center">
             <span class="font-semibold dark:text-gray-300">Language:</span>
@@ -53,7 +52,25 @@
                         <div class="flex-grow"></div> {{-- This pushes the button to the bottom --}}
                         <div class="mt-4">
                             @if ($ebook->type == 'paid')
-                                <p class="text-xl font-bold text-blue-700 dark:text-blue-400 mb-2">₹{{ $ebook->price }}</p>
+                                <div class="mb-2">
+                                    @if($ebook->discount_percentage > 0)
+                                        <div class="flex items-center gap-2">
+                                            <p class="text-xl font-bold text-blue-700 dark:text-blue-400">
+                                                ₹{{ number_format($ebook->discounted_price, 2) }}
+                                            </p>
+                                            <p class="text-sm text-gray-500 line-through">
+                                                ₹{{ number_format($ebook->price, 2) }}
+                                            </p>
+                                        </div>
+                                        <span class="text-xs font-semibold text-green-800 bg-green-200 px-2 py-0.5 rounded-full">
+                                            {{ (int)$ebook->discount_percentage }}% OFF
+                                        </span>
+                                    @else
+                                        <p class="text-xl font-bold text-blue-700 dark:text-blue-400">
+                                            ₹{{ number_format($ebook->price, 2) }}
+                                        </p>
+                                    @endif
+                                </div>
                                 @auth
                                 <form action="{{ route('cart.addEbook') }}" method="POST">
                                     @csrf

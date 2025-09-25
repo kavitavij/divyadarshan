@@ -261,6 +261,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue.index');
     Route::get('/revenue/download', [AdminRevenueController::class, 'download'])->name('revenue.download');
+    Route::resource('managers', \App\Http\Controllers\Admin\ManagerController::class);
+
 });
     // // Routes for Stay Refunds
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -289,6 +291,11 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::get('/refund-requests/{booking}', [RefundController::class, 'show'])->name('refund.show');
     Route::patch('/refund-requests/{booking}/status', [RefundController::class, 'updateStatus'])->name('refund.updateStatus');
     Route::post('/bookings/{booking}/cancel', [HotelManagerBookingController::class, 'cancel'])->name('bookings.cancel');
+    // Routes for Terms & Conditions
+    Route::get('/terms/edit', [App\Http\Controllers\HotelManager\TermsController::class, 'edit'])->name('terms.edit');
+Route::patch('/terms/update', [App\Http\Controllers\HotelManager\TermsController::class, 'update'])->name('terms.update');
+Route::get('/profile', [App\Http\Controllers\HotelManager\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [App\Http\Controllers\HotelManager\ProfileController::class, 'update'])->name('profile.update');
 });
 
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {
@@ -310,4 +317,7 @@ Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->na
     Route::post('gallery', [GalleryController::class, 'store'])->name('gallery.store');
     Route::delete('gallery/{image}', [GalleryController::class, 'destroy'])->name('gallery.destroy');
     Route::get('/revenue', [TempleRevenueController::class, 'index'])->name('revenue.index');
+    Route::get('/profile', [App\Http\Controllers\TempleManager\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [App\Http\Controllers\TempleManager\ProfileController::class, 'update'])->name('profile.update');
 });
+

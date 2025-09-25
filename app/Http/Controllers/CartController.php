@@ -48,13 +48,21 @@ class CartController extends Controller
     {
         $ebook = Ebook::findOrFail($request->ebook_id);
         $cart = session()->get('cart', []);
-        $cart['ebook_' . $ebook->id] = [
+
+        $cartItemData = [
             'id' => $ebook->id,
             'type' => 'ebook',
             'name' => $ebook->title,
-            'price' => $ebook->price,
+            'price' => $ebook->discounted_price,
             'quantity' => 1
         ];
+
+        if ($ebook->discount_percentage > 0) {
+            $cartItemData['original_price'] = $ebook->price;
+        }
+
+        $cart['ebook_' . $ebook->id] = $cartItemData;
+        
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Ebook added to cart!');
     }

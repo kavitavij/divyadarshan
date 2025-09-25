@@ -161,7 +161,7 @@
                         <!-- Room Summary -->
                         <div class="room-summary mb-4">
                             <h3>{{ $room->type }} Room at {{ $room->hotel->name }}</h3>
-                            <p>Price: <strong>₹{{ number_format($room->price_per_night, 2) }}</strong> / night</p>
+                            <p>Price: <strong>₹{{ number_format($room->discounted_price, 2) }}</strong> / night</p>
                         </div>
 
                         <!-- Form -->
@@ -240,7 +240,14 @@
                                         value="{{ old('phone_number') }}" required>
                                 </div>
                             </div>
-
+                            <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" value="1" id="agree_terms" name="agree_terms" required>
+            <label class="form-check-label" for="agree_terms">
+                I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-primary">
+                    Terms and Conditions
+                </a>
+            </label>
+        </div>
             <!-- Action Buttons -->
             <div class="form-footer mt-4">
               <div class="row g-3">
@@ -257,14 +264,13 @@
                   </button>
                 </div>
                 <div class="col-md-4">
-                  <button type="submit" class="btn btn-primary w-100 p-3 fw-bold"
-                    formaction="{{ route('stays.bookPayAtHotel') }}">
-                    🏨 Pay at Hotel
-                  </button>
-                </div>
+                    <button type="submit" class="btn btn-primary w-100 p-3 fw-bold"
+                        formaction="{{ route('stays.bookPayAtHotel') }}">
+                        🏨 Pay at Hotel <span class="fw-normal" style="font-size: 0.9rem;">(+₹50 extra)</span>
+                    </button>
+                    </div>
               </div>
             </div>
-
           </form>
         </div>
       </div>
@@ -347,5 +353,28 @@
       calculateTotal();
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms and Conditions - {{ $room->hotel->name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                @if($room->hotel->terms_and_conditions)
+    <div class="trix-content">
+        {!! $room->hotel->terms_and_conditions !!}
+    </div>
+@else
+    <p>No specific terms and conditions have been provided for this hotel.</p>
+@endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

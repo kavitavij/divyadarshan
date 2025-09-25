@@ -23,6 +23,7 @@ class Temple extends Model
     'darshan_charge',
     'offered_services',
     'terms_and_conditions',
+    'manager_id', 
 ];
     protected $casts = [
     'offered_services' => 'array',

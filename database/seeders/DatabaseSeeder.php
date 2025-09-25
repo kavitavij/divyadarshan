@@ -13,16 +13,9 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // THE FIX: The call to the old RolesTableSeeder has been removed.
-        // $this->call(RolesTableSeeder::class);
-
         $this->call([
-            UsersTableSeeder::class,
-            TempleSeeder::class,
-            // You can add other seeders here if needed
-        ]);
-         $this->call([
-            DefaultDarshanSlotSeeder::class,
+            RolesAndPermissionsSeeder::class,
+            // You can add other seeders here
         ]);
     }
 }

@@ -16,15 +16,24 @@ class EbookController extends Controller
     }
 
     public function create()
-    {
+    {   
         $languages = config('languages.available');
         return view('admin.ebooks.create', compact('languages'));
     }
 
     public function store(Request $request)
     {
-        $request->validate(['title' => 'required', 'language' => 'required', 'type' => 'required', 'ebook_file' => 'required|mimes:pdf']);
-        $data = $request->only(['title', 'author', 'language', 'type', 'price']);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'nullable|string|max:255',
+            'language' => 'required|string',
+            'type' => 'required|in:free,paid',
+            'price' => 'required_if:type,paid|nullable|numeric|min:0',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100', // Validation for discount
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'ebook_file' => 'required|file|mimes:pdf|max:10240', // PDF up to 10MB
+        ]);
+        $data = $request->only(['title', 'author', 'language', 'type', 'price', 'discount_percentage']);
         if ($data['type'] === 'free') $data['price'] = null;
 
         if ($request->hasFile('ebook_file')) $data['ebook_file_path'] = $request->file('ebook_file')->store('ebooks', 'public');
@@ -47,8 +56,19 @@ class EbookController extends Controller
 
     public function update(Request $request, Ebook $ebook)
     {
-        $request->validate(['title' => 'required', 'language' => 'required', 'type' => 'required']);
-        $data = $request->only(['title', 'author', 'language', 'type', 'price']);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'nullable|string|max:255',
+            'language' => 'required|string',
+            'type' => 'required|in:free,paid',
+            'price' => 'required_if:type,paid|nullable|numeric|min:0',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100', // Validation for discount
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'ebook_file' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+
+        $data = $request->only(['title', 'author', 'language', 'type', 'price', 'discount_percentage']);
+
         if ($data['type'] === 'free') $data['price'] = null;
 
         if ($request->hasFile('ebook_file')) {

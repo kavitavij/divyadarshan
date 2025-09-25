@@ -1,16 +1,24 @@
 <?php
 
 namespace App\Models;
-use App\Notifications\CustomVerifyEmail;
 
+use App\Notifications\CustomVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Spatie\Permission\Traits\HasRoles; 
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable;
+    // FIX: Add the HasRoles trait here
+    use HasFactory, Notifiable, HasRoles;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'email',
@@ -18,11 +26,21 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -31,22 +49,13 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    /**
-     * Check if the user has a specific role.
-     *
-     * @param string $role
-     * @return bool
-     */
-    public function hasRole(string $role): bool
-    {
-        return $this->role === $role;
-    }
+    // This custom method is no longer needed as the Spatie package provides it.
+    // public function hasRole(string $role): bool { ... }
 
     public function favorites()
     {
         return $this->belongsToMany(Temple::class, 'favorites');
     }
-
 
     public function ebooks()
     {
@@ -62,21 +71,19 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Hotel::class, 'manager_id');
     }
+
     public function temple()
     {
         return $this->hasOne(Temple::class, 'manager_id');
     }
+    
     public function routeNotificationForTwilio()
     {
         return $this->phone_number; // Assuming you have a 'phone_number' column
     }
-     public function sendEmailVerificationNotification()
+
+    public function sendEmailVerificationNotification()
     {
         $this->notify(new CustomVerifyEmail);
     }
-    public function hotels()
-    {
-        return $this->hasMany(Hotel::class, 'manager_id');
-    }
-
 }

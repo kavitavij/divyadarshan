@@ -127,11 +127,10 @@
                         <button type="button" data-amount="101" class="donation-amount-btn border rounded-lg py-3 font-semibold hover:bg-purple-50">₹101</button>
                         <button type="button" data-amount="501" class="donation-amount-btn border rounded-lg py-3 font-semibold hover:bg-purple-50">₹501</button>
                         <button type="button" data-amount="1101" class="donation-amount-btn border rounded-lg py-3 font-semibold hover:bg-purple-50">₹1,101</button>
-                        <button type="button" data-amount="2501" class="donation-amount-btn border rounded-lg py-3 font-semibold hover:bg-purple-50">₹2,501</button>
+                        <button type="button" data-amount="2551" class="donation-amount-btn border rounded-lg py-3 font-semibold hover:bg-purple-50">₹2,551</button>
                     </div>
                 </div>
 
-                {{-- Custom Amount --}}
                 <div>
                     <label for="amount" class="block text-gray-700 font-semibold mb-2">
                         Or Enter Custom Amount

@@ -207,7 +207,9 @@
                 <i class="fas fa-caret-down"></i>
             </button>
             <div class="dropdown">
-                <a href="#"><i class="fas fa-user"></i> Profile</a>
+            <a class="dropdown-item" href="{{ route('hotel-manager.profile.edit') }}">
+                <i class="fas fa-user me-2"></i>Profile
+            </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button onclick="event.preventDefault(); this.closest('form').submit();">
@@ -247,6 +249,10 @@
             class="{{ request()->routeIs('hotel-manager.revenue.index') ? 'active' : '' }}">
             <i class="fas fa-dollar-sign"></i> Hotel Revenue
         </a>
+        <a href="{{ route('hotel-manager.terms.edit') }}" 
+   class="{{ request()->routeIs('hotel-manager.terms.*') ? 'active' : '' }}">
+    <i class="fas fa-file-contract"></i> Terms & Conditions
+</a>
     </div>
 
     <div class="content">

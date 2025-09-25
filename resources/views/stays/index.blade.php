@@ -43,7 +43,6 @@
                             @endforeach
                         </select>
                     </div>
-
                     {{-- Facilities Filter --}}
                     <div x-data="{ showAll: false }">
                         <h4 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3 border-b dark:border-gray-700 pb-2">Facilities</h4>
@@ -61,14 +60,12 @@
                             </button>
                         @endif
                     </div>
-
                     <div class="pt-4 border-t dark:border-gray-700">
                         <button type="submit" class="w-full justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-black bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">Apply Filters</button>
                         <a href="{{ route('stays.index') }}" class="mt-2 w-full inline-flex justify-center py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">Reset</a>
                     </div>
                  </form>
             </aside>
-
             {{-- Main Content --}}
             <main class="lg:col-span-3">
                 @if($hotels->isEmpty())
@@ -80,14 +77,12 @@
                     <div class="space-y-6">
                         @foreach($hotels as $hotel)
                         <div class="bg-white dark:bg-gray-900 shadow-lg rounded-xl overflow-hidden md:flex transition-shadow duration-300 hover:shadow-2xl border dark:border-gray-800">
-
                             {{-- Image Section --}}
                             <div class="md:w-1/3">
                                 <img src="{{ $hotel->image ? asset('storage/' . $hotel->image) : 'https://placehold.co/600x400/1a1a1a/444444?text=DivyaDarshan' }}"
                                      alt="Image of {{ $hotel->name }}"
                                      class="h-full w-full object-cover">
                             </div>
-
                             {{-- Details Section --}}
                             <div class="p-6 md:w-2/3 flex flex-col justify-between">
                                 <div>
@@ -144,7 +139,7 @@
         </div>
     </div>
 
-    {{-- ✅ MOBILE: Filter Modal --}}
+    {{--  Filter Modal --}}
     <div x-show="filtersOpen" x-cloak class="fixed inset-0 z-50 flex lg:hidden" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
         <div @click="filtersOpen = false" class="fixed inset-0 bg-black bg-opacity-60"></div>
         <div @click.away="filtersOpen = false" class="relative bg-white dark:bg-gray-900 rounded-t-xl shadow-2xl w-full max-h-[85vh] flex flex-col mt-auto">
@@ -168,7 +163,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div x-data="{ showAll: true }"> {{-- Show all by default in modal --}}
+                    <div x-data="{ showAll: true }"> 
                         <h4 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3 border-b dark:border-gray-700 pb-2">Facilities</h4>
                         <div class="space-y-2">
                             @foreach($amenities as $amenity)

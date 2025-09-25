@@ -1,66 +1,196 @@
 @extends('layouts.hotel-manager')
 
 @section('content')
-<div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Hotel Revenue</h1>
+<style>
+    .page-title {
+        font-size: 26px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        background: #fff;
+        margin-bottom: 30px;
+    }
+
+    .summary-box {
+        padding: 20px;
+        border-radius: 10px;
+        background: #f8f9fa;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .summary-title {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .summary-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: flex-end;
+    }
+
+    .filter-group label {
+        font-weight: 500;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .filter-group input[type="date"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+    }
+
+    .btn-filter {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 16px;
+        font-size: 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .btn-filter:hover {
+        background-color: #0056b3;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+    .data-table thead th {
+        background: #f5f5f5;
+        padding: 12px;
+        font-weight: 600;
+        font-size: 13px;
+        text-align: center;
+        color: #555;
+    }
+
+    .data-table tbody tr {
+        background: #fafafa;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .data-table td {
+        padding: 12px;
+        text-align: center;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+        .filter-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <h1 class="page-title">Hotel Revenue</h1>
 
     {{-- Date Filter --}}
-    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-        <form action="{{ route('hotel-manager.revenue.index') }}" method="GET" class="flex flex-wrap items-center gap-4">
-                <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
-                <input type="date" id="start_date" name="start_date" value="{{ $startDate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-                <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
-                <input type="date" id="end_date" name="end_date" value="{{ $endDate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Filter</button>
+    <div class="card">
+        <form action="{{ route('hotel-manager.revenue.index') }}" method="GET">
+            <div class="filter-group">
+                <div>
+                    <label for="start_date">Start Date</label><br>
+                    <input type="date" id="start_date" name="start_date" value="{{ $startDate }}">
+                </div>
+
+                <div>
+                    <label for="end_date">End Date</label><br>
+                    <input type="date" id="end_date" name="end_date" value="{{ $endDate }}">
+                </div>
+
+                <div>
+                    <button type="submit" class="btn-filter">Filter</button>
+                </div>
             </div>
         </form>
     </div>
+
     {{-- Revenue Summary --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Total Revenue</h3>
-            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">₹{{ number_format($totalRevenue, 2) }}</p>
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="summary-box">
+                <div class="summary-title">Total Revenue</div>
+                <div class="summary-value">₹{{ number_format($totalRevenue, 2) }}</div>
+            </div>
         </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Total Bookings</h3>
-            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $totalBookings }}</p>
+        <div class="col-md-4 mb-3">
+            <div class="summary-box">
+                <div class="summary-title">Total Bookings</div>
+                <div class="summary-value">{{ $totalBookings }}</div>
+            </div>
         </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Avg. Booking Value</h3>
-            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">₹{{ number_format($averageBookingValue, 2) }}</p>
+        <div class="col-md-4 mb-3">
+            <div class="summary-box">
+                <div class="summary-title">Avg. Booking Value</div>
+                <div class="summary-value">₹{{ number_format($averageBookingValue, 2) }}</div>
+            </div>
         </div>
     </div>
 
-    {{-- Bookings Table --}}
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md overflow-x-auto">
-        <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Completed Bookings in Period</h2>
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Booking ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Guest</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Hotel</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Check-in</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse ($bookings as $booking)
+    {{-- Completed Bookings Table --}}
+    <div class="card">
+        <h2 class="mb-3" style="font-size: 20px; font-weight: 600;">Completed Bookings in Period</h2>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#{{ $booking->id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $booking->user->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $booking->hotel->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ \Carbon\Carbon::parse($booking->check_in_date)->format('d M, Y') }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800 dark:text-white">₹{{ number_format($booking->total_amount, 2) }}</td>
+                        <th>Booking ID</th>
+                        <th>Guest</th>
+                        <th>Hotel</th>
+                        <th>Check-in</th>
+                        <th>Amount</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No completed bookings found for this period.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        <div class="mt-4">
+                </thead>
+                <tbody>
+                    @forelse ($bookings as $booking)
+                        <tr>
+                            <td>#{{ $booking->id }}</td>
+                            <td>{{ $booking->user->name }}</td>
+                            <td>{{ $booking->hotel->name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($booking->check_in_date ,)->format('d M, Y') }}</td>
+                            <td>₹{{ number_format($booking->total_amount, 2) }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-muted text-center py-3">
+                                No completed bookings found for this period.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
             {{ $bookings->appends(request()->query())->links() }}
         </div>
     </div>
