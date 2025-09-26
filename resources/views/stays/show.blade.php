@@ -290,12 +290,12 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Available Rooms</h2>
                 <div class="grid gap-4 max-h-[65vh] overflow-y-auto pr-2">
                     @forelse($hotel->rooms as $room)
-                        <div @click="
-                                roomModal = true;
-                                selectedRoom = {{ Js::from($room) }};
-                                initRoomSwiper()
-                             "
-                             class="border border-gray-200 rounded-lg p-4 hover:border-indigo-500 hover:shadow-md transition cursor-pointer">
+                    <div @click='
+        roomModal = true;
+        selectedRoom = @json($room);
+        initRoomSwiper()
+    '
+    class="border border-gray-200 rounded-lg p-4 hover:border-indigo-500 hover:shadow-md transition cursor-pointer">
                             <h3 class="font-bold text-lg text-gray-900">{{ $room->type }}</h3>
                             <p class="text-sm text-gray-500">Capacity: {{ $room->capacity }} guests</p>
 

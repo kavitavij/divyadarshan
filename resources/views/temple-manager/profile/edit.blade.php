@@ -31,34 +31,41 @@
                         {{-- Email --}}
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="email" name="email" id="email" class="form-control" value="{{ $user->email }}" disabled>
+                            <div class="form-text">Your email address cannot be changed. Please contact the administrator to update it.</div>
                         </div>
                         
                         <hr class="my-4">
-                        <p class="text-muted">Leave the fields below blank to keep your current password.</p>
+    <p class="text-muted">To change your password, please fill out all three fields below. Otherwise, leave them blank.</p>
 
-                        {{-- New Password --}}
-                        <div class="mb-3">
-                            <label for="password" class="form-label">New Password</label>
-                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror">
-                             @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+    {{-- Current Password --}}
+    <div class="mb-3">
+        <label for="current_password" class="form-label">Current Password</label>
+        <input type="password" name="current_password" id="current_password" class="form-control @error('current_password') is-invalid @enderror">
+        @error('current_password')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
 
-                        {{-- Confirm New Password --}}
-                        <div class="mb-3">
-                            <label for="password_confirmation" class="form-label">Confirm New Password</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
-                        </div>
+    {{-- New Password --}}
+    <div class="mb-3">
+        <label for="password" class="form-label">New Password</label>
+        <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror">
+         @error('password')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
 
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">Update Profile</button>
-                        </div>
-                    </form>
+    {{-- Confirm New Password --}}
+    <div class="mb-3">
+        <label for="password_confirmation" class="form-label">Confirm New Password</label>
+        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
+    </div>
+
+    <div class="text-end mt-4">
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+    </div>
+</form>
                 </div>
             </div>
         </div>

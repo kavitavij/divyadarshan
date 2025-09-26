@@ -296,6 +296,9 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
 Route::patch('/terms/update', [App\Http\Controllers\HotelManager\TermsController::class, 'update'])->name('terms.update');
 Route::get('/profile', [App\Http\Controllers\HotelManager\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\HotelManager\ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('/notifications', [\App\Http\Controllers\HotelManager\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notificationId}/read', [\App\Http\Controllers\HotelManager\NotificationController::class, 'markAsRead'])->name('notifications.read');
 });
 
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {

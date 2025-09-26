@@ -14,6 +14,15 @@
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm h-100 border-0">
                 <div class="card-body text-center">
+                    <h5 class="card-title">Managers</h5>
+                    <p class="text-muted">Add and view all managers.</p>
+                    <a href="{{ route('admin.managers.index') }}" class="btn btn-primary">Manage Managers</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body text-center">
                     <h5 class="card-title">Revenue</h5>
                     <p class="text-muted">View Revenue of website</p>
                     <a href="{{ route('admin.revenue.index') }}" class="btn btn-primary">Website Revenue</a>
@@ -56,15 +65,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100 border-0">
-            <div class="card-body text-center">
-                <h5 class="card-title">Managers</h5>
-                <p class="text-muted">Add and view all managers.</p>
-                <a href="{{ route('admin.managers.index') }}" class="btn btn-primary">Manage Managers</a>
-            </div>
-        </div>
-    </div>
+        
     </div>
     {{-- Temple Management Section --}}
     <h5 class="mt-4 mb-3 text-success">Temple Management</h5>

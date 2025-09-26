@@ -285,37 +285,44 @@ class ProfileController extends Controller
     }
     public function cancelStayBooking(StayBooking $booking): RedirectResponse
 {
-    // 1. Authorization: Ensure the logged-in user owns this booking
+    // 1. Authorization
     if (auth()->id() !== $booking->user_id) {
         abort(403, 'Unauthorized action.');
     }
 
-    // 2. Business Rule: Check if the booking is in a cancellable state
-    if (strtolower($booking->status) !== 'confirmed' || !now()->startOfDay()->isBefore($booking->check_in_date)) {
+    // 2. Business Rule
+    // This now checks if today's date is AFTER the check-in date
+if (strtolower($booking->status) !== 'confirmed' || now()->startOfDay()->isAfter($booking->check_in_date)) {
         return back()->with('error', 'This booking can no longer be cancelled.');
     }
 
-    // 3. Update the booking status to 'Cancelled'
+    // 3. Update the booking status
     $booking->status = 'Cancelled';
 
-    // 4. If the booking was paid online, mark it for a refund.
+    // 4. Update refund status
     if ($booking->payment_method === 'online') {
         $booking->refund_status = 'Pending';
     }
 
-    // 5. Save the changes to the database
+    // 5. Save the changes
     $booking->save();
 
-    // 6. Conditionally redirect based on payment method
+    // --- NOTIFICATION LOGIC (without try-catch for debugging) ---
+    $booking->load('hotel.manager');
+    $manager = $booking->hotel->manager;
+
+    if ($manager) {
+        $manager->notify(new \App\Notifications\BookingCancelled($booking));
+    }
+    // --- END OF NOTIFICATION LOGIC ---
+
+    // 6. Conditional redirect
     if ($booking->payment_method === 'online') {
-        // If paid online, redirect to the refund request form
         return redirect()->route('profile.my-stays.request-refund', $booking)
-                       ->with('success', 'Booking cancelled. Please provide your bank details to process the refund.');
+                         ->with('success', 'Booking cancelled. Please provide your bank details to process the refund.');
     } else {
-        // If 'Pay at Hotel', just redirect back to the list
         return redirect()->route('profile.my-stays.index')
-                       ->with('success', 'Your booking has been successfully cancelled.');
+                         ->with('success', 'Your booking has been successfully cancelled.');
     }
 }
 }
-

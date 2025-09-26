@@ -187,4 +187,58 @@
         @endif
     </div>
 </div>
+<div class="container">
+    @if(session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+    @if(session('success'))
+        <div class="alert alert-success" role="alert">
+            {{ session('success') }}
+        </div>
+    @endif
+</div>
+{{-- Success Modal --}}
+@if (session('success'))
+    <div x-data="{ showModal: true }"
+         x-show="showModal"
+         x-on:keydown.escape.window="showModal = false"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60"
+         x-cloak>
+        
+        <div @click.away="showModal = false"
+             x-show="showModal"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-90"
+             x-transition:enter-end="opacity-100 scale-100"
+             class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 text-center">
+
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mt-4">Success!</h3>
+            
+            <p class="text-gray-600 dark:text-gray-300 mt-2">
+                {{ session('success') }}
+            </p>
+
+            <div class="mt-6">
+                <button @click="showModal = false" class="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+@endif
+
+<div class="bg-gray-100 dark:bg-gray-900 min-h-screen py-10">
+    <div class="container mx-auto px-4">
+        {{-- The rest of your page content --}}
+        {{-- ... --}}
+    </div>
+</div>
 @endsection

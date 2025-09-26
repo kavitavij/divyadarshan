@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <link rel="icon" type="image/png" href="public/images/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -117,6 +118,9 @@
             <li><a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                 <i class="fa-solid fa-gauge"></i> <span>Dashboard</span></a></li>
 
+            <li><a class="nav-link {{ request()->routeIs('admin.managers.*') ? 'active' : '' }}" href="{{ route('admin.managers.index') }}">
+                <i class="fa-solid fa-user"></i> <span>View Managers</span></a></li> 
+
             <li><a class="nav-link {{ request()->routeIs('admin.revenue.*') ? 'active' : '' }}" href="{{ route('admin.revenue.index') }}">
                 <i class="fas fa-dollar-sign"></i> <span>Revenue</span></a></li>
 
@@ -131,6 +135,8 @@
 
             <li><a class="nav-link {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}" href="{{ route('admin.complaints.index') }}">
                 <i class="fa-solid fa-exclamation-circle"></i> <span>Complaints</span></a></li>
+   
+            
             {{-- Temple Management --}}
             <h class="px-3" text-color >Temple Management</h>
             <li><a class="nav-link {{ request()->routeIs('admin.temples.*') ? 'active' : '' }}" href="{{ route('admin.temples.index') }}">
@@ -197,7 +203,7 @@
             @yield('content')
         </div>
     </main>
-
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const sidebar = document.getElementById('sidebar');

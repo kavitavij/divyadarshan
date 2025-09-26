@@ -314,8 +314,15 @@ class CartController extends Controller
         if ($stayBooking) {
             try {
                 $bookingWithDetails = StayBooking::with('room.hotel.user')->find($stayBooking->id);
+                // This is the UPDATED code
                 if ($bookingWithDetails && $bookingWithDetails->room->hotel->user) {
-                    Mail::to($bookingWithDetails->room->hotel->user->email)->send(new StayBookingNotification($bookingWithDetails));
+                    $manager = $bookingWithDetails->room->hotel->user;
+
+                    // Send the original email notification
+                    Mail::to($manager->email)->send(new StayBookingNotification($bookingWithDetails));
+
+                    // ALSO send the new database notification for the bell icon
+                    $manager->notify(new \App\Notifications\NewHotelBooking($bookingWithDetails));
                 }
             } catch (Exception $e) {
                 Log::error("Failed to send pay-at-hotel notification for booking ID {$stayBooking->id}: " . $e->getMessage());
@@ -450,9 +457,15 @@ class CartController extends Controller
                             $bookingWithDetails = StayBooking::with('room.hotel.user')->find($stayBooking->id);
 
                             // Check if the manager's user record exists
+                            // This is the UPDATED code
                             if ($bookingWithDetails && $bookingWithDetails->room->hotel->user) {
-                                $managerEmail = $bookingWithDetails->room->hotel->user->email;
-                                Mail::to($managerEmail)->send(new StayBookingNotification($bookingWithDetails));
+                                $manager = $bookingWithDetails->room->hotel->user;
+                                
+                                // Send the original email notification
+                                Mail::to($manager->email)->send(new StayBookingNotification($bookingWithDetails));
+                                
+                                // ALSO send the new database notification for the bell icon
+                                $manager->notify(new \App\Notifications\NewHotelBooking($bookingWithDetails));
                             } else {
                                 Log::error("Could not find manager email for stay booking ID: {$stayBooking->id}");
                             }

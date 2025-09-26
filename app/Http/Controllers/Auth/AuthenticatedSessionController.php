@@ -23,7 +23,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validate login fields
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -35,32 +34,22 @@ class AuthenticatedSessionController extends Controller
 
             $user = Auth::user();
 
-            // --- CORRECTED REDIRECT LOGIC ---
-            // Redirect by role, using the exact names from your database and routes file.
             switch ($user->role) {
                 case 'admin':
-                    // Assuming your admin route is named 'admin.dashboard'
                     return redirect()->route('admin.dashboard');
 
                 case 'temple_manager':
-                    // CORRECTED: Route name changed to 'temple-manager.dashboard'
                     return redirect()->route('temple-manager.dashboard');
 
                 case 'hotel_manager':
-                    // CORRECTED: Route name changed to 'hotel-manager.dashboard'
                     return redirect()->route('hotel-manager.dashboard');
 
-                case 'driver':
-                     // Assuming your driver route is named 'driver.dashboard'
-                    return redirect()->route('driver.dashboard');
 
                 default:
-                    // Default redirect for regular users
                     return redirect()->route('home');
             }
         }
 
-        // If login fails
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);

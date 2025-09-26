@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Temple Manager Dashboard</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1"W/>
     <link rel="icon" href="{{ asset('favicon.ico') }}"/>
     <link
