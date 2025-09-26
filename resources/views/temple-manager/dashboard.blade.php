@@ -53,7 +53,7 @@
                 <p>Seva Bookings</p>
             </div>
             <div class="widget">
-                <h3>{{ $bookings->count() }}</h3>
+                <h3>{{ $allTimeBookingCount }}</h3>
                 <p>All-Time Bookings</p>
             </div>
         </div>

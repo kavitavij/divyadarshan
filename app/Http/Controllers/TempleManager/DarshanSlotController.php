@@ -68,7 +68,7 @@ class DarshanSlotController extends Controller
             'slot_date' => 'required|date',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
-            'total_capacity' => 'required|integer|min:1',
+            'total_capacity' => 'required|integer|min:' . $slot->booked_capacity,
         ]);
 
         $slot->update($request->all());
@@ -81,6 +81,9 @@ class DarshanSlotController extends Controller
     {
         if ($slot->temple_id !== $this->getManagerTemple()->id) {
             abort(403);
+        }
+        if ($slot->booked_capacity > 0) {
+            return redirect()->back()->with('error', 'Cannot delete a slot that has active bookings.');
         }
         $slotDate = $slot->slot_date->format('Y-m-d');
         $slot->delete();
