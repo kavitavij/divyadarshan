@@ -417,7 +417,10 @@ class CartController extends Controller
                             'darshan_slot_id' => $isDefaultSlot ? null : $slotId,
                             'default_darshan_slot_id' => $isDefaultSlot ? $slotId : null,
                         ]);
-
+                        $booking->load('temple.manager');
+                        if ($booking->temple && $booking->temple->manager) {
+                            $booking->temple->manager->notify(new \App\Notifications\NewDarshanBooking($booking));
+                        }
                         foreach ($details['devotees'] as $devoteeData) {
                             $booking->devotees()->create($devoteeData);
                         }
@@ -476,7 +479,7 @@ class CartController extends Controller
                     }
                     // Handle Seva
                     else if ($item['type'] === 'seva') {
-                        SevaBooking::create([
+                        $sevaBooking = SevaBooking::create([ 
                             'user_id'  => $user->id,
                             'order_id' => $order->id,
                             'seva_id'  => $item['id'],
@@ -484,7 +487,19 @@ class CartController extends Controller
                             'quantity' => $item['quantity'],
                             'status'   => 'Completed',
                         ]);
+                        try {
+                            // Load the relationships needed to find the manager
+                            $sevaBooking->load('seva.temple.manager');
+                            
+                            // Check if the manager exists and send the notification
+                            if ($sevaBooking->seva && $sevaBooking->seva->temple && $sevaBooking->seva->temple->manager) {
+                                $sevaBooking->seva->temple->manager->notify(new \App\Notifications\NewSevaBooking($sevaBooking));
+                            }
+                        } catch (Exception $e) {
+                            Log::error("Failed to send Seva booking notification for booking ID {$sevaBooking->id}: " . $e->getMessage());
+                        }
                     }
+
                     // Handle eBook
                     else if ($item['type'] === 'ebook') {
                         $user->ebooks()->attach($item['id']);

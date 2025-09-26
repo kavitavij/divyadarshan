@@ -322,5 +322,6 @@ Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->na
     Route::get('/revenue', [TempleRevenueController::class, 'index'])->name('revenue.index');
     Route::get('/profile', [App\Http\Controllers\TempleManager\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\TempleManager\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/notifications', [\App\Http\Controllers\TempleManager\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notificationId}/read', [\App\Http\Controllers\TempleManager\NotificationController::class, 'markAsRead'])->name('notifications.read');
 });
-

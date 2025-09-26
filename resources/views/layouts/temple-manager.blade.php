@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <title>Temple Manager Dashboard</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1"W/>
-    <link rel="icon" href="{{ asset('favicon.ico') }}"/>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"/>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     @stack('styles')
 
     <style>
@@ -172,37 +169,36 @@
 
         <div class="logo" aria-label="Temple Manager Dashboard">Temple Manager</div>
 
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            {{-- (NEW) Notification Bell --}}
             <div class="dropdown">
-                <button
-                    class="btn btn-sm btn-outline-light dropdown-toggle"
-                    type="button"
-                    id="userMenuButton"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    <i class="fas fa-user-circle"></i> Account
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuButton">
-                <li>
-    <a class="dropdown-item" href="{{ route('temple-manager.profile.edit') }}">
-        <i class="fas fa-user me-2"></i>Profile
-    </a>
-</li>
-<li><hr class="dropdown-divider"></li>
-<li>
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit" class="dropdown-item text-danger">
-            <i class="fas fa-sign-out-alt me-2"></i>Logout
-        </button>
-    </form>
-</li>
-                </ul>
+            <button class="btn btn-link text-white p-0 position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 18px;">
+                <i class="fas fa-bell"></i>
+                <span id="notification-count" class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 small rounded-circle" style="display: none;"></span>
+            </button>
+            <div id="notificationDropdown" class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                {{-- Populated by JS --}}
             </div>
         </div>
-    </nav>
 
+        {{-- User Account Dropdown --}}
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user-circle"></i> Account
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ route('temple-manager.profile.edit') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
     {{-- Sidebar --}}
     <nav class="sidebar" id="sidebar" aria-label="Sidebar menu">
         <a href="{{ route('temple-manager.dashboard') }}" 
@@ -237,29 +233,85 @@
 
     {{-- Scripts --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous" defer></script>
+    <script>
+    function toggleSidebar(event) {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+        const expanded = event.currentTarget.getAttribute('aria-expanded') === 'true';
+        event.currentTarget.setAttribute('aria-expanded', !expanded);
+    }
 
-    <script defer>
-        function toggleSidebar(event) {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const btn = event.currentTarget;
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('overlay').classList.remove('active');
+        const toggleBtn = document.querySelector('.menu-toggle');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', false);
+    }
+    
+    // --- NOTIFICATION DATA LOGIC ---
+    const notificationCountEl = document.getElementById('notification-count');
+    const notificationDropdownEl = document.getElementById('notificationDropdown');
 
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-
-            // Update aria-expanded on button for accessibility
-            const expanded = btn.getAttribute('aria-expanded') === 'true';
-            btn.setAttribute('aria-expanded', !expanded);
+    function formatTimeAgo(dateString) {
+        const now = new Date();
+        const notificationDate = new Date(dateString);
+        const secondsAgo = Math.round((now - notificationDate) / 1000);
+        if (secondsAgo < 60) { return "a few seconds ago"; }
+        if (secondsAgo < 3600) {
+            const minutes = Math.floor(secondsAgo / 60);
+            return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
         }
+        return notificationDate.toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
+    }
 
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('overlay').classList.remove('active');
+    function fetchNotifications() {
+        fetch('{{ route("temple-manager.notifications.index") }}')
+            .then(response => response.json())
+            .then(notifications => updateNotificationUI(notifications));
+    }
 
-            // Reset aria-expanded on toggle button
-            const toggleBtn = document.querySelector('.menu-toggle');
-            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', false);
+    function markAsRead(notificationId) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        fetch(`/temple-manager/notifications/${notificationId}/read`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        }).then(response => { if (response.ok) fetchNotifications(); });
+    }
+
+    function updateNotificationUI(notifications) {
+        if (notifications.length > 0) {
+            notificationCountEl.innerText = notifications.length;
+            notificationCountEl.style.display = 'block';
+        } else {
+            notificationCountEl.style.display = 'none';
         }
+        let html = '<h6 class="dropdown-header">Notifications</h6>';
+        if (notifications.length === 0) {
+            html += '<li><p class="dropdown-item text-muted text-center mb-0">No new notifications</p></li>';
+        } else {
+            notifications.forEach(n => {
+                const date = formatTimeAgo(n.created_at);
+                html += `<li>
+                           <a class="dropdown-item" href="${n.data.url}">
+                               <div class="d-flex flex-column">
+                                   <span class="fw-normal">${n.data.message}</span>
+                                   <small class="text-muted">${date}</small>
+                               </div>
+                           </a>
+                         </li>
+                         <li>
+                           <button onclick="markAsRead('${n.id}')" class="dropdown-item text-primary text-center small py-1">Mark as read</button>
+                         </li>
+                         <li><hr class="dropdown-divider my-1"></li>`;
+            });
+        }
+        notificationDropdownEl.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchNotifications();
+        setInterval(fetchNotifications, 15000);
+    });
     </script>
 
     @stack('scripts')
