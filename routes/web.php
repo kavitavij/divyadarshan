@@ -227,7 +227,10 @@ Route::delete('/profile/my-stays/{booking}/cancel', [ProfileController::class, '
         Route::get('/donations/{donation}/receipt', [ProfileController::class, 'downloadDonationReceipt'])->name('donations.receipt.download');
 Route::get('/stays/bookings/{stayBooking}/review', [ReviewController::class, 'create'])->name('reviews.create');
 Route::post('/stays/bookings/{stayBooking}/review', [ReviewController::class, 'store'])->name('reviews.store');
-    });
+Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/{notificationId}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+});
+
 
 
 

@@ -28,6 +28,7 @@ use Illuminate\Support\Str;
 use App\Models\DefaultDarshanSlot;
 use App\Models\DarshanSlot;
 use App\Mail\OrderConfirmation;
+use App\Notifications\OrderConfirmationNotification;
 class CartController extends Controller
 {
     public function addSeva(Request $request)
@@ -524,6 +525,7 @@ class CartController extends Controller
             if ($finalOrder) {
                 // This sends the confirmation to the customer
                 Mail::to($user->email)->send(new OrderConfirmation($finalOrder));
+                $user->notify(new OrderConfirmationNotification($finalOrder));
             }
 
             Payment::create([

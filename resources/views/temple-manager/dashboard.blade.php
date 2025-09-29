@@ -27,13 +27,13 @@
                 <h5 class="mb-3">⚡ Quick Actions</h5>
                 <div class="btn-group gap-2 flex-wrap">
                     <a href="{{ route('temple-manager.temple.edit') }}" class="btn btn-outline-primary">✏️ Edit Temple</a>
-                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#termsModal">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#termsModal">
                         📄 Manage T&C
                     </button>
-                    <a href="{{ route('temple-manager.slots.index') }}" class="btn btn-outline-dark">🗓️ Manage Slots</a>
-                    <a href="{{ route('temple-manager.sevas.index') }}" class="btn btn-outline-secondary">🙏 Manage Sevas</a>
-                    <a href="{{ route('temple-manager.bookings.index') }}" class="btn btn-outline-success">📖 View Bookings</a>
-                    <a href="{{ route('temple-manager.gallery.index') }}" class="btn btn-outline-success">Gallery</a>
+                    <a href="{{ route('temple-manager.slots.index') }}" class="btn btn-outline-primary">🗓️ Manage Slots</a>
+                    <a href="{{ route('temple-manager.sevas.index') }}" class="btn btn-outline-primary">🙏 Manage Sevas</a>
+                    <a href="{{ route('temple-manager.bookings.index') }}" class="btn btn-outline-primary">📖 View Bookings</a>
+                    <a href="{{ route('temple-manager.gallery.index') }}" class="btn btn-outline-primary">Gallery</a>
                 </div>
             </div>
         </div>

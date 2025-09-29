@@ -167,6 +167,7 @@
                         <th>Guest</th>
                         <th>Hotel</th>
                         <th>Check-in</th>
+                        <th>Check-out</th>
                         <th>Amount</th>
                     </tr>
                 </thead>
@@ -177,6 +178,13 @@
                             <td>{{ $booking->user->name }}</td>
                             <td>{{ $booking->hotel->name }}</td>
                             <td>{{ \Carbon\Carbon::parse($booking->check_in_date ,)->format('d M, Y') }}</td>
+                            <td>
+                                @if($booking->check_out_date)
+                                    {{ \Carbon\Carbon::parse($booking->check_out_date)->format('d M, Y') }}
+                                @else
+                                    <span class="text-warning">Pending</span>
+                                @endif
+                            </td>
                             <td>₹{{ number_format($booking->total_amount, 2) }}</td>
                         </tr>
                     @empty

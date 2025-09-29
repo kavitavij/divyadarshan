@@ -31,9 +31,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 align-middle">
-                                    {{-- ======================================================= --}}
-                                    {{-- START: DESKTOP PRICE LOGIC WITH DISCOUNTS           --}}
-                                    {{-- ======================================================= --}}
+                                
                                     @if ($item['type'] === 'ebook' && isset($item['original_price']))
                                         <div>
                                             <span class="font-bold">₹{{ number_format($item['price'], 2) }}</span>
@@ -51,9 +49,6 @@
                                         ₹{{ number_format($item['price'], 2) }}
                                         @if($item['type'] === 'stay') <span class="text-xs text-gray-500">/ night</span> @endif
                                     @endif
-                                    {{-- ======================================================= --}}
-                                    {{-- END: DESKTOP PRICE LOGIC                            --}}
-                                    {{-- ======================================================= --}}
                                 </td>
                                 <td class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 text-center align-middle">
                                     @if ($item['type'] === 'seva' || $item['type'] === 'ebook')
@@ -92,9 +87,6 @@
                         <div class="font-semibold text-lg">{{ $item['name'] }}</div>
                         <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Type: {{ ucfirst($item['type']) }}</div>
 
-                        {{-- ======================================================= --}}
-                        {{-- START: MOBILE PRICE LOGIC WITH DISCOUNTS              --}}
-                        {{-- ======================================================= --}}
                         <div class="mt-2 text-sm">
                             <span class="font-medium">Price: </span>
                             @if ($item['type'] === 'ebook' && isset($item['original_price']))
@@ -111,9 +103,6 @@
                                 <span class="font-medium">₹{{ number_format($item['price'], 2) }}</span>
                             @endif
                         </div>
-                        {{-- ======================================================= --}}
-                        {{-- END: MOBILE PRICE LOGIC                               --}}
-                        {{-- ======================================================= --}}
 
                         <div class="mt-1 text-sm">
                             Quantity:

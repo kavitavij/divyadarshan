@@ -9,11 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
+    
+    <style>* {
+            box-sizing: border-box;}
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
@@ -199,7 +197,6 @@
 </head>
 
 <body>
-    {{-- Add this meta tag in your <head> section to help with AJAX requests --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="navbar">
@@ -214,7 +211,6 @@
                     <span id="notification-count" class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 small rounded-circle" style="display: none;"></span>
                 </button>
                 <div class="dropdown" id="notificationDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
-                    {{-- Notifications will be inserted here by JavaScript --}}
                 </div>
             </div>
 
@@ -244,13 +240,10 @@
         <a href="{{ route('hotel-manager.revenue.index') }}" class="{{ request()->routeIs('hotel-manager.revenue.index') ? 'active' : '' }}"><i class="fas fa-dollar-sign"></i> Hotel Revenue</a>
         <a href="{{ route('hotel-manager.terms.edit') }}" class="{{ request()->routeIs('hotel-manager.terms.*') ? 'active' : '' }}"><i class="fas fa-file-contract"></i> Terms & Conditions</a>
     </div>
-
     <div class="content">@yield('content')</div>
     <div class="footer">&copy; {{ date('Y') }} <a href="/">DivyaDarshan</a>. All rights reserved.</div>
-
     <script src="https://cdn.jsdelivrnet/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     
-    {{-- UPDATED JAVASCRIPT --}}
     <script>
     function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); }
     function toggleUserMenu() { document.getElementById("userMenu").classList.toggle("active"); }
@@ -263,15 +256,8 @@
         if (userMenu && !userMenu.contains(e.target)) { userMenu.classList.remove("active"); }
         if (notifBell && !notifBell.contains(e.target)) { notifBell.classList.remove("active"); }
     });
-
-    // --- NOTIFICATION LOGIC ---
     const notificationCountEl = document.getElementById('notification-count');
     const notificationDropdownEl = document.getElementById('notificationDropdown');
-
-    /**
-     * Converts a date string into a relative time format.
-     * e.g., "5 minutes ago" or a full date if older than an hour.
-     */
     function formatTimeAgo(dateString) {
         const now = new Date();
         const notificationDate = new Date(dateString);

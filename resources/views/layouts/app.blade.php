@@ -6,6 +6,7 @@
     <title>DivyaDarshan</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <meta name="csrf-token" content="{{ csrf_token() }}"> 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spotlight.js@0.7.8/dist/spotlight.min.css" />
@@ -122,8 +123,7 @@
 <body x-data="appState()" x-init="initCart()"
     :class="{ 'overflow-hidden': loginModal || cartOpen || isMobileMenuOpen }"
     class="bg-gray-100 font-sans text-gray-800 dark:bg-gray-900">
-
-<header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
+<!-- <header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
     <div class="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-4">
 
         <div class="flex-shrink-0">
@@ -184,6 +184,33 @@
                     <img src="{{ asset('storage/logo/login.png') }}" alt="Login" class="h-10 w-auto">
                 </a>
             @else
+            @auth
+                <div x-data="userNotificationBell()" x-init="init()" class="relative">
+                    <button @click="isOpen = !isOpen" class="relative text-[#ccc] hover:text-yellow-400 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        <template x-if="unreadCount > 0">
+                            <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" x-text="unreadCount"></span>
+                        </template>
+                    </button>
+                    <div x-show="isOpen" @click.away="isOpen = false" x-transition class="absolute mt-2 w-80 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                        <div class="p-3 font-bold border-b border-gray-700">Notifications</div>
+                        <div class="max-h-80 overflow-y-auto">
+                            <template x-if="notifications.length === 0">
+                                <div class="p-4 text-center text-gray-400">No new notifications</div>
+                            </template>
+                            <template x-for="n in notifications" :key="n.id">
+                                <div class="p-3 border-b border-gray-700 hover:bg-gray-700">
+                                    <a :href="n.data.url" class="text-sm text-gray-300 d-block mb-1" x-text="n.data.message"></a>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-500" x-text="formatTimeAgo(n.created_at)"></span>
+                                        <button @click="markAsRead(n.id)" class="text-xs text-blue-400 hover:underline">Mark as read</button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            @endauth
                 <div x-data="{ open: false }" @click.away="open = false" class="relative">
                     <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
                         <span>{{ Auth::user()->name }}</span>
@@ -243,7 +270,145 @@
             </button>
         </div>
     </div>
-</header>
+</header> -->
+<header class="bg-[#910404fa] text-[#f1e8e8] sticky top-0 z-50 font-poppins">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-4">
+
+        <div class="flex-shrink-0">
+            <a href="/" class="flex items-center gap-2 font-bold text-yellow-400">
+                <img src="{{ asset('images/logoo.png') }}"
+                     alt="DivyaDarshan Logo"
+                     class="h-14 w-14 object-contain">
+                <span class="text-2xl">DivyaDarshan</span>
+            </a>
+        </div>
+        <nav class="hidden md:flex flex-1 justify-center items-center gap-6">
+            <a href="/" class="hover:text-yellow-400 transition">Home</a>
+            <a href="/about" class="hover:text-yellow-400 transition">About</a>
+
+            <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition">
+                    Temples
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div x-show="open" x-transition class="absolute mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                    @foreach ($allTemples as $temple)
+                        <a href="{{ route('temples.show', $temple->id) }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">{{ $temple->name }}</a>
+                    @endforeach
+                </div>
+            </div>
+            <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                <button @click="open = !open" class="flex items-center gap-1 hover:text-yellow-400 transition">
+                    Online Services
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div x-show="open" x-transition class="absolute mt-2 w-56 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                    <a href="{{ route('booking.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Darshan Booking</a>
+                    <a href="{{ route('sevas.booking.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Sevas</a>
+                    <a href="{{ route('stays.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Accommodation Booking</a>
+                    <a href="{{ route('donations.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Donations</a>
+                    <a href="{{ route('ebooks.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Ebooks</a>
+                </div>
+            </div>
+        </nav>
+        <div class="hidden md:flex items-center gap-4">
+            <div class="translate-container flex items-center gap-2 ml-4">
+                <span class="globe-icon text-yellow-400 text-lg">Hi/En</span>
+                <div id="google_translate_element" class="inline-block"></div>
+            </div>
+            <button @click="spiritualHelpModal = true" class="px-5 py-2 bg-white text-red-600 rounded-full font-semibold shadow hover:bg-red-600 hover:text-white transition">Get Spiritual help</button>
+            @guest
+                <a href="javascript:void(0)" @click="loginModal = true" class="flex items-center gap-2 hover:opacity-80 transition">
+                    <img src="{{ asset('storage/logo/login.png') }}" alt="Login" class="h-10 w-auto">
+                </a>
+            @else
+                <div x-data="userNotificationBell()" x-init="init()" class="relative">
+                    <button @click="isOpen = !isOpen" class="relative text-[#ccc] hover:text-yellow-400 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        <template x-if="unreadCount > 0">
+                            <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" x-text="unreadCount"></span>
+                        </template>
+                    </button>
+                    <div x-show="isOpen" @click.away="isOpen = false" x-transition class="absolute right-0 mt-2 w-80 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-50" style="display:none;">
+                        <div class="p-3 font-bold border-b border-gray-700">Notifications</div>
+                        <div class="max-h-80 overflow-y-auto">
+                            <template x-if="notifications.length === 0">
+                                <div class="p-4 text-center text-gray-400">No new notifications</div>
+                            </template>
+                            <template x-for="n in notifications" :key="n.id">
+                                <div class="p-3 border-b border-gray-700 hover:bg-gray-700">
+                                    <a :href="n.data.url" class="text-sm text-gray-300 block mb-1" x-text="n.data.message"></a>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-500" x-text="formatTimeAgo(n.created_at)"></span>
+                                        <button @click="markAsRead(n.id)" class="text-xs text-blue-400 hover:underline flex-shrink-0 ml-2">Mark as read</button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                
+                {{-- User Menu --}}
+                <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                    <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
+                        <span>{{ Auth::user()->name }}</span>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40" style="display:none;">
+                        @if (Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Admin Dashboard</a>
+                        @endif
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Profile</a>
+                        <a href="{{ route('cart.view') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Cart</a>
+                        <a href="{{ route('profile.ebooks') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My ebooks</a>
+                        <a href="{{ route('profile.my-orders.index') }}" class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My Orders</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-[#0d0d0d]">Log Out</button>
+                        </form>
+                    </div>
+                </div>
+            @endauth
+            @auth
+                <a href="{{ route('cart.view') }}" class="relative text-[#ccc] hover:text-yellow-400 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    @if (session('cart') && count(session('cart')) > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ count(session('cart')) }}
+                        </span>
+                    @endif
+                </a>
+            @endauth
+        </div>
+        {{-- MOBILE ACTION ICONS --}}
+        <div class="flex items-center gap-4 md:hidden">
+            @guest
+                <a href="javascript:void(0)" @click="loginModal = true">
+                    <img src="{{ asset('storage/logo/login.png') }}" alt="Login" class="h-8 w-auto">
+                </a>
+            @endguest
+            @auth
+                <a href="{{ route('cart.view') }}" class="relative text-[#ccc] hover:text-yellow-400 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    @if (session('cart') && count(session('cart')) > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ count(session('cart')) }}</span>
+                    @endif
+                </a>
+            @endauth
+            <button @click="isMobileMenuOpen = true" class="text-[#ccc] hover:text-yellow-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</header> 
     {{-- Mobile Responsive --}}
     <div x-show="isMobileMenuOpen" x-cloak class="fixed inset-0 z-[100] flex"
      x-transition:enter="transition ease-out duration-300"
@@ -754,7 +919,6 @@
         </div>
     </div>
 </div>
-
 @push('styles')
 <style>
     .custom-scrollbar::-webkit-scrollbar {
@@ -856,7 +1020,61 @@ s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
+// End of Tawk.to Script
+function appState() {
+        return {
+            isMobileMenuOpen: false,
+            loginModal: false,
+            modalView: 'login',
+            spiritualHelpModal: false,
+            cartOpen: false,
+            cartItems: [],
+            total: 0,
+            initCart() { /* ... */ },
+            // ... other functions
+        }
+    }
+
+    // // (NEW) USER NOTIFICATION SCRIPT
+    // function userNotificationBell() {
+    //     return {
+    //         isOpen: false,
+    //         notifications: [],
+    //         unreadCount: 0,
+    //         formatTimeAgo(dateString) {
+    //             const now = new Date();
+    //             const notificationDate = new Date(dateString);
+    //             const secondsAgo = Math.round((now - notificationDate) / 1000);
+    //             if (secondsAgo < 60) { return "a few seconds ago"; }
+    //             if (secondsAgo < 3600) {
+    //                 const minutes = Math.floor(secondsAgo / 60);
+    //                 return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    //             }
+    //             return notificationDate.toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
+    //         },
+    //         fetchNotifications() {
+    //             fetch('{{ route("notifications.index") }}')
+    //                 .then(response => response.json())
+    //                 .then(data => {
+    //                     this.notifications = data;
+    //                     this.unreadCount = data.length;
+    //                 });
+    //         },
+    //         markAsRead(notificationId) {
+    //             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    //             fetch(`/notifications/${notificationId}/read`, {
+    //                 method: 'POST',
+    //                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+    //             }).then(response => {
+    //                 if (response.ok) { this.fetchNotifications(); }
+    //             });
+    //         },
+    //         init() {
+    //             this.fetchNotifications();
+    //             setInterval(() => { this.fetchNotifications(); }, 20000); // Check every 20 seconds
+    //         }
+    //     }
+    // }   
 </script>
-<!--End of Tawk.to Script-->
 </body>
 </html>

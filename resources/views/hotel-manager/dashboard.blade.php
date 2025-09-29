@@ -111,6 +111,12 @@
                     <p class="text-muted">View Refund and Cancellation</p>
                     <a href="{{ route('hotel-manager.refund.index') }}" class="btn btn-warning">Refund</a>
                 </div>
+                <!-- <div class="quick-card">
+                    <div class="quick-icon">📖</div>
+                    <h5 class="card-title">Completed Booking</h5>
+                    <p class="text-muted">View and Update completed Bookings</p>
+                    <a href="#" class="btn btn-warning"></a>
+                </div> -->
             </div>
             
             {{-- Recent Bookings --}}
