@@ -320,8 +320,6 @@
                 </div>
             </div>
         </div>
-
-
     {{-- RESTRUCTURED Room Details Modal --}}
     <div x-show="roomModal" x-cloak
          class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[10000] p-4"

@@ -281,11 +281,11 @@ class CartController extends Controller
             // Create a parent Order record
             $order = Order::create([
                 'user_id'       => $user->id,
-                'order_number'  => 'DD-' . strtoupper(Str::random(10)),
+                'order_number'  => 'DD-STAY-' . strtoupper(Str::random(8)),
                 'total_amount'  => $totalAmount,
-                'status'        => 'Payment Pending', // A new status for the main order
+                'status'        => 'Payment Pending',
                 'payment_id'    => null,
-                'order_details' => [$validated], // Save details for reference
+                'order_details' => [$validated], 
             ]);
 
             // 3. Create the StayBooking with the new payment status
@@ -391,9 +391,25 @@ class CartController extends Controller
             $finalOrder = null;
 
             DB::transaction(function () use ($cart, $validated, $totalAmount, $user, &$finalOrder) {
+                
+                $prefix = 'DD-GEN-'; 
+                $cartTypes = array_column($cart, 'type');
+
+                if (in_array('stay', $cartTypes)) {
+                    $prefix = 'DD-STAY-';
+                } elseif (in_array('darshan', $cartTypes)) {
+                    $prefix = 'DD-DARSHAN-';
+                } elseif (in_array('seva', $cartTypes)) {
+                    $prefix = 'DD-SEVA-';
+                } elseif (in_array('donation', $cartTypes)) {
+                    $prefix = 'DD-DONATION-';
+                } elseif (in_array('ebook', $cartTypes)) {
+                    $prefix = 'DD-EBOOK-';
+                }
+
                 $order = Order::create([
-                    'user_id'       => $user->id,
-                    'order_number'  => 'DD-' . strtoupper(Str::random(10)),
+                    'user_id'     => $user->id,
+                    'order_number'  => $prefix . strtoupper(Str::random(8)), 
                     'total_amount'  => $totalAmount,
                     'status'        => 'Completed',
                     'payment_id'    => $validated['razorpay_payment_id'],
@@ -518,7 +534,6 @@ class CartController extends Controller
                         ]);
                     }
                 }
-
                 $finalOrder = $order;
             });
 

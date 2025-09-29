@@ -6,7 +6,7 @@
     <title>DivyaDarshan</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <meta name="csrf-token" content="{{ csrf_token() }}"> 
+    <meta name="csrf-token" content="{{ csrf_token() }}"> 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spotlight.js@0.7.8/dist/spotlight.min.css" />
@@ -347,7 +347,6 @@
                         </div>
                     </div>
                 </div>
-                
                 {{-- User Menu --}}
                 <div x-data="{ open: false }" @click.away="open = false" class="relative">
                     <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
@@ -974,9 +973,7 @@
       }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <script async defer src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdR-7EGvRdTcL0NSvxG1pKan2bQu3nXuo&callback=initMap" async defer></script>
 
     {{-- Alpine JS State --}}
@@ -1035,46 +1032,46 @@ function appState() {
         }
     }
 
-    // // (NEW) USER NOTIFICATION SCRIPT
-    // function userNotificationBell() {
-    //     return {
-    //         isOpen: false,
-    //         notifications: [],
-    //         unreadCount: 0,
-    //         formatTimeAgo(dateString) {
-    //             const now = new Date();
-    //             const notificationDate = new Date(dateString);
-    //             const secondsAgo = Math.round((now - notificationDate) / 1000);
-    //             if (secondsAgo < 60) { return "a few seconds ago"; }
-    //             if (secondsAgo < 3600) {
-    //                 const minutes = Math.floor(secondsAgo / 60);
-    //                 return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-    //             }
-    //             return notificationDate.toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
-    //         },
-    //         fetchNotifications() {
-    //             fetch('{{ route("notifications.index") }}')
-    //                 .then(response => response.json())
-    //                 .then(data => {
-    //                     this.notifications = data;
-    //                     this.unreadCount = data.length;
-    //                 });
-    //         },
-    //         markAsRead(notificationId) {
-    //             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    //             fetch(`/notifications/${notificationId}/read`, {
-    //                 method: 'POST',
-    //                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-    //             }).then(response => {
-    //                 if (response.ok) { this.fetchNotifications(); }
-    //             });
-    //         },
-    //         init() {
-    //             this.fetchNotifications();
-    //             setInterval(() => { this.fetchNotifications(); }, 20000); // Check every 20 seconds
-    //         }
-    //     }
-    // }   
+    // (NEW) USER NOTIFICATION SCRIPT
+    function userNotificationBell() {
+        return {
+            isOpen: false,
+            notifications: [],
+            unreadCount: 0,
+            formatTimeAgo(dateString) {
+                const now = new Date();
+                const notificationDate = new Date(dateString);
+                const secondsAgo = Math.round((now - notificationDate) / 1000);
+                if (secondsAgo < 60) { return "a few seconds ago"; }
+                if (secondsAgo < 3600) {
+                    const minutes = Math.floor(secondsAgo / 60);
+                    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+                }
+                return notificationDate.toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
+            },
+            fetchNotifications() {
+                fetch('{{ route("notifications.index") }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.notifications = data;
+                        this.unreadCount = data.length;
+                    });
+            },
+            markAsRead(notificationId) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                fetch(`/notifications/${notificationId}/read`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                }).then(response => {
+                    if (response.ok) { this.fetchNotifications(); }
+                });
+            },
+            init() {
+                this.fetchNotifications();
+                setInterval(() => { this.fetchNotifications(); }, 20000); // Check every 20 seconds
+            }
+        }
+    }
 </script>
 </body>
 </html>

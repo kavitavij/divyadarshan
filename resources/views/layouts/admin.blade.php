@@ -121,6 +121,9 @@
             <li><a class="nav-link {{ request()->routeIs('admin.managers.*') ? 'active' : '' }}" href="{{ route('admin.managers.index') }}">
                 <i class="fa-solid fa-user"></i> <span>View Managers</span></a></li> 
 
+            <li><a class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}" href="{{ route('admin.announcements.create') }}">
+                <i class="fa-solid fa-bullhorn"></i> <span>Announcements</span></a></li>
+
             <li><a class="nav-link {{ request()->routeIs('admin.revenue.*') ? 'active' : '' }}" href="{{ route('admin.revenue.index') }}">
                 <i class="fas fa-dollar-sign"></i> <span>Revenue</span></a></li>
 
@@ -171,7 +174,6 @@
                 <i class="fa-solid fa-rotate-left"></i> <span>Refund Return</span></a></li>
         </ul>
     </nav>
-
     <main class="main-content" id="main">
         <div class="topbar">
             <button class="btn btn-sm btn-outline-secondary d-lg-none" id="sidebarToggle">

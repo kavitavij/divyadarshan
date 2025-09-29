@@ -265,7 +265,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue.index');
     Route::get('/revenue/download', [AdminRevenueController::class, 'download'])->name('revenue.download');
     Route::resource('managers', \App\Http\Controllers\Admin\ManagerController::class);
-
+    Route::get('/announcements/create', [\App\Http\Controllers\Admin\AnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('/announcements', [\App\Http\Controllers\Admin\AnnouncementController::class, 'store'])->name('announcements.store');
 });
     // // Routes for Stay Refunds
     Route::prefix('admin')->name('admin.')->group(function () {

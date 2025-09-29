@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 class RefundController extends Controller
 {
+    /**
+     * (UPDATED) Display a listing of ALL refund requests (pending, approved, rejected).
+     */
     public function index()
     {
         $manager = Auth::user();
@@ -18,8 +21,11 @@ class RefundController extends Controller
             return redirect()->route('hotel-manager.dashboard')->with('error', 'You are not assigned to a hotel.');
         }
 
+        // (FIX) This query now fetches all cancelled bookings that have a refund status,
+        // instead of just the 'pending' ones.
         $refundRequests = StayBooking::where('hotel_id', $hotel->id)
-            ->whereRaw('LOWER(refund_status) = ?', ['pending'])
+            ->where('status', 'Cancelled')
+            ->whereNotNull('refund_status')
             ->with('user', 'room')
             ->latest()
             ->paginate(15);
@@ -33,6 +39,7 @@ class RefundController extends Controller
 
         $booking->load('user', 'room', 'hotel', 'guests');
 
+        // This gets the user's bank details for the refund
         $refundRequest = $booking->refundRequests()->latest()->first();
 
         return view('hotel-manager.refund.show', compact('booking', 'refundRequest'));
@@ -48,6 +55,8 @@ class RefundController extends Controller
 
         $booking->refund_status = $validated['status'];
         $booking->save();
+        
+        // This updates the status on the original request record as well
         if ($refundRequest = $booking->refundRequests()->latest()->first()) {
             $refundRequest->status = ucfirst($validated['status']);
             $refundRequest->save();

@@ -9,7 +9,6 @@
         color: #333;
         display: inline-block;
     }
-
     .back-button {
         background-color: #6f4f28;
         color: white;
@@ -17,143 +16,139 @@
         border-radius: 5px;
         text-decoration: none;
         font-size: 14px;
-        display: inline-block;
+        display: inline-flex; /* Use inline-flex for alignment */
+        align-items: center; /* Vertically center icon and text */
         margin-left: 20px;
-        vertical-align: top;
-        display: flex;
-        align-items: center;
+        vertical-align: middle; /* Align with title */
     }
-
-    .back-button i {
-        margin-right: 8px;
-    }
-
     .back-button:hover {
         background-color: #5a3f1e;
+        color: white;
     }
-
     .card {
-        border: 1px solid #ddd;
+        border: none;
         border-radius: 10px;
         margin-top: 20px;
-        padding: 20px;
-        background: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-
-    .table {
-        border-collapse: separate;
-        border-spacing: 0 12px;
-        width: 100%;
-    }
-
     .table thead th {
-        background: #f5f5f5;
-        padding: 12px;
+        background: #f8f9fa;
+        padding: 15px;
         font-weight: 600;
         text-align: center;
+        border-bottom: 2px solid #dee2e6;
     }
-
     .table tbody tr {
-        background: #fafafa;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        background: #fff;
+        border-bottom: 1px solid #f0f0f0;
     }
-
     .table td {
-        padding: 12px;
+        padding: 15px;
         text-align: center;
+        vertical-align: middle;
     }
-
     .badge {
-        padding: 6px 12px;
+        padding: 8px 14px;
         border-radius: 20px;
-        font-size: 13px;
+        font-size: 12px;
+        font-weight: 500;
     }
-
-    .pagination {
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
+    .btn-cancel {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-size: 13px;
+        cursor: pointer;
     }
 </style>
 
 <div class="container-fluid">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1 class="page-title">Guest List for {{ $hotel->name }}</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title mb-0">Guest List for {{ $hotel->name }}</h1>
         <a href="{{ route('hotel-manager.dashboard') }}" class="back-button">
-           <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+           <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
         </a>
     </div>
     
     <div class="card">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Booking ID</th>
-                    <th>Guest Name</th>
-                    <th>Room Type</th>
-                    <th>Guests</th>
-                    <th>Check-in/ Check-out</th>
-                    <th>Status</th>
-                    <th>Payment</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($bookings as $booking)
-                <tr>
-                    <td><strong>#{{ $booking->id }}</strong></td>
-                    <td>{{ $booking->user->name ?? 'N/A' }}</td>
-                    <td>{{ $booking->room->type ?? 'N/A' }}</td>
-                    <td>{{ $booking->number_of_guests }}</td>
-                    <td>{{ \Carbon\Carbon::parse($booking->check_in_date)->format('d M ') }} - {{ \Carbon\Carbon::parse($booking->check_out_date)->format('d M Y') }}</td>
-                    <td>
-                        @if($booking->status == 'confirmed')
-                            <span class="badge bg-success">Confirmed</span>
-                        @elseif($booking->status == 'pending')
-                            <span class="badge bg-warning text-dark">Pending</span>
-                        @elseif($booking->status == 'cancelled')
-                            <span class="badge bg-danger">Cancelled</span>
-                        @else
-                            <span class="badge bg-secondary">{{ $booking->status }}</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if($booking->payment_method == 'pay_at_hotel')
-                        <span class="badge bg-warning text-dark">Pay at Hotel</span>
-                        @else
-                        <span class="badge bg-success">Paid Online</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if(in_array($booking->status, ['Confirmed', 'pending']))
-                            <form action="{{ route('hotel-manager.bookings.cancel', $booking->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
-                                @csrf
-                                <button type="submit" class="btn-cancel">Cancel</button>
-                            </form>
-                        @elseif($booking->status == 'Cancelled')
-                            @if($booking->refund_status == 'pending')
-                                <span class="badge bg-warning text-dark">Refund Pending</span>
-                            @elseif($booking->refund_status == 'approved')
-                                <span class="badge bg-success">Refunded</span>
-                            @elseif($booking->refund_status == 'rejected')
-                                <span class="badge bg-danger">Refund Rejected</span>
-                            @else 
-                                <span class="text-muted">N/A</span>
-                            @endif
-                        @else
-                            <span class="text-muted">N/A </span>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7" class="text-center text-muted">No guests found for this hotel.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-        <div class="pagination">
-            {{ $bookings->links() }}
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Guest Contact</th>
+                            <th>Room</th>
+                            <th>Guests</th>
+                            <th>Check-in / Check-out</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($bookings as $booking)
+                        <tr>
+                            <td><strong>#{{ $booking->id }}</strong></td>
+                            <td class="text-start">
+                                <strong>{{ $booking->user->name ?? 'N/A' }}</strong><br>
+                                {{-- (FIX) Use the email and phone from the booking itself --}}
+                                <small class="text-muted">
+                                    <i class="fas fa-envelope me-1"></i> {{ $booking->email ?? 'N/A' }}
+                                </small><br>
+                                <small class="text-muted">
+                                    <i class="fas fa-phone me-1"></i> {{ $booking->phone_number ?? 'N/A' }}
+                                </small>
+                            </td>
+                            <td>{{ $booking->room->type ?? 'N/A' }}</td>
+                            <td>{{ $booking->number_of_guests }}</td>
+                            <td>{{ \Carbon\Carbon::parse($booking->check_in_date)->format('d M') }} - {{ \Carbon\Carbon::parse($booking->check_out_date)->format('d M, Y') }}</td>
+                            <td>
+                                @if(strtolower($booking->status) == 'confirmed')
+                                    <span class="badge bg-success">Confirmed</span>
+                                @elseif(strtolower($booking->status) == 'pending')
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                @elseif(strtolower($booking->status) == 'cancelled')
+                                    <span class="badge bg-danger">Cancelled</span>
+                                @else
+                                    <span class="badge bg-secondary">{{ ucfirst($booking->status) }}</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($booking->payment_method == 'pay_at_hotel')
+                                    <span class="badge bg-info text-dark">Pay at Hotel</span>
+                                @else
+                                    <span class="badge bg-primary">Paid Online</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if(in_array(strtolower($booking->status), ['confirmed', 'pending']))
+                                    <form action="{{ route('hotel-manager.bookings.cancel', $booking->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking? This will notify the user.');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                    </form>
+                                @elseif($booking->status == 'Cancelled' && $booking->refund_status)
+                                     <span class="badge bg-secondary">{{ ucfirst($booking->refund_status) }}</span>
+                                @else
+                                    <span class="text-muted">--</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">No guests found for this hotel.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if ($bookings->hasPages())
+                <div class="card-footer bg-white">
+                    {{ $bookings->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>

@@ -4,8 +4,8 @@
 <div class="container-fluid">
     <h4 class="mb-3">Dashboard Overview</h4>
     <p class="text-muted">
-        This is your central admin dashboard. Use the quick actions below to manage different sections
-        of your site.
+        This is  central admin dashboard. Use the quick actions below to manage different sections
+        of website.
     </p>
 
     {{-- General Website Section --}}
@@ -17,6 +17,15 @@
                     <h5 class="card-title">Managers</h5>
                     <p class="text-muted">Add and view all managers.</p>
                     <a href="{{ route('admin.managers.index') }}" class="btn btn-primary">Manage Managers</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Announcement</h5>
+                    <p class="text-muted">Make Announcement for users</p>
+                    <a href="{{ route('admin.announcements.create') }}" class="btn btn-primary">Website announcements</a>
                 </div>
             </div>
         </div>
