@@ -133,7 +133,7 @@
         <!-- Pagination -->
         @if ($donations->hasPages())
             <div class="mt-6">
-                {{ $donations->links() }}
+                {{ $donations->onEachSide(1)->links('pagination::bootstrap-5') }}
             </div>
         @endif
     </div>

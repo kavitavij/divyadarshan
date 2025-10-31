@@ -35,10 +35,7 @@ class GeneralInfoController extends Controller
     /**
      * Display the Contact Us page.
      */
-    public function contact(): View
-    {
-        return view('info.contact');
-    }
+
 
     /**
      * Handle the submission of the Contact Us form.

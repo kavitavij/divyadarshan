@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 // Public Controllers
 use App\Http\Controllers\HomeController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\SpiritualHelpController;
 use App\Http\Controllers\CheckInController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\Auth\GoogleLoginController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\AdminController;
@@ -48,6 +50,7 @@ use App\Http\Controllers\Admin\SpiritualHelpController as AdminSpiritualHelpCont
 use App\Http\Controllers\Admin\AmenityController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\AdminRevenueController;
+use App\Http\Controllers\GoogleController;
 
 // Hotel Manager Controllers
 use App\Http\Controllers\HotelManager\DashboardController as HotelManagerDashboardController;
@@ -59,6 +62,7 @@ use App\Http\Controllers\HotelManager\RoomController;
 use App\Http\Controllers\HotelManager\RevenueController;
 use App\Http\Controllers\HotelManager\RefundController;
 use App\Http\Controllers\HotelManager\HotelManagerBookingController;
+
 // Temple Manager Controllers
 use App\Http\Controllers\TempleManager\DashboardController as TempleManagerDashboardController;
 use App\Http\Controllers\TempleManager\TempleController as TempleManagerController;
@@ -69,6 +73,9 @@ use App\Http\Controllers\TempleManager\DashboardController;
 use App\Http\Controllers\TempleManager\SlotController;
 use App\Http\Controllers\TempleManager\GalleryController;
 use App\Http\Controllers\TempleManager\TempleRevenueController;
+use App\Http\Controllers\TempleManager\NotificationController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -104,10 +111,9 @@ Route::post('/faq-submit', [FaqController::class, 'store'])->name('info.faq.subm
 Route::get('/spiritual-help', [SpiritualHelpController::class, 'create'])->name('spiritual-help.form');
 Route::post('/spiritual-help-request', [SpiritualHelpController::class, 'store'])->name('spiritual-help.submit');
 Route::post('/social-service-inquiry', [TempleController::class, 'storeSocialServiceInquiry'])->name('social.service.inquiry.store');
-// The URL the QR code points to
+
 Route::get('/check-in/{token}', [CheckInController::class, 'show'])->name('check-in.show');
 
-// The route that handles the confirmation button press
 Route::post('/check-in/{token}', [CheckInController::class, 'confirm'])->name('check-in.confirm');
 //  refund request form
 Route::get('/profile/my-bookings/{booking}/refund', [ProfileController::class, 'requestRefund'])->name('profile.my-bookings.refund.request');
@@ -133,17 +139,59 @@ Route::get('/info/dress-code', [GeneralInfoController::class, 'dressCode'])->nam
 Route::get('/info/contact', [GeneralInfoController::class, 'contact'])->name('info.contact');
 Route::post('/contact-us', [GeneralInfoController::class, 'handleContactForm'])->name('info.contact.submit');
 
-// A simple route for clearing the cart during testing
 Route::get('/clear-cart', function() {
     session()->forget('cart');
     return '<h1>Cart has been cleared! You can now go back and test.</h1>';
 });
+
+// Language switch route: sets session and cookies (used to toggle server-side locale)
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'hi'])) {
         session(['locale' => $locale]);
+        // persist cookie and Google Translate cookie for overlay compatibility
+        return redirect()->back()
+            ->withCookie(cookie()->forever('locale', $locale))
+            ->withCookie(cookie()->forever('googtrans', '/en/' . $locale));
     }
     return redirect()->back();
 })->name('lang.switch');
+
+Route::get('/lang/test/{locale}', function ($locale, Request $request) {
+    if (! in_array($locale, ['en', 'hi'])) {
+        return response()->json(['error' => 'unsupported locale'], 400);
+    }
+
+    // set session and force locale for this request
+    session(['locale' => $locale]);
+    \Illuminate\Support\Facades\App::setLocale($locale);
+
+    $payload = [
+        'note' => 'Diagnostic: session and cookies set, App locale forced for this response',
+        'app_locale_now' => app()->getLocale(),
+        'lang_facade_locale' => \Illuminate\Support\Facades\Lang::getLocale(),
+        'config_app_locale' => config('app.locale'),
+        'cookie_locale' => $request->cookie('locale'),
+        'session_locale' => session('locale'),
+        'previous_url' => url()->previous(),
+        'next_check' => url('/debug-locale'),
+        'visit_about' => url('/about'),
+    ];
+
+    return response()->json($payload)
+        ->withCookie(cookie()->forever('locale', $locale))
+        ->withCookie(cookie()->forever('googtrans', '/en/' . $locale));
+})->name('lang.test');
+
+// DEBUG: show current app locale, request cookie and session value (dev only)
+Route::get('/debug-locale', function (Request $request) {
+    return [
+        'app_locale' => app()->getLocale(),
+        'lang_facade_locale' => \Illuminate\Support\Facades\Lang::getLocale(),
+        'config_app_locale' => config('app.locale'),
+        'cookie_locale' => $request->cookie('locale'),
+        'session_locale' => session('locale'),
+    ];
+});
 
 // web.php
 // Route::get('/', function () {
@@ -165,6 +213,12 @@ Route::prefix('cart')->name('cart.')->group(function () {
    Route::post('/add-donation', [CartController::class, 'addDonation'])->name('addDonation');
 });
 
+Route::get('/auth/google/redirect', [GoogleLoginController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback'])->name('google.callback');
+
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
+
 // ## AUTHENTICATED USER ROUTES ##
 Route::middleware(['auth', 'verified'])->group(function () {
     // Role-based Dashboard Redirect
@@ -180,14 +234,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // CORRECTED
-    // In routes/web.php, inside your 'auth' middleware group
 
-// This is the corrected route for your main bookings list
-Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.my-bookings.index');
-Route::get('/profile/my-stays/{booking}/receipt', [ProfileController::class, 'downloadStayReceipt'])->name('profile.my-stays.receipt');
-Route::delete('/profile/my-stays/{booking}/cancel', [ProfileController::class, 'cancelStayBooking'])->name('profile.my-stays.cancel');
-// Add this new route to handle the receipt download for a specific booking
+    Route::get('/profile/my-bookings', [ProfileController::class, 'myBookings'])->name('profile.my-bookings.index');
+    Route::get('/profile/my-stays/{booking}/receipt', [ProfileController::class, 'downloadStayReceipt'])->name('profile.my-stays.receipt');
+    Route::delete('/profile/my-stays/{booking}/cancel', [ProfileController::class, 'cancelStayBooking'])->name('profile.my-stays.cancel');
+
     Route::get('/profile/bookings/{booking}/receipt', [ProfileController::class, 'downloadBookingReceipt'])->name('profile.my-bookings.receipt.download');
     Route::get('/profile/my-ebooks', [ProfileController::class, 'myEbooks'])->name('profile.ebooks');
     Route::get('/profile/my-donations', [ProfileController::class, 'myDonations'])->name('profile.my-donations.index');
@@ -232,12 +283,9 @@ Route::post('/notifications/{notificationId}/read', [\App\Http\Controllers\Notif
 });
 
 
-
-
-// ## ADMIN, MANAGER, AND BREEZE AUTH ROUTES ##
 require __DIR__.'/auth.php';
 
-// ## ADMIN ROUTES ##
+// ADMIN ROUTES
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('temples', AdminTempleController::class);
@@ -268,7 +316,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/announcements/create', [\App\Http\Controllers\Admin\AnnouncementController::class, 'create'])->name('announcements.create');
     Route::post('/announcements', [\App\Http\Controllers\Admin\AnnouncementController::class, 'store'])->name('announcements.store');
 });
-    // // Routes for Stay Refunds
+    //  Routes for Stay Refunds
     Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/stay-refund-requests', [BookingCancelController::class, 'index'])->name('booking-cancel.index');
     Route::get('/stay-refund-requests/{refundRequest}', [BookingCancelController::class, 'showStayRefund'])->name('booking-cancel.stay.show');
@@ -276,7 +324,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/my-stays/{booking}/request-refund', [ProfileController::class, 'requestStayRefund'])->name('profile.my-stays.request-refund');
 });
 
-// ## HOTEL MANAGER ROUTES ##
+// HOTEL MANAGER ROUTES
 Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name('hotel-manager.')->group(function () {
     Route::get('/dashboard', [HotelManagerDashboardController::class, 'index'])->name('dashboard');
     Route::get('/hotel/edit', [HotelManagerHotelController::class, 'edit'])->name('hotel.edit');
@@ -290,21 +338,24 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
     Route::patch('rooms/{room}/toggle-visibility', [RoomController::class, 'toggleVisibility'])->name('hotel-manager.rooms.toggleVisibility');
     Route::patch('rooms/{room}/toggle-visibility', [HotelManagerRoomController::class, 'toggleVisibility'])->name('rooms.toggleVisibility');
     Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
+    Route::get('/revenue/download', [RevenueController::class, 'download'])->name('revenue.download');
     Route::get('/refund', [RefundController::class, 'index'])->name('refund.index');
     Route::get('/refund-requests', [RefundController::class, 'index'])->name('refund.index');
     Route::get('/refund-requests/{booking}', [RefundController::class, 'show'])->name('refund.show');
     Route::patch('/refund-requests/{booking}/status', [RefundController::class, 'updateStatus'])->name('refund.updateStatus');
+    Route::get('/bookings/{booking}', [HotelManagerBookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{booking}/cancel', [HotelManagerBookingController::class, 'cancel'])->name('bookings.cancel');
-    // Routes for Terms & Conditions
     Route::get('/terms/edit', [App\Http\Controllers\HotelManager\TermsController::class, 'edit'])->name('terms.edit');
-Route::patch('/terms/update', [App\Http\Controllers\HotelManager\TermsController::class, 'update'])->name('terms.update');
-Route::get('/profile', [App\Http\Controllers\HotelManager\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/terms/update', [App\Http\Controllers\HotelManager\TermsController::class, 'update'])->name('terms.update');
+    Route::get('/profile', [App\Http\Controllers\HotelManager\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\HotelManager\ProfileController::class, 'update'])->name('profile.update');
-
-    Route::get('/notifications', [\App\Http\Controllers\HotelManager\NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/{notificationId}/read', [\App\Http\Controllers\HotelManager\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::delete('/profile-photo', [App\Http\Controllers\HotelManager\ProfileController::class, 'removePhoto'])->name('profile.remove-photo');
+    Route::get('/notifications', [App\Http\Controllers\HotelManager\NotificationController::class, 'showAll'])->name('notifications.all');
+    Route::get('/notifications/unread', [App\Http\Controllers\HotelManager\NotificationController::class, 'fetchUnread'])->name('notifications.unread');
+    Route::post('/notifications/{notification}/read', [App\Http\Controllers\HotelManager\NotificationController::class, 'markAsRead'])->name('notifications.read');
 });
 
+// TEMPLE MANAGER ROUTES
 Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->name('temple-manager.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/temple/edit', [TempleManagerController::class, 'edit'])->name('temple.edit');
@@ -324,8 +375,14 @@ Route::middleware(['auth', 'role:temple_manager'])->prefix('temple-manager')->na
     Route::post('gallery', [GalleryController::class, 'store'])->name('gallery.store');
     Route::delete('gallery/{image}', [GalleryController::class, 'destroy'])->name('gallery.destroy');
     Route::get('/revenue', [TempleRevenueController::class, 'index'])->name('revenue.index');
+    Route::get('/revenue/download', [TempleRevenueController::class, 'downloadRevenueReport'])->name('revenue.download');
     Route::get('/profile', [App\Http\Controllers\TempleManager\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\TempleManager\ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/notifications', [\App\Http\Controllers\TempleManager\NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/{notificationId}/read', [\App\Http\Controllers\TempleManager\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
+    Route::get('/notifications/all', [NotificationController::class, 'showAll'])->name('notifications.all');
+
+    Route::get('/notifications/unread', [NotificationController::class, 'fetchUnread'])->name('notifications.unread');
+
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 });

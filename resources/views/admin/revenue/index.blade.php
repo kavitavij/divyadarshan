@@ -1,164 +1,202 @@
-@extends('layouts.admin') {{-- Or your main admin layout --}}
+@extends('layouts.admin')
 
 @section('content')
-<div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Platform Revenue Dashboard</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Platform Revenue</h1>
+    </div>
 
     {{-- Date Filter Form --}}
-    {{-- <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-        <form action="{{ route('admin.revenue.index') }}" method="GET" class="flex flex-wrap items-center gap-4">
-            <div>
-                <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
-                <input type="date" id="start_date" name="start_date" value="{{ $startDate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-            </div>
-            <div>
-                <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
-                <input type="date" id="end_date" name="end_date" value="{{ $endDate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-            </div>
-            <div class="pt-6">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Filter</button>
-            </div>
-        </form>
-    </div> --}}
-    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-        <form action="{{ route('admin.revenue.index') }}" method="GET" class="flex flex-wrap items-center gap-4">
-
-                <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
-                <input type="date" id="start_date" name="start_date" value="{{ $startDate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-
-                <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
-                <input type="date" id="end_date" name="end_date" value="{{ $endDate }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-
-                <button type="submit" class="bg-blue-600 text-black px-4 py-2 rounded-md hover:bg-blue-700">Filter</button>
-                <a href="{{ route('admin.revenue.download', request()->query()) }}"
-                class="bg-green-600 text-black px-4 py-2 rounded-md hover:bg-green-700">
-                    Download Excel
-                </a>
-            </div>
-        </form>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ route('admin.revenue.index') }}" method="GET" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" id="start_date" name="start_date" value="{{ $startDate }}" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" id="end_date" name="end_date" value="{{ $endDate }}" class="form-control">
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    <a href="{{ route('admin.revenue.download', request()->query()) }}" class="btn btn-success w-100">
+                        <i class="fas fa-file-excel me-1"></i> Download
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 
     {{-- Revenue Summary Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
-        <div class="lg:col-span-2 bg-gradient-to-br from-blue-500 to-indigo-600 text-black p-6 rounded-lg shadow-lg">
-            <h3 class="text-lg font-medium">Total Revenue</h3>
-            <p class="text-4xl font-bold mt-2">₹{{ number_format($totalRevenue, 2) }}</p>
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="card text-white bg-primary h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <p class="card-text fs-2 fw-bold">₹{{ number_format($totalRevenue, 2) }}</p>
+                </div>
+            </div>
         </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 class="text-md font-medium text-gray-500 dark:text-gray-400">Darshan</h3>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-2">₹{{ number_format($darshanRevenue, 2) }}</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 class="text-md font-medium text-gray-500 dark:text-gray-400">Hotel Stays</h3>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-2">₹{{ number_format($stayRevenue, 2) }}</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 class="text-md font-medium text-gray-500 dark:text-gray-400">Sevas</h3>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-2">₹{{ number_format($sevaRevenue, 2) }}</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 class="text-md font-medium text-gray-500 dark:text-gray-400">Donations & Ebooks</h3>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-2">₹{{ number_format($donationRevenue + $ebookRevenue, 2) }}</p>
+        <div class="col-lg-8 col-md-6">
+            <div class="row g-4">
+                <div class="col-lg-3 col-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle mb-2 text-muted">Darshan</h6>
+                            <p class="card-text fs-5 fw-bold">₹{{ number_format($darshanRevenue, 2) }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle mb-2 text-muted">Hotel Stays</h6>
+                            <p class="card-text fs-5 fw-bold">₹{{ number_format($stayRevenue, 2) }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle mb-2 text-muted">Sevas</h6>
+                            <p class="card-text fs-5 fw-bold">₹{{ number_format($sevaRevenue, 2) }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle mb-2 text-muted">Donations & Ebooks</h6>
+                            <p class="card-text fs-5 fw-bold">₹{{ number_format($donationRevenue + $ebookRevenue, 2) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     {{-- Recent Transactions --}}
-    <div class="space-y-8">
-        {{-- Hotel Stay Bookings Table --}}
-        {{-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Recent Hotel Stay Bookings</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Booking ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Guest</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Hotel</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Check-in</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse ($stayBookings as $booking)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#{{ $booking->id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $booking->user->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $booking->hotel->name ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $booking->check_in_date->format('d M, Y') }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800 dark:text-white">₹{{ number_format($booking->total_amount, 2) }}</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No hotel bookings found for this period.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-4">{{ $stayBookings->appends(request()->query())->links() }}</div>
-        </div> --}}
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="revenue-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="darshan-tab" data-bs-toggle="tab" data-bs-target="#darshan"
+                        type="button" role="tab" aria-controls="darshan" aria-selected="true">Recent Darshan
+                        Bookings</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="stays-tab" data-bs-toggle="tab" data-bs-target="#stays" type="button"
+                        role="tab" aria-controls="stays" aria-selected="false">Recent Hotel Stays</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="donations-tab" data-bs-toggle="tab" data-bs-target="#donations"
+                        type="button" role="tab" aria-controls="donations" aria-selected="false">Recent
+                        Donations</button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="revenue-tabs-content">
+                {{-- Darshan Bookings Table --}}
+                <div class="tab-pane fade show active" id="darshan" role="tabpanel" aria-labelledby="darshan-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Devotee</th>
+                                    <th>Temple</th>
+                                    <th>Darshan Date</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($darshanBookings as $booking)
+                                    <tr>
+                                        <td>#{{ $booking->id }}</td>
+                                        <td>{{ $booking->user->name }}</td>
+                                        <td>{{ $booking->temple_name ?? 'N/A' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($booking->booking_date)->format('d M, Y') }}</td>
+                                        <td class="text-end">₹{{ number_format($booking->total_amount, 2) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No darshan bookings found for
+                                            this period.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">{{ $darshanBookings->appends(request()->query())->links() }}</div>
+                </div>
 
-        {{-- Darshan Bookings Table --}}
-        {{-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Recent Darshan Bookings</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                     <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Booking ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Devotee</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Temple</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Darshan Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse ($darshanBookings as $booking)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#{{ $booking->id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $booking->user->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $booking->temple_name ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ \Carbon\Carbon::parse($booking->booking_date)->format('d M, Y') }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800 dark:text-white">₹{{ number_format($booking->total_amount, 2) }}</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No darshan bookings found for this period.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-4">{{ $darshanBookings->appends(request()->query())->links() }}</div>
-        </div> --}}
+                {{-- Hotel Stay Bookings Table --}}
+                <div class="tab-pane fade" id="stays" role="tabpanel" aria-labelledby="stays-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Guest</th>
+                                    <th>Hotel</th>
+                                    <th>Check-in</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($stayBookings as $booking)
+                                    <tr>
+                                        <td>#{{ $booking->id }}</td>
+                                        <td>{{ $booking->user->name }}</td>
+                                        <td>{{ $booking->hotel->name ?? 'N/A' }}</td>
+                                        <td>{{ $booking->check_in_date->format('d M, Y') }}</td>
+                                        <td class="text-end">₹{{ number_format($booking->total_amount, 2) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No hotel bookings found for this
+                                            period.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">{{ $stayBookings->appends(request()->query())->links() }}</div>
+                </div>
 
-        {{-- Donations Table --}}
-        {{-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Recent Donations</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Purpose</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Temple</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse ($donations as $donation)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $donation->donation_purpose ?? 'General Donation' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $donation->temple->name ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $donation->created_at->format('d M, Y') }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800 dark:text-white">₹{{ number_format($donation->amount, 2) }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No donations found for this period.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                {{-- Donations Table --}}
+                <div class="tab-pane fade" id="donations" role="tabpanel" aria-labelledby="donations-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Purpose</th>
+                                    <th>Temple</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($donations as $donation)
+                                    <tr>
+                                        <td>{{ $donation->donation_purpose ?? 'General Donation' }}</td>
+                                        <td>{{ $donation->temple->name ?? 'N/A' }}</td>
+                                        <td>{{ $donation->created_at->format('d M, Y') }}</td>
+                                        <td class="text-end">₹{{ number_format($donation->amount, 2) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No donations found for this
+                                            period.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">{{ $donations->appends(request()->query())->links() }}</div>
+                </div>
             </div>
-            <div class="mt-4">{{ $donations->appends(request()->query())->links() }}</div>
-        </div> --}}
+        </div>
     </div>
-</div>
 @endsection

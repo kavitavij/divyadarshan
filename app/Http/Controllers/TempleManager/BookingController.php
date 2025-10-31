@@ -36,8 +36,9 @@ class BookingController extends Controller
             ->get();
 
         $sevaQuery = SevaBooking::whereHas('seva', function ($query) use ($temple) {
-            $query->where('temple_id', $temple->id);
-        })->with('user', 'seva');
+        $query->where('temple_id', $temple->id);
+        })->with(['user', 'seva', 'order']);
+
         if ($startDate) {
             $sevaQuery->whereDate('booking_date', '>=', $startDate);
         }

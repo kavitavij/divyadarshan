@@ -6,6 +6,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use App\Models\StayBooking; 
+
+use App\Models\Order;
+
 class NewHotelBooking extends Notification
 {
     use Queueable;

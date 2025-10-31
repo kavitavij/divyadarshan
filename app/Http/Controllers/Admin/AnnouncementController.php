@@ -26,7 +26,7 @@ class AnnouncementController extends Controller
         ]);
 
         $role = $validated['target_role'];
-        
+
         // 2. Build the query to find the correct group of users
         $users = User::where('role', $role)->get();
 
@@ -36,7 +36,7 @@ class AnnouncementController extends Controller
 
         // 3. Send the notification to the selected group
         Notification::send($users, new AdminAnnouncement($validated['message']));
-        
+
         // 4. Create a dynamic success message
         $roleName = str_replace('_', ' ', $role); // Converts 'temple_manager' to 'temple manager'
         $successMessage = "Announcement has been sent to all " . ucwords($roleName) . "s!";

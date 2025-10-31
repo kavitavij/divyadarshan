@@ -87,7 +87,7 @@
 </table>
             </div>
             <div class="mt-3 d-flex justify-content-center">
-                {{ $bookings->appends(request()->query())->links() }}
+                {{ $bookings->onEachSide(1)->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>

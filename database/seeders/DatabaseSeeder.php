@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-// Make sure your RolesAndPermissionsSeeder is imported
-use Database\Seeders\RolesAndPermissionsSeeder; 
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,9 +12,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Call the seeder to create the roles
-        $this->call([
-            RolesAndPermissionsSeeder::class,
-        ]);
+        // \App\Models\User::factory(10)->create();
+
+        // ** ADD THIS LINE **
+        $this->call(RoleSeeder::class);
     }
 }

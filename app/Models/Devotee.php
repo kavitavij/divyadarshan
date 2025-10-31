@@ -28,6 +28,8 @@ class Devotee extends Model
         'id_type',
         'id_number',
         'id_photo_path',
+        'email',
+        'phone',
     ];
 
     /**

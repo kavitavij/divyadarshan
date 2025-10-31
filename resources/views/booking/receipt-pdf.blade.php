@@ -1,27 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Darshan Booking Receipt #{{ str_pad($booking->id, 6, '0', STR_PAD_LEFT) }}</title>
     <style>
-        body { font-family: 'DejaVu Sans', sans-serif; font-size: 14px; color: #333; }
-        .container { max-width: 680px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .details-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .details-table td { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-        .details-table td:first-child { font-weight: bold; width: 160px; }
-        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #777; }
-        .info-grid { width: 100%; margin-top: 20px; }
-        .info-grid td { vertical-align: top; padding: 10px; }
-        .devotees-table { width: 100%; border-collapse: collapse; }
-        .devotees-table th, .devotees-table td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
-        .devotees-table th { background-color: #f2f2f2; }
-        .qr-code-box { text-align: center; padding-left: 20px; }
-        .qr-code-box p { margin-top: 5px; font-size: 11px; color: #555; }
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .details-table td {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .details-table td:first-child {
+            font-weight: bold;
+            width: 160px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .info-grid {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .info-grid td {
+            vertical-align: top;
+            padding: 10px;
+        }
+
+        .devotees-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .devotees-table th,
+        .devotees-table td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .devotees-table th {
+            background-color: #f2f2f2;
+        }
+
+        .qr-code-box {
+            text-align: center;
+            padding-left: 20px;
+        }
+
+        .qr-code-box p {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #555;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -50,7 +120,6 @@
             </tr>
         </table>
 
-        {{-- NEW SECTION with Devotees on Left and QR Code on Right --}}
         <table class="info-grid">
             <tr>
                 <td style="width: 60%;">
@@ -63,7 +132,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($booking->devotees as $devotee)
+                            @foreach ($booking->devotees as $devotee)
                                 <tr>
                                     <td>{{ $devotee->full_name }}</td>
                                     <td>{{ $devotee->age }}</td>
@@ -72,19 +141,14 @@
                         </tbody>
                     </table>
                 </td>
-               <td style="width: 40%;" class="qr-code-box">
-    @if($booking->check_in_token)
+                <td style="width: 40%;" class="qr-code-box">
+                    @if ($booking->check_in_token)
+                        <img src="data:image/svg+xml;base64,{{ base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::size(150)->generate(route('check-in.show', $booking->check_in_token))) }}"
+                            alt="QR Code">
 
-            {{--
-                THE DEFINITIVE FIX:
-                Generate the SVG code and then embed it as a base64 image source.
-                This is the most reliable method for dompdf.
-            --}}
-            <img src="data:image/svg+xml;base64,{{ base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::size(150)->generate(route('check-in.show', $booking->check_in_token))) }}" alt="QR Code">
-
-            <p>Scan for entry</p>
-        @endif
-    </td>
+                        <p>Scan for entry</p>
+                    @endif
+                </td>
             </tr>
         </table>
 
@@ -94,4 +158,5 @@
         </div>
     </div>
 </body>
+
 </html>

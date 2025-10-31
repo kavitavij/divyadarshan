@@ -48,7 +48,7 @@
                     </tbody>
                 </table>
                 <div class="mt-3">
-                    {{ $submissions->links() }}
+                    {{ $submissions->onEachSide(1)->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>

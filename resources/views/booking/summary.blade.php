@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Summary</title>
-    {{-- Link to Bootstrap CSS to maintain basic styling --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -164,8 +163,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- THE FIX: Footer is moved outside the main content wrapper --}}
         <footer class="footer-container">
             <div class="container">
                 <h4>Have questions about these Terms or need assistance?</h4>

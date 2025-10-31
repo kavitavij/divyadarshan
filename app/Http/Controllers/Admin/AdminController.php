@@ -3,57 +3,92 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Complaint;
-use App\Models\Booking;
+use App\Models\Donation;
+use App\Models\Hotel;
+use App\Models\Order;
+use App\Models\StayBooking;
 use App\Models\Temple;
 use App\Models\User;
-use App\Models\SevaBooking;
-use App\Models\AccommodationBooking;
-use App\Models\Hotel;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 class AdminController extends Controller
 {
-    public function dashboard()
+    /**
+     * Display the admin dashboard with analytics.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index(Request $request)
     {
-        $totalUsers = User::count();
-        $totalTemples = Temple::count();
+        // Validate and get dates from request, or set defaults
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
 
-        // Correctly count all confirmed bookings
-        $totalBookings = Booking::where('status', 'confirmed')->count()
-                         + SevaBooking::where('status', 'confirmed')->count()
-                         + AccommodationBooking::where('status', 'confirmed')->count();
+        $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : Carbon::now()->subDays(29)->startOfDay();
+        $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : Carbon::now()->endOfDay();
 
+        // === Key Metrics (KPIs) ===
+        // Filtered by date range
+        $revenueForPeriod = Order::where('status', 'completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total_amount');
+        $bookingsForPeriod = StayBooking::whereBetween('created_at', [$startDate, $endDate])->count()
+            + Order::where('status', 'completed')->whereBetween('created_at', [$startDate, $endDate])->count();
+        $newUsersForPeriod = User::whereBetween('created_at', [$startDate, $endDate])->count();
+
+        // Overall totals (not filtered by date)
         $totalHotels = Hotel::count();
+        $totalTemples = Temple::count();
+        $pendingComplaints = Complaint::where('status', 'pending')->count();
 
-        // --- Fetch recent bookings from all types ---
 
-        // 1. Fetch recent Darshan bookings
-        $darshanBookings = Booking::with('user', 'temple')->latest()->get()->map(function ($booking) {
-            $booking->type = 'Darshan';
-            return $booking;
-        });
+        // === Revenue Chart Data (Last 30 days) ===
+        $revenueData = Order::where('status', 'completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->get([
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('SUM(total_amount) as total')
+            ])
+            ->pluck('total', 'date');
 
-        // 2. Fetch recent Seva bookings
-        $sevaBookings = SevaBooking::with('user', 'seva.temple')->latest()->get()->map(function ($booking) {
-            $booking->type = 'Seva';
-            return $booking;
-        });
+        // === Bookings Chart Data (Last 30 days) ===
+        $bookingData = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->get([
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as count')
+            ])
+            ->pluck('count', 'date');
 
-        // 3. Fetch recent Accommodation bookings
-        $accommodationBookings = AccommodationBooking::with('user', 'room.hotel')->latest()->get()->map(function ($booking) {
-            $booking->type = 'Accommodation';
-            return $booking;
-        });
+        // --- Prepare chart data by filling in missing dates ---
+        $dates = collect();
+        for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+            $dates->push($date->format('Y-m-d'));
+        }
 
-        // 4. Merge, sort, and take the 5 most recent bookings from all types
-        $allBookings = $darshanBookings->merge($sevaBookings)->merge($accommodationBookings)->sortByDesc('created_at');
-        $recentBookings = $allBookings->take(5);
+        $revenueChartData = $dates->map(fn ($date) => $revenueData->get($date, 0));
+        $bookingChartData = $dates->map(fn ($date) => $bookingData->get($date, 0));
 
-        return view('admin.bookings.index', compact('totalUsers', 'totalTemples', 'totalBookings', 'totalHotels', 'recentBookings'));
-    }
-    public function index()
-    {
-        // Simply return the admin dashboard view.
-        return view('admin.dashboard');
+        return view('admin.dashboard', [
+            'revenueForPeriod' => $revenueForPeriod,
+            'bookingsForPeriod' => $bookingsForPeriod,
+            'newUsersForPeriod' => $newUsersForPeriod,
+            'totalHotels' => $totalHotels,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
+            'totalTemples' => $totalTemples,
+            'pendingComplaints' => $pendingComplaints,
+            'chartLabels' => $dates->map(fn ($date) => Carbon::parse($date)->format('d M')),
+            'revenueChartData' => $revenueChartData,
+            'bookingChartData' => $bookingChartData,
+        ]);
     }
 }

@@ -32,8 +32,9 @@ class Kernel extends HttpKernel
     \App\Http\Middleware\EncryptCookies::class,
     \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
     \Illuminate\Session\Middleware\StartSession::class,
+    // Set locale for each web request based on session/cookie
+    \App\Http\Middleware\SetLocale::class,
     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-    \App\Http\Middleware\SetLocale::class, // ✅ must be here
     \Illuminate\Routing\Middleware\SubstituteBindings::class,
 ],
 

@@ -7,11 +7,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles; 
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage; // Import Storage facade
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    // FIX: Add the HasRoles trait here
     use HasFactory, Notifiable, HasRoles;
 
     /**
@@ -24,6 +24,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'google_id',
+        'google_token',
+        'google_refresh_token',
+        'email_verified_at',
+        'is_active',
+        'profile_photo_path', // <-- ADD THIS
     ];
 
     /**
@@ -34,6 +40,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'google_token',
+        'google_refresh_token',
     ];
 
     /**
@@ -46,11 +54,26 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
-    // This custom method is no longer needed as the Spatie package provides it.
-    // public function hasRole(string $role): bool { ... }
+    /**
+     * Get the URL to the user's profile photo.
+     *
+     * @return string
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo_path) {
+            return Storage::url($this->profile_photo_path);
+        }
+
+        // Return a default image or UI Avatar
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=1e293b&background=cbd5e1';
+    }
+
+    // ... (rest of your methods: favorites, ebooks, etc.)
 
     public function favorites()
     {
@@ -86,5 +109,5 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new CustomVerifyEmail);
     }
-
 }
+

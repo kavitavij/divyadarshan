@@ -70,20 +70,17 @@ class ProfileController extends Controller
     public function myEbooks()
     {
         $user = Auth::user();
-        // Eager load the ebooks to get all their details
         $ebooks = $user->ebooks()->get();
 
         return view('profile.my-ebooks', compact('ebooks'));
     }
     public function myBookings()
     {
-        // This is the cleanest way to get the user's bookings.
-        // It fetches the bookings and their related temple data directly.
         $bookings = Booking::query()
             ->where('user_id', auth()->id())
             ->with('temple', 'darshanSlot', 'defaultDarshanSlot')
             ->with('temple')
-            ->latest('created_at') // Be explicit about ordering by creation date
+            ->latest('created_at')
             ->paginate(9);
 
         return view('profile.my-bookings.index', [
@@ -94,9 +91,9 @@ class ProfileController extends Controller
     public function myDonations(): View
     {
         $donations = Donation::where('user_id', Auth::id())
-                            ->with('temple') // Eager load temple details to prevent extra queries
-                            ->latest()       // Order by the most recent donation
-                            ->paginate(10);   // Paginate the results
+        ->with(['temple', 'order']) 
+                            ->latest()       
+                            ->paginate(10);   
 
         return view('profile.my-donations', compact('donations'));
     }
@@ -254,38 +251,26 @@ class ProfileController extends Controller
     }
     public function cancelStayBooking(StayBooking $booking): RedirectResponse
 {
-    // 1. Authorization
     if (auth()->id() !== $booking->user_id) {
         abort(403, 'Unauthorized action.');
     }
-
-    // 2. Business Rule
-    // This now checks if today's date is AFTER the check-in date
 if (strtolower($booking->status) !== 'confirmed' || now()->startOfDay()->isAfter($booking->check_in_date)) {
         return back()->with('error', 'This booking can no longer be cancelled.');
     }
-
-    // 3. Update the booking status
     $booking->status = 'Cancelled';
 
-    // 4. Update refund status
     if ($booking->payment_method === 'online') {
         $booking->refund_status = 'Pending';
     }
 
-    // 5. Save the changes
     $booking->save();
 
-    // --- NOTIFICATION LOGIC (without try-catch for debugging) ---
     $booking->load('hotel.manager');
     $manager = $booking->hotel->manager;
 
     if ($manager) {
         $manager->notify(new \App\Notifications\BookingCancelled($booking));
     }
-    // --- END OF NOTIFICATION LOGIC ---
-
-    // 6. Conditional redirect
     if ($booking->payment_method === 'online') {
         return redirect()->route('profile.my-stays.request-refund', $booking)
                         ->with('success', 'Booking cancelled. Please provide your bank details to process the refund.');

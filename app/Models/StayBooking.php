@@ -19,6 +19,7 @@ class StayBooking extends Model
      */
     protected $fillable = [
         'user_id',
+        'order_id',
         'room_id',
         'hotel_id',
         'check_in_date',
@@ -65,6 +66,10 @@ class StayBooking extends Model
     public function hotel()
     {
         return $this->belongsTo(Hotel::class, 'hotel_id');
+    }
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
 }

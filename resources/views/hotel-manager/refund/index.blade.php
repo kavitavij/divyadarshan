@@ -79,7 +79,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Booking ID</th>
+                    <th>Order ID</th>
                     <th>Guest Name</th>
                     <th>Dates</th>
                     <th>Amount</th>
@@ -90,8 +90,8 @@
             <tbody>
                 @forelse ($refundRequests as $booking)
                     <tr>
-                        <td><strong>#{{ $booking->id }}</strong></td>
-                        <td>{{ $booking->user->name }}</td>
+                    <td><strong>{{ $booking->order->order_number ?? 'N/A' }}</strong></td>
+                    <td>{{ $booking->user->name }}</td>
                         <td>
                             {{ \Carbon\Carbon::parse($booking->check_in_date)->format('d M, Y') }} - 
                             {{ \Carbon\Carbon::parse($booking->check_out_date)->format('d M, Y') }}
@@ -124,7 +124,7 @@
         </table>
 
         <div class="pagination">
-            {{ $refundRequests->links() }}
+            {{ $refundRequests->onEachSide(1)->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>

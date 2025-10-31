@@ -113,5 +113,9 @@ class Booking extends Model
 
         return 'N/A';
     }
+    public function order()
+    {
+        return $this->belongsTo(\App\Models\Order::class);
+    }
 }
 

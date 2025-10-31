@@ -8,7 +8,10 @@ class TermsController extends Controller
 {
     public function index()
     {
-        // This method simply shows the terms view.
-        return view('pages.terms');
+        // Fetch Terms content from settings (if present) so the view can render admin-edited Terms
+        $settings = \App\Models\Setting::whereIn('key', ['page_content_terms', 'terms_effective_date'])
+                    ->pluck('value', 'key');
+
+        return view('pages.terms', compact('settings'));
     }
 }

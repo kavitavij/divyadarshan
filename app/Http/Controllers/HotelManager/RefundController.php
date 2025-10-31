@@ -21,12 +21,10 @@ class RefundController extends Controller
             return redirect()->route('hotel-manager.dashboard')->with('error', 'You are not assigned to a hotel.');
         }
 
-        // (FIX) This query now fetches all cancelled bookings that have a refund status,
-        // instead of just the 'pending' ones.
         $refundRequests = StayBooking::where('hotel_id', $hotel->id)
             ->where('status', 'Cancelled')
             ->whereNotNull('refund_status')
-            ->with('user', 'room')
+            ->with(['user', 'room', 'order'])
             ->latest()
             ->paginate(15);
 
@@ -37,7 +35,7 @@ class RefundController extends Controller
     {
         $this->authorizeManagerAccess($booking);
 
-        $booking->load('user', 'room', 'hotel', 'guests');
+        $booking->load('user', 'room', 'hotel', 'guests', 'order');
 
         // This gets the user's bank details for the refund
         $refundRequest = $booking->refundRequests()->latest()->first();

@@ -8,6 +8,7 @@ use App\Models\Hotel;
 use App\Models\Temple;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
 
 class ManagerController extends Controller
@@ -21,6 +22,14 @@ class ManagerController extends Controller
         return view('admin.managers.index', compact('managers'));
     }
 
+    public function show(User $manager)
+    {
+        // Load relationships to make sure we have all the data
+        $manager->load(['hotel', 'temple', 'roles']);
+        
+        // Return the new view, passing the manager data to it
+        return view('admin.managers.show', compact('manager'));
+    }
     public function create()
     {
         $hotels = Hotel::whereNull('manager_id')->orderBy('name')->get();
@@ -37,19 +46,27 @@ class ManagerController extends Controller
             'role' => ['required', 'in:hotel_manager,temple_manager'],
             'hotel_id' => ['nullable', 'exists:hotels,id'],
             'temple_id' => ['nullable', 'exists:temples,id'],
+            'profile_photo' => ['nullable', 'image', 'max:1024'], // Max 1MB
         ]);
 
-        $user = User::create([
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
-        
+        ];
+
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            $userData['profile_photo_path'] = $path;
+        }
+
+        $user = User::create($userData);
+
         $user->role = $request->role;
         $user->save();
 
         $user->syncRoles([$request->role]);
-        
+
         if ($request->role === 'hotel_manager' && $request->hotel_id) {
             Hotel::find($request->hotel_id)->update(['manager_id' => $user->id]);
         }
@@ -76,10 +93,22 @@ class ManagerController extends Controller
             'role' => ['required', 'in:hotel_manager,temple_manager'],
             'hotel_id' => ['nullable', 'exists:hotels,id'],
             'temple_id' => ['nullable', 'exists:temples,id'],
+            'profile_photo' => ['nullable', 'image', 'max:1024'], // Max 1MB
         ]);
 
-        $manager->update($request->only('name', 'email', 'role'));
+        $updateData = $request->only('name', 'email', 'role');
         
+        if ($request->hasFile('profile_photo')) {
+            // Delete old photo if exists
+            if ($manager->profile_photo_path) {
+                Storage::disk('public')->delete($manager->profile_photo_path);
+            }
+            $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            $updateData['profile_photo_path'] = $path;
+        }
+        
+        $manager->update($updateData);
+
         if ($request->filled('password')) {
             $manager->update(['password' => Hash::make($request->password)]);
         }
@@ -103,7 +132,7 @@ class ManagerController extends Controller
     {
         if ($manager->hotel) $manager->hotel->update(['manager_id' => null]);
         if ($manager->temple) $manager->temple->update(['manager_id' => null]);
-        
+
         $manager->delete();
 
         return redirect()->route('admin.managers.index')->with('success', 'Manager deleted successfully.');

@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('allTemples', $allTemples)
                      ->with('latestNews', $latestNews)
                      ->with('latestUpdates', $latestUpdates);
+                     
             });
         }
     }

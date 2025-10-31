@@ -9,7 +9,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            // Check if the table ALREADY has this unique index
             $indexExists = collect(DB::select("SHOW INDEXES FROM orders"))
                 ->pluck('Key_name')
                 ->contains('orders_order_number_unique');

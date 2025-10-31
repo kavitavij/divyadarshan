@@ -63,7 +63,7 @@ class CartController extends Controller
         }
 
         $cart['ebook_' . $ebook->id] = $cartItemData;
-        
+
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Ebook added to cart!');
     }
@@ -285,7 +285,7 @@ class CartController extends Controller
                 'total_amount'  => $totalAmount,
                 'status'        => 'Payment Pending',
                 'payment_id'    => null,
-                'order_details' => [$validated], 
+                'order_details' => [$validated],
             ]);
 
             // 3. Create the StayBooking with the new payment status
@@ -391,8 +391,8 @@ class CartController extends Controller
             $finalOrder = null;
 
             DB::transaction(function () use ($cart, $validated, $totalAmount, $user, &$finalOrder) {
-                
-                $prefix = 'DD-GEN-'; 
+
+                $prefix = 'DD-GEN-';
                 $cartTypes = array_column($cart, 'type');
 
                 if (in_array('stay', $cartTypes)) {
@@ -409,7 +409,7 @@ class CartController extends Controller
 
                 $order = Order::create([
                     'user_id'     => $user->id,
-                    'order_number'  => $prefix . strtoupper(Str::random(8)), 
+                    'order_number'  => $prefix . strtoupper(Str::random(8)),
                     'total_amount'  => $totalAmount,
                     'status'        => 'Completed',
                     'payment_id'    => $validated['razorpay_payment_id'],
@@ -480,10 +480,10 @@ class CartController extends Controller
                             // This is the UPDATED code
                             if ($bookingWithDetails && $bookingWithDetails->room->hotel->user) {
                                 $manager = $bookingWithDetails->room->hotel->user;
-                                
+
                                 // Send the original email notification
                                 Mail::to($manager->email)->send(new StayBookingNotification($bookingWithDetails));
-                                
+
                                 // ALSO send the new database notification for the bell icon
                                 $manager->notify(new \App\Notifications\NewHotelBooking($bookingWithDetails));
                             } else {
@@ -496,7 +496,7 @@ class CartController extends Controller
                     }
                     // Handle Seva
                     else if ($item['type'] === 'seva') {
-                        $sevaBooking = SevaBooking::create([ 
+                        $sevaBooking = SevaBooking::create([
                             'user_id'  => $user->id,
                             'order_id' => $order->id,
                             'seva_id'  => $item['id'],
@@ -507,7 +507,7 @@ class CartController extends Controller
                         try {
                             // Load the relationships needed to find the manager
                             $sevaBooking->load('seva.temple.manager');
-                            
+
                             // Check if the manager exists and send the notification
                             if ($sevaBooking->seva && $sevaBooking->seva->temple && $sevaBooking->seva->temple->manager) {
                                 $sevaBooking->seva->temple->manager->notify(new \App\Notifications\NewSevaBooking($sevaBooking));

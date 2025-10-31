@@ -82,7 +82,7 @@ class TempleController extends Controller
         $currentDate = Carbon::now()->startOfMonth();
         $slotData = $temple->slot_data ?? [];
 
-        for ($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < 5; $i++) {
             $monthName = $currentDate->format('F Y');
             $daysInMonth = $currentDate->daysInMonth;
             $startOfMonth = $currentDate->copy()->startOfMonth()->dayOfWeek;
@@ -165,4 +165,3 @@ class TempleController extends Controller
         return back()->with('success', 'Thank you for your interest! Our team will review your inquiry and contact you shortly.');
     }
 }
-

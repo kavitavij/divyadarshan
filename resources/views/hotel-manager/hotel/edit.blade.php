@@ -151,9 +151,8 @@
     </div>
 </div>
 @endsection
-
 @push('scripts')
-@push('scripts')
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places&callback=initMap" async defer></script> 
 <script>
     let map;
     let marker;
@@ -162,8 +161,8 @@
 
     function initMap() {
         const initialPosition = {
-            lat: parseFloat(latInput.value) || 28.6139,
-            lng: parseFloat(lngInput.value) || 77.2090
+            lat: parseFloat(latInput.value) || 30.9010, // Default to Ludhiana, Punjab
+            lng: parseFloat(lngInput.value) || 75.8573
         };
 
         map = new google.maps.Map(document.getElementById("map"), {
@@ -177,16 +176,14 @@
             draggable: true,
         });
 
-        // --- NEW SEARCH BOX LOGIC ---
+        // --- Search Box Logic ---
         const input = document.getElementById("pac-input");
         const searchBox = new google.maps.places.SearchBox(input);
 
-        // Bias the SearchBox results towards current map's viewport.
         map.addListener("bounds_changed", () => {
             searchBox.setBounds(map.getBounds());
         });
 
-        // Listen for the event fired when the user selects a prediction and retrieve more details for that place.
         searchBox.addListener("places_changed", () => {
             const places = searchBox.getPlaces();
 
@@ -208,8 +205,6 @@
             latInput.value = place.geometry.location.lat();
             lngInput.value = place.geometry.location.lng();
         });
-        // --- END OF NEW SEARCH BOX LOGIC ---
-
 
         // Update hidden inputs when marker is dragged
         google.maps.event.addListener(marker, 'dragend', function(event) {
@@ -218,7 +213,7 @@
         });
     }
 
+    // This makes the initMap function globally available for the callback
     window.initMap = initMap;
 </script>
-@endpush
 @endpush

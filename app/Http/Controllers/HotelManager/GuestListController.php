@@ -26,7 +26,7 @@ class GuestListController extends Controller
         $roomIds = $hotel->rooms()->pluck('id');
 
         $bookings = StayBooking::whereIn('room_id', $roomIds)
-            ->with('user', 'room') // Eager load relationships for efficiency
+        ->with(['user', 'room', 'order']) // Eager load relationships for efficiency
             ->latest()
             ->paginate(15);
 

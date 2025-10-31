@@ -13,6 +13,19 @@ class NotificationController extends Controller
         return response()->json(Auth::user()->unreadNotifications);
     }
 
+    public function showAll(Request $request)
+    {
+        $query = Auth::user()->notifications();
+
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->input('date'));
+        }
+
+        $notifications = $query->latest()->paginate(15)->withQueryString();
+
+        return view('temple-manager.notifications.index', compact('notifications'));
+    }
+
     public function markAsRead(Request $request, $notificationId)
     {
         $notification = Auth::user()->notifications()->findOrFail($notificationId);
@@ -20,4 +33,8 @@ class NotificationController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+    public function fetchUnread()
+{
+    return response()->json(Auth::user()->unreadNotifications);
+}
 }

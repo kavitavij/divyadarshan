@@ -3,8 +3,6 @@
 @section('content')
     <div class="container-fluid py-4">
         <h1 class="h3 mb-4 text-gray-800">Manage Bookings for {{ $temple->name }}</h1>
-
-        {{-- Stat Cards --}}
         <div class="row g-4 mb-4">
             <div class="col-lg-4 col-md-6">
                 <div class="card summary-card-modern border-0 shadow h-100">
@@ -84,6 +82,7 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>Booking ID</th>
+                                <th>Order ID</th>
                                 <th>Type</th>
                                 <th>User Name</th>
                                 <th>Details</th>
@@ -92,10 +91,18 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody> 
                             @forelse ($bookings as $booking)
                                 <tr>
-                                    <td>{{ $booking->id }}</td>
+                                <td><strong>#{{ $booking->id }}</strong></td>
+                                <td>@if($booking->type === 'Seva')
+                                            {{ $booking->order->order_number ?? 'N/A' }}
+                                        @elseif($booking->type === 'Darshan')
+                                            {{ $booking->order->order_number ?? 'N/A' }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                     <td>
                                         <span class="badge rounded-pill px-3 py-2 {{ $booking->type === 'Darshan' ? 'bg-info' : 'bg-warning text-dark' }}">
                                             <i class="fas {{ $booking->type === 'Darshan' ? 'fa-eye' : 'fa-concierge-bell' }} me-1"></i> {{ $booking->type }}
@@ -126,7 +133,7 @@
                     </table>
                 </div>
                 <div class="mt-3">
-                    {{ $bookings->appends(request()->query())->links() }}
+                    {{ $bookings->onEachSide(1)->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>

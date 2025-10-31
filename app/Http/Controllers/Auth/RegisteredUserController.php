@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\Setting;
 
 class RegisteredUserController extends Controller
 {
@@ -20,7 +21,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        // Fetch all settings as a key-value array, which is what the view expects.
+        $settings = Setting::pluck('value', 'key')->all();
+
+        return view('auth.register', ['settings' => $settings]);
     }
 
     /**

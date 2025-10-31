@@ -26,9 +26,8 @@
                     @endif
                 </div>
 
-                {{-- Booking Details Column --}}
                 <div class="col-md-6 mb-4">
-                    <h5>Original Booking Details (ID: #{{ $booking->id }})</h5>
+                    <h5>Original Booking Details (ID: #{{ $booking->order->order_number ?? 'N/A' }})</h5>
                     <ul class="list-group">
                         <li class="list-group-item"><strong>Hotel:</strong> {{ $booking->hotel->name }}</li>
                         <li class="list-group-item"><strong>Check-in:</strong> {{ \Carbon\Carbon::parse($booking->check_in_date)->format('d F, Y') }}</li>

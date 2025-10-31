@@ -23,7 +23,7 @@ class HotelManagerBookingController extends Controller
 
         // 2. Update Statuses: This is the core logic
         $booking->status = 'Cancelled';
-        $booking->refund_status = 'pending'; 
+        $booking->refund_status = 'pending';
         $booking->save();
 
         try {

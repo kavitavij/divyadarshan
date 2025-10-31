@@ -38,10 +38,6 @@
                             </td>
                             <td>{{ $ebook->title }}</td>
                             <td>{{ $ebook->author ?? 'N/A' }}</td>
-                            
-                            {{-- ======================================================= --}}
-                            {{-- START: NEW LOGIC FOR TYPE AND PRICE                   --}}
-                            {{-- ======================================================= --}}
                             <td>
                                 @if($ebook->type == 'free')
                                     <span class="badge bg-success">Free</span>
@@ -64,9 +60,6 @@
                                     <span class="text-muted">—</span>
                                 @endif
                             </td>
-                            {{-- ======================================================= --}}
-                            {{-- END: NEW LOGIC                                        --}}
-                            {{-- ======================================================= --}}
 
                             <td>
                                 <form action="{{ route('admin.ebooks.destroy', $ebook->id) }}" method="POST">
@@ -93,7 +86,7 @@
                 </table>
             </div>
             <div class="mt-3">
-                {!! $ebooks->links() !!}
+                {{ $ebooks->onEachSide(1)->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>

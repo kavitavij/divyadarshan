@@ -12,9 +12,11 @@
                 @csrf
                 <div class="form-group">
                     <label for="slot_date">Date</label>
-                    <input type="date" name="slot_date" id="slot_date" class="form-control @error('slot_date') is-invalid @enderror" value="{{ old('slot_date') }}" min="{{ date('Y-m-d') }}" required>
+                    <input type="date" name="slot_date" id="slot_date"
+                        class="form-control @error('slot_date') is-invalid @enderror" value="{{ old('slot_date') }}"
+                        min="{{ date('Y-m-d') }}" required>
                     @error('slot_date')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -37,10 +39,11 @@
                         </div>
                     </div>
                 </div>
-                <div>
-                <button type="button" class="btn btn-secondary mb-3" id="add-slot-btn">Add Another Slot</button>
-                <button type="submit" class="btn btn-primary">Create Slot</button>
-                <a href="{{ route('temple-manager.slots.index') }}" class="btn btn-secondary">Cancel</a>
+                <div class="d-flex justify-content-start align-items-center gap-2 mt-3">
+                    <button type="button" class="btn btn-secondary" id="add-slot-btn">Add Another Slot</button>
+                    <button type="submit" class="btn btn-primary">Create Slot</button>
+                    <a href="{{ route('temple-manager.slots.index') }}" class="btn btn-secondary">Cancel</a>
+                </div>
             </form>
         </div>
     </div>
@@ -50,42 +53,43 @@
         let slotIndex = 1;
         const slotsContainer = document.getElementById('slots-container');
         document.getElementById('add-slot-btn').addEventListener('click', function() {
-        const row = document.createElement('div');
-        row.className = 'slot-row row align-items-end mb-3';
-        row.innerHTML = `
-        <div class="col-md-3">
-            <label>Start Time</label>
-            <input type="time" name="slots[${slotIndex}][start_time]" class="form-control" required>
-        </div>
-        <div class="col-md-3">
-            <label>End Time</label>
-            <input type="time" name="slots[${slotIndex}][end_time]" class="form-control" required>
-        </div>
-            <div class="col-md-4">
-                <label>Capacity</label>
-                <input type="number" name="slots[${slotIndex}][capacity]" class="form-control" min="1" required>
-        </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-danger btn-remove-slot">Remove</button>
+            const row = document.createElement('div');
+            row.className = 'slot-row row align-items-end mb-3';
+            row.innerHTML = `
+            <div class="col-md-3">
+                <label>Start Time</label>
+                <input type="time" name="slots[${slotIndex}][start_time]" class="form-control" required>
             </div>
-        `;
-                    slotsContainer.appendChild(row);
-                    slotIndex++;
+            <div class="col-md-3">
+                <label>End Time</label>
+                <input type="time" name="slots[${slotIndex}][end_time]" class="form-control" required>
+            </div>
+                <div class="col-md-4">
+                    <label>Capacity</label>
+                    <input type="number" name="slots[${slotIndex}][capacity]" class="form-control" min="1" required>
+            </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-remove-slot">Remove</button>
+                </div>
+            `;
+            slotsContainer.appendChild(row);
+            slotIndex++;
+            updateRemoveButtons();
+        });
+
+        function updateRemoveButtons() {
+            document.querySelectorAll('.btn-remove-slot').forEach(btn => {
+                btn.classList.remove('d-none');
+                btn.onclick = function() {
+                    btn.closest('.slot-row').remove();
                     updateRemoveButtons();
-                });
-                function updateRemoveButtons() {
-                    document.querySelectorAll('.btn-remove-slot').forEach(btn => {
-                        btn.classList.remove('d-none');
-                        btn.onclick = function() {
-                            btn.closest('.slot-row').remove();
-                            updateRemoveButtons();
-                        };
-                    });
-                    if (document.querySelectorAll('.slot-row').length === 1) {
-                        document.querySelector('.btn-remove-slot').classList.add('d-none');
-                    }
-                }
-                updateRemoveButtons();
+                };
             });
-            </script>
+            if (document.querySelectorAll('.slot-row').length === 1) {
+                document.querySelector('.btn-remove-slot').classList.add('d-none');
+            }
+        }
+        updateRemoveButtons();
+    });
+</script>
 @endsection

@@ -16,10 +16,11 @@ class Donation extends Model
      */
     protected $fillable = [
         'user_id',
+        'order_id',
         'temple_id',
         'amount',
         'status',
-        'purpose', // <-- ADD THIS LINE
+        'purpose', 
     ];
 
     /**
@@ -36,5 +37,9 @@ class Donation extends Model
     public function temple()
     {
         return $this->belongsTo(Temple::class);
+    }
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 }

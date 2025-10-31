@@ -3,22 +3,14 @@
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg">
-        <!-- Header -->
         <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">My Donation History</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">A record of all your generous contributions. Thank you for your support.</p>
         </div>
 
-        <!-- Donations List -->
         <div class="flow-root">
             @if($donations->isEmpty())
                 <div class="text-center py-12 px-6">
-                    <div class="mx-auto h-12 w-12 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1014.625 7.5H9.375A2.625 2.625 0 1012 4.875z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75v6.75" />
-                        </svg>
-                    </div>
                     <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">No donations yet</h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">You have not made any donations. Your support is greatly appreciated.</p>
                     <div class="mt-6">
@@ -32,10 +24,9 @@
                     @foreach ($donations as $donation)
                         <li class="px-6 py-5">
                             <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
-                                <!-- Left side: Details -->
                                 <div class="flex-1">
                                     <p class="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">
-                                        Donation #{{ str_pad($donation->id, 6, '0', STR_PAD_LEFT) }}
+                                        Order #{{ $donation->order->order_number ?? 'N/A' }}
                                     </p>
                                     <div class="mt-2 space-y-2 sm:flex sm:items-center sm:gap-4 sm:space-y-0">
                                         <p class="flex items-center text-sm text-gray-500 dark:text-gray-400">
@@ -49,12 +40,10 @@
                                               <path d="M3.25 4A2.25 2.25 0 001 6.25v7.5A2.25 2.25 0 003.25 16h13.5A2.25 2.25 0 0019 13.75v-7.5A2.25 2.25 0 0016.75 4H3.25zM16.5 6.25a.75.75 0 00-.75-.75H4a.75.75 0 00-.75.75v7.5c0 .414.336.75.75.75h12a.75.75 0 00.75-.75v-7.5zM9 12a1 1 0 112 0 1 1 0 01-2 0zM6.5 10.5a1 1 0 100-2 1 1 0 000 2zM12.5 10.5a1 1 0 100-2 1 1 0 000 2z" />
                                             </svg>
                                             For: {{ $donation->temple->name ?? 'General Donation' }}
-                                            @if($donation->purpose) - ({{ Illuminate\Support\Str::title(str_replace('_', ' ', $donation->purpose)) }}) @endif
                                         </p>
                                     </div>
                                 </div>
 
-                                <!-- Right side: Amount and Button -->
                                 <div class="flex sm:flex-col sm:items-end sm:text-right gap-4">
                                     <div class="flex-1">
                                         <p class="text-xl font-bold text-gray-900 dark:text-white">₹{{ number_format($donation->amount, 2) }}</p>
@@ -71,7 +60,6 @@
                     @endforeach
                 </ul>
 
-                <!-- Pagination -->
                 <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50">
                     {{ $donations->links() }}
                 </div>
@@ -80,4 +68,3 @@
     </div>
 </div>
 @endsection
-

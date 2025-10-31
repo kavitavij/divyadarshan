@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Temple extends Model
 {
@@ -23,7 +24,7 @@ class Temple extends Model
     'darshan_charge',
     'offered_services',
     'terms_and_conditions',
-    'manager_id', 
+    'manager_id',
 ];
     protected $casts = [
     'offered_services' => 'array',
@@ -37,18 +38,10 @@ class Temple extends Model
     {
         return $this->hasMany(Seva::class);
     }
-
-    /**
-     * Get all Darshan bookings for the temple.
-     */
     public function darshanBookings()
     {
         return $this->hasMany(Booking::class);
     }
-
-    /**
-     * Get all Seva bookings for the temple through its sevas.
-     */
     public function sevaBookings()
     {
         return $this->hasManyThrough(SevaBooking::class, Seva::class);
@@ -64,5 +57,23 @@ class Temple extends Model
     public function galleryImages()
     {
         return $this->hasMany(TempleImage::class);
+    }
+    protected function city(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                $parts = explode(',', $attributes['location'] ?? 'N/A,N/A', 2);
+                return trim($parts[0]);
+            }
+        );
+    }
+    protected function state(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                $parts = explode(',', $attributes['location'] ?? 'N/A,N/A', 2);
+                return trim($parts[1] ?? 'N/A');
+            }
+        );
     }
 }

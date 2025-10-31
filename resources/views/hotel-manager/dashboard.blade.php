@@ -19,6 +19,37 @@
             margin-bottom: 20px;
         }
 
+        /* Stat Cards */
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 3.5rem;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.2;
+        }
+
+        .stat-card-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
         /* Quick Actions using CSS Grid (always 2-3 per row) */
         .quick-actions {
             display: grid;
@@ -68,6 +99,78 @@
         @else
             <p class="welcome-text">Welcome, <strong>{{ Auth::user()->name }}</strong>! Manage your hotel with ease.</p>
 
+            {{-- Date Filter --}}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <form action="{{ route('hotel-manager.dashboard') }}" method="GET"
+                        class="d-flex flex-wrap gap-2 align-items-end">
+                        <div class="flex-grow-1">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" id="start_date" name="start_date"
+                                value="{{ $startDate instanceof \Carbon\Carbon ? $startDate->format('Y-m-d') : $startDate }}"
+                                class="form-control">
+                        </div>
+                        <div class="flex-grow-1">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" id="end_date" name="end_date"
+                                value="{{ $endDate instanceof \Carbon\Carbon ? $endDate->format('Y-m-d') : $endDate }}"
+                                class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i>Filter</button>
+                        <a href="{{ route('hotel-manager.dashboard') }}" class="btn btn-outline-secondary">Reset</a>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Key Metrics --}}
+            <div class="row mb-4">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="stat-card bg-success">
+                        <div class="stat-icon">💰</div>
+                        <h5 class="card-subtitle mb-2">Revenue (Period)</h5>
+                        <h3 class="stat-card-title">₹{{ number_format($revenueForPeriod, 2) }}</h3>
+                        <p class="card-text small">Completed bookings in period</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="stat-card bg-info">
+                        <div class="stat-icon">🧾</div>
+                        <h5 class="card-subtitle mb-2">Bookings (Period)</h5>
+                        <h3 class="stat-card-title">{{ $bookingsForPeriod }}</h3>
+                        <p class="card-text small">New bookings in period</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="stat-card bg-primary">
+                        <div class="stat-icon">🚪</div>
+                        <h5 class="card-subtitle mb-2">Total Rooms</h5>
+                        <h3 class="stat-card-title">{{ $totalRooms }}</h3>
+                        <p class="card-text small">In your hotel</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Charts Section --}}
+            <div class="row">
+                <div class="col-lg-7 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">Revenue Overview (Period)</h5>
+                        </div>
+                        <div class="card-body"><canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">Bookings Overview (Period)</h5>
+                        </div>
+                        <div class="card-body"><canvas id="bookingsChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
             {{-- ✅ Quick Actions (2–3 per row, responsive) --}}
             <div class="quick-actions">
                 <div class="quick-card">
@@ -111,14 +214,7 @@
                     <p class="text-muted">View Refund and Cancellation</p>
                     <a href="{{ route('hotel-manager.refund.index') }}" class="btn btn-warning">Refund</a>
                 </div>
-                <!-- <div class="quick-card">
-                    <div class="quick-icon">📖</div>
-                    <h5 class="card-title">Completed Booking</h5>
-                    <p class="text-muted">View and Update completed Bookings</p>
-                    <a href="#" class="btn btn-warning"></a>
-                </div> -->
             </div>
-            
             {{-- Recent Bookings --}}
             <div class="card shadow-sm mt-4">
                 <div class="card-header">
@@ -156,3 +252,81 @@
         @endif
     </div>
 @endsection
+
+@push('scripts')
+    {{-- Chart.js for graphs --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartData = JSON.parse('{!! $chartData !!}');
+
+            // 1. Revenue Chart (Line)
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: chartData.revenue,
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' Revenue: ₹' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. Bookings Chart (Bar)
+            const bookingsCtx = document.getElementById('bookingsChart').getContext('2d');
+            new Chart(bookingsCtx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Bookings',
+                        data: chartData.bookings,
+                        backgroundColor: 'rgba(23, 162, 184, 0.7)',
+                        borderColor: 'rgba(23, 162, 184, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+@endpush
