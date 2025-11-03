@@ -210,7 +210,10 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::delete('/remove/{index}', [CartController::class, 'removeFromCart'])->name('remove');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
     Route::post('/pay', [CartController::class, 'pay'])->name('pay');
-   Route::post('/add-donation', [CartController::class, 'addDonation'])->name('addDonation');
+    Route::post('/add-donation', [CartController::class, 'addDonation'])->name('addDonation');
+    Route::post('/pay/stripe', [App\Http\Controllers\CartController::class, 'payWithStripe'])->name('pay.stripe'); // Name becomes 'cart.pay.stripe'
+    Route::get('/payment/stripe/success', [App\Http\Controllers\CartController::class, 'stripeSuccess'])->name('stripe.success'); // Name becomes 'cart.stripe.success'
+    Route::get('/payment/stripe/cancel', [App\Http\Controllers\CartController::class, 'stripeCancel'])->name('stripe.cancel'); // Name becomes 'cart.stripe.cancel'
 });
 
 Route::get('/auth/google/redirect', [GoogleLoginController::class, 'redirectToGoogle'])->name('google.redirect');
@@ -315,6 +318,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('managers', \App\Http\Controllers\Admin\ManagerController::class);
     Route::get('/announcements/create', [\App\Http\Controllers\Admin\AnnouncementController::class, 'create'])->name('announcements.create');
     Route::post('/announcements', [\App\Http\Controllers\Admin\AnnouncementController::class, 'store'])->name('announcements.store');
+
+    Route::get('settings/payment', [App\Http\Controllers\Admin\SettingsController::class, 'paymentSettings'])->name('settings.payment');
+    Route::put('settings/payment', [App\Http\Controllers\Admin\SettingsController::class, 'updatePaymentSettings'])->name('settings.payment.update');
 });
     //  Routes for Stay Refunds
     Route::prefix('admin')->name('admin.')->group(function () {

@@ -94,9 +94,11 @@
             <div class="alert alert-success shadow-sm">{{ session('success') }}</div>
         @endif
 
-        @if (isset($error))
-            <div class="alert alert-danger shadow-sm">{{ $error }}</div>
-        @else
+        @if (session('error'))
+            <div class="alert alert-danger shadow-sm">{{ session('error') }}</div>
+        @endif
+
+        @if (isset($hotel) && $hotel)
             <p class="welcome-text">Welcome, <strong>{{ Auth::user()->name }}</strong>! Manage your hotel with ease.</p>
 
             {{-- Date Filter --}}
@@ -249,6 +251,8 @@
                     @endif
                 </div>
             </div>
+        @else
+            <div class="alert alert-warning">You are not assigned a hotel. Please contact to administrator.</div>
         @endif
     </div>
 @endsection

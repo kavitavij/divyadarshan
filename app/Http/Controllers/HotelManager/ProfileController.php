@@ -45,9 +45,9 @@ class ProfileController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'], // <-- ADDED THIS
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'current_password' => ['nullable', 'required_with:password', 'current_password'],
-            'password' => ['nullable', 'confirmed', Password::defaults()], // Changed Rules\Password to Password
+            'password' => ['nullable', 'confirmed', Password::defaults()],
         ]);
 
         $user->name = $request->name;

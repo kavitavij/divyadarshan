@@ -281,7 +281,7 @@
                     {{-- User Menu --}}
                     <div x-data="{ open: false }" @click.away="open = false" class="relative">
                         <button @click="open = !open"
-                            class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-[#0d0d0d] font-medium rounded hover:bg-yellow-400 transition">
+                            class="flex items-center gap-1 hover:text-yellow-400 transition text-yellow-400 font-semibold">
                             <span>{{ Auth::user()->name }}</span>
                             <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,6 +289,7 @@
                                 </path>
                             </svg>
                         </button>
+
                         <div x-show="open" x-transition
                             class="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded-md shadow-lg z-40"
                             style="display:none;">
@@ -296,7 +297,16 @@
                                 <a href="{{ route('admin.dashboard') }}"
                                     class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Admin
                                     Dashboard</a>
+                            @elseif (Auth::user()->role === 'hotel_manager')
+                                <a href="{{ url('/hotel-manager/dashboard') }}"
+                                    class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Hotel
+                                    Manager Dashboard</a>
+                            @elseif (Auth::user()->role === 'temple_manager')
+                                <a href="{{ url('/temple-manager/dashboard') }}"
+                                    class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Temple
+                                    Manager Dashboard</a>
                             @endif
+
                             <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">Profile</a>
                             <a href="{{ route('cart.view') }}"
@@ -304,14 +314,14 @@
                                 Cart</a>
                             <a href="{{ route('profile.ebooks') }}"
                                 class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My
-                                ebooks</a>
+                                Ebooks</a>
                             <a href="{{ route('profile.my-orders.index') }}"
                                 class="block px-4 py-2 text-sm text-[#ccc] hover:bg-yellow-500 hover:text-[#0d0d0d]">My
                                 Orders</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
-                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-[#0d0d0d]">Log
+                                    class="w-full text-left block px-4 py-2 text-sm text-red-500 hover:bg-red-600 hover:text-white">Log
                                     Out</button>
                             </form>
                         </div>
@@ -662,7 +672,6 @@
             </div>
         </section>
     </div>
-    {{-- Login modal removed: login page is used instead. --}}
 
     <div x-show="spiritualHelpModal" @keydown.escape.window="spiritualHelpModal = false"
         class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[999] p-4" x-cloak

@@ -46,6 +46,11 @@
         .temple-card {
             background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
         }
+
+        #termsModal .modal-dialog {
+            z-index: 1060;
+            margin-top: 5rem;
+        }
     </style>
     <div class="container-fluid">
         <h1 class="dashboard-title mb-4">Temple Manager Dashboard</h1>
@@ -70,11 +75,13 @@
                         <div class="flex-grow-1">
                             <label for="start_date" class="form-label">Start Date</label>
                             <input type="date" id="start_date" name="start_date"
-                                value="{{ $startDate->format('Y-m-d') }}" class="form-control">
+                                value="{{ $startDate instanceof \Carbon\Carbon ? $startDate->format('Y-m-d') : $startDate }}"
+                                class="form-control">
                         </div>
                         <div class="flex-grow-1">
                             <label for="end_date" class="form-label">End Date</label>
-                            <input type="date" id="end_date" name="end_date" value="{{ $endDate->format('Y-m-d') }}"
+                            <input type="date" id="end_date" name="end_date"
+                                value="{{ $endDate instanceof \Carbon\Carbon ? $endDate->format('Y-m-d') : $endDate }}"
                                 class="form-control">
                         </div>
                         <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i>Filter</button>
@@ -211,7 +218,7 @@
     </div>
     </div>
 @else
-    <div class="alert alert-warning">You are not assigned a temple. Please contact an administrator.</div>
+    <div class="alert alert-warning">You are not assigned a temple. Please contact to administrator.</div>
     @endif
     </div>
 

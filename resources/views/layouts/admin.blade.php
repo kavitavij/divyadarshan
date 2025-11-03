@@ -200,7 +200,9 @@
             <li><a class="nav-link {{ request()->routeIs('admin.managers.*') ? 'active' : '' }}"
                     href="{{ route('admin.managers.index') }}">
                     <i class="fa-solid fa-user"></i> <span>View Managers</span></a></li>
-
+            <li><a class="nav-link {{ request()->routeIs('admin.settings.payment') ? 'active' : '' }}"
+                    href="{{ route('admin.settings.payment') }}">
+                    <i class="fa-solid fa-credit-card"></i> <span>Payment Gateways</span></a></li>
             <li><a class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}"
                     href="{{ route('admin.announcements.create') }}">
                     <i class="fa-solid fa-bullhorn"></i> <span>Announcements</span></a></li>
@@ -209,7 +211,7 @@
                     href="{{ route('admin.revenue.index') }}">
                     <i class="fas fa-dollar-sign"></i> <span>Revenue</span></a></li>
 
-            <li><a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+            <li><a class="nav-link {{ request()->routeIs('admin.settings.edit') ? 'active' : '' }}"
                     href="{{ route('admin.settings.edit') }}">
                     <i class="fa-solid fa-file-alt"></i> <span>Page Content</span></a></li>
 
@@ -295,7 +297,8 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user me-2"></i> Profile</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear me-2"></i> Settings</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear me-2"></i> Settings</a>
+                    </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
