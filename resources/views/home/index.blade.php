@@ -274,13 +274,6 @@
                                     <span class="flex-1">{{ $update->message }}</span>
                                 </div>
                             @endforeach
-                            @foreach ($latestUpdates as $update)
-                                <div
-                                    class="notification-item flex items-center gap-x-4 text-gray-200 p-3 rounded-lg bg-slate-700/50 border border-slate-600">
-                                    <span class="text-yellow-400 text-xl"></span>
-                                    <span class="flex-1">{{ $update->message }}</span>
-                                </div>
-                            @endforeach
                         @else
                             <div
                                 class="notification-item flex items-center gap-x-4 text-gray-200 p-3 rounded-lg bg-slate-700/50 border border-slate-600">
