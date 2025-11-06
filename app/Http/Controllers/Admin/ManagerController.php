@@ -15,9 +15,10 @@ class ManagerController extends Controller
 {
     public function index()
     {
-        // CORRECTED: Query directly on the 'role' column to include all managers,
-        // including those who may have signed up via Google before being assigned a role.
-        $managers = User::whereIn('role', ['hotel_manager', 'temple_manager'])
+        // Use whereHas to query users based on their assigned roles
+        $managers = User::whereHas('roles', function ($query) {
+                            $query->whereIn('name', ['hotel_manager', 'temple_manager']);
+                        })
                         ->with(['hotel', 'temple'])->latest()->paginate(10);
 
         return view('admin.managers.index', compact('managers'));
@@ -61,10 +62,7 @@ class ManagerController extends Controller
 
         $user = User::create($userData);
 
-        $user->role = $request->role;
-        $user->save();
-
-        $user->syncRoles([$request->role]);
+        $user->assignRole($request->role);
 
         if ($request->role === 'hotel_manager' && $request->hotel_id) {
             Hotel::find($request->hotel_id)->update(['manager_id' => $user->id]);
@@ -95,7 +93,7 @@ class ManagerController extends Controller
             'profile_photo' => ['nullable', 'image', 'max:1024'], // Max 1MB
         ]);
 
-        $updateData = $request->only('name', 'email', 'role');
+        $updateData = $request->only('name', 'email');
 
         if ($request->hasFile('profile_photo')) {
             // Delete old photo if exists

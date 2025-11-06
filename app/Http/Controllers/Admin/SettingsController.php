@@ -109,4 +109,3 @@ class SettingsController extends Controller
         return redirect()->back()->with('success', 'Payment settings updated successfully!');
     }
 }
-

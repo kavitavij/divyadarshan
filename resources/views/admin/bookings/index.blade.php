@@ -66,21 +66,24 @@
                                 <td>{{ $booking->location_name ?? 'N/A' }}</td>
                                 <td>{{ $booking->user_name ?? 'N/A' }}</td>
                                 <td>
-                                    <span class="badge {{ strtolower($booking->status) === 'confirmed' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                    <span
+                                        class="badge {{ strtolower($booking->status) === 'confirmed' ? 'bg-success' : 'bg-warning text-dark' }}">
                                         {{ Str::ucfirst($booking->status) }}
                                     </span>
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y') }}</td>
                                 <td>
                                     {{-- The link to the generic show page remains correct --}}
-                                    <a href="{{ route('admin.bookings.show', ['type' => $booking->type, 'id' => $booking->id]) }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('admin.bookings.show', ['type' => $booking->type, 'id' => $booking->id]) }}"
+                                        class="btn btn-sm btn-primary">
                                         View Details
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted">No bookings found for the selected filters.</td>
+                                <td colspan="7" class="text-center text-muted">No bookings found for the selected
+                                    filters.</td>
                             </tr>
                         @endforelse
                     </tbody>

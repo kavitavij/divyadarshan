@@ -112,64 +112,45 @@
         .slot-item {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
-            background-color: #fff;
-        }
-
-        .dark .slot-item {
-            border-color: #374151;
-            background-color: #1f2937;
+            background-color: #0f172a;
+            /* dark navy background */
+            color: #ffffff;
+            /* white text */
+            width: 100%;
+            /* full line width */
         }
 
         .slot-item:hover {
             border-color: #6366f1;
+            background-color: #1e293b;
         }
 
         .slot-item.selected {
             border-color: #4f46e5;
-            background-color: #e0e7ff;
-        }
-
-        .dark .slot-item.selected {
-            background-color: #312e81;
-        }
-
-        .slot-item input[type="radio"] {
-            margin-right: 1rem;
-            width: 1.25em;
-            height: 1.25em;
+            background-color: #3730a3;
         }
 
         .slot-time {
             font-weight: 600;
-            color: #1f2937;
+            font-size: 1.1rem;
             flex-grow: 1;
         }
 
-        .dark .slot-time {
-            color: #f9fafb;
-        }
-
-        .slot-item.selected .slot-time {
-            color: #312e81;
-        }
-
-        .dark .slot-item.selected .slot-time {
-            color: #c7d2fe;
-        }
-
         .slot-availability {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 500;
-            padding: 0.2rem 0.6rem;
+            padding: 0.3rem 0.8rem;
             border-radius: 9999px;
-            background-color: #d1fae5;
-            color: #065f46;
+            background-color: #065f46;
+            color: #d1fae5;
         }
+
 
         .dark .slot-availability {
             background-color: #064e3b;
